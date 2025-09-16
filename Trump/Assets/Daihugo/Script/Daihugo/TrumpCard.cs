@@ -1,15 +1,15 @@
 public class TrumpCard
 {
-    public Daihugo.SuitType Suit;
+    public DaihugoGameRule.SuitType Suit;
     public CardNumber cardNumber;
 
     public string CardName;
     public bool IsFront;
-    public TrumpCard(Daihugo.SuitType suit, CardNumber number)
+    public TrumpCard(DaihugoGameRule.SuitType suit, CardNumber number)
     {
         Suit = suit;
         cardNumber = number;
-        if (suit == Daihugo.SuitType.Joker)
+        if (suit == DaihugoGameRule.SuitType.Joker)
         {
             CardName = "Joker";
         }
@@ -17,17 +17,17 @@ public class TrumpCard
         {
             CardName = Suit switch
             {
-                Daihugo.SuitType.Spade => "S",
-                Daihugo.SuitType.Diamond => "D",
-                Daihugo.SuitType.Clover => "C",
-                Daihugo.SuitType.Heart => "H",
-                _ => ""
+                DaihugoGameRule.SuitType.Spade => "S",
+                DaihugoGameRule.SuitType.Diamond => "D",
+                DaihugoGameRule.SuitType.Clover => "C",
+                DaihugoGameRule.SuitType.Heart => "H",
+                _ => throw new System.Exception("Not found Suit Type")
             } + number.NumberName();
         }
 
-        if (suit == Daihugo.SuitType.Spade && cardNumber.Number == Daihugo.Number.Three)
+        if (suit == DaihugoGameRule.SuitType.Spade && cardNumber.Number == DaihugoGameRule.Number.Three)
         {
-            cardNumber.Effect = Daihugo.Effect.Counter_Spade_3;
+            cardNumber.Effect = DaihugoGameRule.Effect.Counter_Spade_3;
         }
     }
 }

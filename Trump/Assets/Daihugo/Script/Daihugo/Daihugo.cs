@@ -6,58 +6,20 @@ using UnityEngine;
 
 public class Daihugo
 {
-    private int CardNumberLength => 14;
-
-    public enum Number
-    {
-        Three = 0,
-        Four,
-        Five,
-        Six,
-        Seven,
-        Eight,
-        Nine,
-        Ten,
-        Jack,
-        Queen,
-        King,
-        Ace,
-        Two,
-        Joker
-    }
-
-    public enum SuitType
-    {
-        Spade,
-        Diamond,
-        Clover,
-        Heart,
-        Joker
-    }
-    public enum Effect
-    {
-        None,
-        Eight_Enders,
-        Eleven_Back,
-        Revolution,
-        Counter_Revolution,
-        Counter_Spade_3
-    }
-    SuitType[] suitTypes = { SuitType.Spade, SuitType.Diamond, SuitType.Clover, SuitType.Heart };
     private List<TrumpCard> Cards;
     private List<GamePlayer> gamePlayers;
     public List<GamePlayer> GamePlayers => gamePlayers;
     public Daihugo()
     {
         Cards = new List<TrumpCard>();
-        foreach (var type in suitTypes)
+        foreach (var type in DaihugoGameRule.SuitTypes)
         {
-            for (var i = 1; i < CardNumberLength; i++)
+            for (var i = 1; i < DaihugoGameRule.Numbers.Length; i++)
             {
                 Cards.Add(new TrumpCard(type, new CardNumber(i)));
             }
         }
-        Cards.Add(new TrumpCard(SuitType.Joker, new CardNumber(14)));
+        Cards.Add(new TrumpCard(DaihugoGameRule.SuitType.Joker, new CardNumber(14)));
         Cards = Cards.OrderBy(a => Guid.NewGuid()).ToList();
         gamePlayers = new List<GamePlayer>();
         for (var i = 0; i < 4; i++)

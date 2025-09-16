@@ -1,67 +1,69 @@
 
+using System;
+
 public class CardNumber
 {
-    public Daihugo.Number Number;
-    public Daihugo.Effect Effect;
+    public DaihugoGameRule.Number Number;
+    public DaihugoGameRule.Effect Effect;
     public CardNumber(int number)
     {
         switch (number)
         {
             case 1:
-                Number = Daihugo.Number.Ace;
-                Effect = Daihugo.Effect.None;
+                Number = DaihugoGameRule.Number.Ace;
+                Effect = DaihugoGameRule.Effect.None;
                 break;
             case 2:
-                Number = Daihugo.Number.Two;
-                Effect = Daihugo.Effect.None;
+                Number = DaihugoGameRule.Number.Two;
+                Effect = DaihugoGameRule.Effect.None;
                 break;
             case 3:
-                Number = Daihugo.Number.Three;
-                Effect = Daihugo.Effect.None;
+                Number = DaihugoGameRule.Number.Three;
+                Effect = DaihugoGameRule.Effect.None;
                 break;
             case 4:
-                Number = Daihugo.Number.Four;
-                Effect = Daihugo.Effect.None;
+                Number = DaihugoGameRule.Number.Four;
+                Effect = DaihugoGameRule.Effect.None;
                 break;
             case 5:
-                Number = Daihugo.Number.Five;
-                Effect = Daihugo.Effect.None;
+                Number = DaihugoGameRule.Number.Five;
+                Effect = DaihugoGameRule.Effect.None;
                 break;
             case 6:
-                Number = Daihugo.Number.Six;
-                Effect = Daihugo.Effect.None;
+                Number = DaihugoGameRule.Number.Six;
+                Effect = DaihugoGameRule.Effect.None;
                 break;
             case 7:
-                Number = Daihugo.Number.Seven;
-                Effect = Daihugo.Effect.None;
+                Number = DaihugoGameRule.Number.Seven;
+                Effect = DaihugoGameRule.Effect.None;
                 break;
             case 8:
-                Number = Daihugo.Number.Eight;
-                Effect = Daihugo.Effect.Eight_Enders;
+                Number = DaihugoGameRule.Number.Eight;
+                Effect = DaihugoGameRule.Effect.Eight_Enders;
                 break;
             case 9:
-                Number = Daihugo.Number.Nine;
-                Effect = Daihugo.Effect.None;
+                Number = DaihugoGameRule.Number.Nine;
+                Effect = DaihugoGameRule.Effect.None;
                 break;
             case 10:
-                Number = Daihugo.Number.Ten;
-                Effect = Daihugo.Effect.None;
+                Number = DaihugoGameRule.Number.Ten;
+                Effect = DaihugoGameRule.Effect.None;
                 break;
             case 11:
-                Number = Daihugo.Number.Jack;
-                Effect = Daihugo.Effect.Eleven_Back;
+                Number = DaihugoGameRule.Number.Jack;
+                Effect = DaihugoGameRule.Effect.Eleven_Back;
                 break;
             case 12:
-                Number = Daihugo.Number.Queen;
-                Effect = Daihugo.Effect.None;
+                Number = DaihugoGameRule.Number.Queen;
+                Effect = DaihugoGameRule.Effect.None;
                 break;
             case 13:
-                Number = Daihugo.Number.King;
-                Effect = Daihugo.Effect.None;
+                Number = DaihugoGameRule.Number.King;
+                Effect = DaihugoGameRule.Effect.None;
                 break;
             case 14:
-                Number = Daihugo.Number.Joker;
-                Effect = Daihugo.Effect.None;
+                Number = DaihugoGameRule.Number.Joker;
+                Effect = DaihugoGameRule.Effect.None;
                 break;
         }
 
@@ -71,20 +73,20 @@ public class CardNumber
     {
         return Number switch
         {
-            Daihugo.Number.Ace => "01",
-            Daihugo.Number.Two => "02",
-            Daihugo.Number.Three => "03",
-            Daihugo.Number.Four => "04",
-            Daihugo.Number.Five => "05",
-            Daihugo.Number.Six => "06",
-            Daihugo.Number.Seven => "07",
-            Daihugo.Number.Eight => "08",
-            Daihugo.Number.Nine => "09",
-            Daihugo.Number.Ten => "10",
-            Daihugo.Number.Jack => "11",
-            Daihugo.Number.Queen => "12",
-            Daihugo.Number.King => "13",
-            _ => ""
+            DaihugoGameRule.Number.Ace => "01",
+            DaihugoGameRule.Number.Two => "02",
+            DaihugoGameRule.Number.Three => "03",
+            DaihugoGameRule.Number.Four => "04",
+            DaihugoGameRule.Number.Five => "05",
+            DaihugoGameRule.Number.Six => "06",
+            DaihugoGameRule.Number.Seven => "07",
+            DaihugoGameRule.Number.Eight => "08",
+            DaihugoGameRule.Number.Nine => "09",
+            DaihugoGameRule.Number.Ten => "10",
+            DaihugoGameRule.Number.Jack => "11",
+            DaihugoGameRule.Number.Queen => "12",
+            DaihugoGameRule.Number.King => "13",
+            _ => throw new Exception("Not found Number Name")
         };
     }
 }
