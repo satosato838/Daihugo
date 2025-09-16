@@ -1,13 +1,12 @@
-using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
+using System.Collections.Generic;
 
 public class GamePlayer
 {
     public int PlayerId;
-    public List<TrumpCard> CurrentSelectCards => HandCards.Where(c => c.IsSelect).ToList();
-    private List<TrumpCard> HandCards;
-    public List<TrumpCard> Hand => HandCards;
+    public List<TrumpCard> CurrentSelectCards => handCards.Where(c => c.IsSelect).ToList();
+    private List<TrumpCard> handCards;
+    public List<TrumpCard> Hand => handCards;
     public GamePlayer(int id, List<TrumpCard> cards)
     {
         PlayerId = id;
@@ -16,13 +15,13 @@ public class GamePlayer
 
     public void DealCard(List<TrumpCard> cards)
     {
-        HandCards = cards;
-        HandCards = BubbleSortCard();
+        handCards = cards;
+        handCards = BubbleSortCard();
     }
 
     private List<TrumpCard> BubbleSortCard()
     {
-        var results = HandCards;
+        var results = handCards;
         for (int i = 0; i < results.Count; i++)
         {
             for (int j = i; j < results.Count; j++)
@@ -41,7 +40,7 @@ public class GamePlayer
 
     public void SelectCard(TrumpCard trumpCard)
     {
-        foreach (var item in HandCards)
+        foreach (var item in handCards)
         {
             if (item.cardNumber.Number == trumpCard.cardNumber.Number &&
                 item.Suit == trumpCard.Suit)
@@ -49,5 +48,10 @@ public class GamePlayer
                 item.IsSelect = !item.IsSelect;
             }
         }
+    }
+
+    public void PlayCards()
+    {
+        handCards.RemoveAll(c => c.IsSelect);
     }
 }

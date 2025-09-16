@@ -9,14 +9,19 @@ public class DaihugoController : MonoBehaviour
         var daihugo = new Daihugo();
         for (var i = 0; i < daihugo.GamePlayers.Count; i++)
         {
-            playerObjects[i].Init(daihugo.GamePlayers[i]);
+            playerObjects[i].Init(daihugo.GamePlayers[i], v =>
+            {
+                PlayHands(v);
+            });
         }
     }
 
-    private void SelectHands(List<TrumpCard> trumpCards)
+    private void PlayHands(List<TrumpCard> trumpCards)
     {
-
-
+        foreach (var item in trumpCards)
+        {
+            Debug.Log("Number:" + item.cardNumber.Number + ": Suit" + item.Suit);
+        }
     }
 
 }
