@@ -1,8 +1,11 @@
 using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 
 public class GamePlayer
 {
     public int PlayerId;
+    public List<TrumpCard> CurrentSelectCards => HandCards.Where(c => c.IsSelect).ToList();
     private List<TrumpCard> HandCards;
     public List<TrumpCard> Hand => HandCards;
     public GamePlayer(int id, List<TrumpCard> cards)
@@ -36,8 +39,15 @@ public class GamePlayer
         return results;
     }
 
-
-
-
-
+    public void SelectCard(TrumpCard trumpCard)
+    {
+        foreach (var item in HandCards)
+        {
+            if (item.cardNumber.Number == trumpCard.cardNumber.Number &&
+                item.Suit == trumpCard.Suit)
+            {
+                item.IsSelect = !item.IsSelect;
+            }
+        }
+    }
 }

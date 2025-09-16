@@ -29,16 +29,16 @@ public class Daihugo
 
         DealLastCard(1);
 
-        foreach (var player in gamePlayers)
-        {
-            Debug.Log($"player:" + player.PlayerId);
-            var cardCount = 0;
-            foreach (var item in player.Hand)
-            {
-                Debug.Log($"{cardCount} item:" + item.CardName);
-                cardCount++;
-            }
-        }
+        // foreach (var player in gamePlayers)
+        // {
+        //     Debug.Log($"player:" + player.PlayerId);
+        //     var cardCount = 0;
+        //     foreach (var item in player.Hand)
+        //     {
+        //         Debug.Log($"{cardCount} item:" + item.CardName);
+        //         cardCount++;
+        //     }
+        // }
 
     }
 

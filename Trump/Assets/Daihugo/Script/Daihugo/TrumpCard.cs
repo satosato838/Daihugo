@@ -4,10 +4,11 @@ public class TrumpCard
     public CardNumber cardNumber;
 
     public string CardName;
-    public bool IsFront;
+    public bool IsSelect;
     public TrumpCard(DaihugoGameRule.SuitType suit, CardNumber number)
     {
         Suit = suit;
+        IsSelect = false;
         cardNumber = number;
         if (suit == DaihugoGameRule.SuitType.Joker)
         {

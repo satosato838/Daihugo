@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class DaihugoController : MonoBehaviour
@@ -10,6 +11,12 @@ public class DaihugoController : MonoBehaviour
         {
             playerObjects[i].Init(daihugo.GamePlayers[i]);
         }
+    }
+
+    private void SelectHands(List<TrumpCard> trumpCards)
+    {
+
+
     }
 
 }
