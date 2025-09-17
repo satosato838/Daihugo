@@ -37,7 +37,8 @@ public class GamePlayer
             {
                 if (card.Number == DaihugoGameRule.Number.Joker)
                 {
-                    card.RefreshIsSelectable(true);
+                    var number = handCards.Any(v => (int)v.Number > fieldNumber);
+                    card.RefreshIsSelectable(number);
                 }
                 else
                 {

@@ -47,11 +47,13 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
         }
         _fieldController.Init();
         _cemeteryController.Init();
+        RefreshPlayersState();
     }
 
     public void OnStartRound()
     {
         _fieldController.Init();
+        RefreshPlayersState();
     }
     public void OnChangePlayerTurn(GamePlayer gamePlayer)
     {

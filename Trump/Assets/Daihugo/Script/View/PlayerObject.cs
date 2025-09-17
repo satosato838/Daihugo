@@ -41,7 +41,7 @@ public class PlayerObject : MonoBehaviour
     {
         _gamePlayer = gamePlayer;
         SetInteractablePlayBtn(false);
-        RefreshCards();
+        CreateCards();
         playCardAction = callback;
         RefreshBGColor();
     }
@@ -49,11 +49,12 @@ public class PlayerObject : MonoBehaviour
     public void RefreshGamePlayerState(bool isMyTurn, List<TrumpCard> fieldLastCards)
     {
         _gamePlayer.RefreshIsMyturn(isMyTurn);
+        Debug.Log(isMyTurn + ":IsMyTurn: RefreshGamePlayerState GamePlayerId:" + _gamePlayer.PlayerId);
         if (IsMyTurn)
         {
             foreach (var item in fieldLastCards) Debug.Log("fieldLastCards:" + item.CardName);
             _gamePlayer.RefreshSelectableHandCards(fieldLastCards);
-            RefreshCards();
+            RefreshCards(_gamePlayer.Hand);
         }
         else
         {
@@ -76,7 +77,8 @@ public class PlayerObject : MonoBehaviour
             item.RefreshButtonInteractable(val);
         }
     }
-    private void RefreshCards()
+
+    private void CreateCards()
     {
         handCardObjects = new List<TrumpCardObject>();
         foreach (Transform transform in HandPos.transform)
@@ -84,6 +86,36 @@ public class PlayerObject : MonoBehaviour
             Destroy(transform.gameObject);
         }
         foreach (var item in _gamePlayer.Hand)
+        {
+            var hand = Instantiate(trumpCardObject, HandPos.transform);
+            hand.Init(v =>
+            {
+                SelectCard(v);
+            });
+
+            // if (_gamePlayer.PlayerId == 0)
+            // {
+            //     hand.SetCardImage(item);
+            // }
+            // else
+            // {
+            //     hand.SetBG();
+            // }
+
+            //debug
+            hand.SetCardImage(item);
+
+            handCardObjects.Add(hand);
+        }
+    }
+    private void RefreshCards(List<TrumpCard> handCards)
+    {
+        handCardObjects = new List<TrumpCardObject>();
+        foreach (Transform transform in HandPos.transform)
+        {
+            Destroy(transform.gameObject);
+        }
+        foreach (var item in handCards)
         {
             var hand = Instantiate(trumpCardObject, HandPos.transform);
             hand.Init(v =>
@@ -133,7 +165,7 @@ public class PlayerObject : MonoBehaviour
     {
         playCardAction?.Invoke(SelectCards);
         _gamePlayer.PlayCards();
-        RefreshCards();
+        RefreshCards(_gamePlayer.Hand);
     }
     public void OnPassButtonClick()
     {

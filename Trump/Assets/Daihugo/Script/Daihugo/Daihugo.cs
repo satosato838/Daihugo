@@ -65,6 +65,7 @@ public class Daihugo : IDaihugoObservable
         DealLastCard(GetRandomPlayerIndex());
         lastPlayCardPlayerId = GamePlayers.First().PlayerId;
         PassCount = 0;
+        ChangeNextPlayerTurn(lastPlayCardPlayerId);
         SendStartSet();
     }
     private List<TrumpCard> DealTheCards()
@@ -114,6 +115,7 @@ public class Daihugo : IDaihugoObservable
         {
             ChangeNextPlayerTurn(GetNextPlayerId);
         }
+        SendPlayerChange();
     }
 
     private void ChangeNextPlayerTurn(int nextPlayerId)
@@ -123,7 +125,6 @@ public class Daihugo : IDaihugoObservable
         {
             gamePlayers[i].RefreshIsMyturn(i == nextPlayerId);
         }
-        SendPlayerChange();
     }
 
     public void RefreshCemeteryCards(List<TrumpCard> cards)
