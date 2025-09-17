@@ -2490,7 +2490,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   trumpCardObject: {fileID: 8389900052833146292, guid: 0a9071d45369340009e171f91858f2b6, type: 3}
-  HandPos: {fileID: 1793725280}
+  FieldPos: {fileID: 1793725280}
 --- !u!4 &1100299012
 Transform:
   m_ObjectHideFlags: 0
@@ -3713,6 +3713,52 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1616454748}
   m_CullTransparentMesh: 1
+--- !u!1 &1769578476
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1769578478}
+  - component: {fileID: 1769578479}
+  m_Layer: 0
+  m_Name: CemeteryController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1769578478
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1769578476}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1769578479
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1769578476}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bb3ab870104b646788eab045b0b800c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  trumpCardObject: {fileID: 8389900052833146292, guid: 0a9071d45369340009e171f91858f2b6, type: 3}
+  FieldPos: {fileID: 1888495508}
 --- !u!1 &1781733338
 GameObject:
   m_ObjectHideFlags: 0
@@ -3945,7 +3991,8 @@ MonoBehaviour:
   - {fileID: 744965962}
   - {fileID: 1168490257}
   - {fileID: 1566041610}
-  fieldController: {fileID: 1100299011}
+  _fieldController: {fileID: 1100299011}
+  _cemeteryController: {fileID: 1769578479}
 --- !u!1 &1853388846
 GameObject:
   m_ObjectHideFlags: 0
@@ -4261,3 +4308,4 @@ SceneRoots:
   - {fileID: 717683738}
   - {fileID: 1807170808}
   - {fileID: 1100299012}
+  - {fileID: 1769578478}

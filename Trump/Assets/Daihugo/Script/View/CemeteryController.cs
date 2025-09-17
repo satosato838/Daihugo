@@ -1,11 +1,10 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
-public class FieldController : MonoBehaviour
+public class CemeteryController : MonoBehaviour
 {
     [SerializeField] TrumpCardObject trumpCardObject;
-    [SerializeField] HorizontalLayoutGroup FieldPos;
+    [SerializeField] Transform FieldPos;
     private List<TrumpCardObject> trumpCardObjects;
     public void Init()
     {
@@ -27,8 +26,7 @@ public class FieldController : MonoBehaviour
                 //SelectCard(v);
             });
 
-            //debug
-            hand.SetCardImage(item);
+            hand.SetBG();
             trumpCardObjects.Add(hand);
         }
     }

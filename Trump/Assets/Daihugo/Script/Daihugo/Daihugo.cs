@@ -3,45 +3,49 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-public class Daihugo
+public class Daihugo : IDaihugoObservable
 {
     private int GamePlayMemberCount => 4;
     private List<TrumpCard> DeckCards;
     private List<GamePlayer> gamePlayers;
     public List<GamePlayer> GamePlayers => gamePlayers;
-    private List<List<TrumpCard>> FieldCards;
-    public List<TrumpCard> FieldCardPairs => FieldCards.Count == 0 ? new List<TrumpCard>() : FieldCards.Last();
-    private List<TrumpCard> CemeteryCards;
+    private List<List<TrumpCard>> fieldCards;
+    public List<TrumpCard> LastFieldCardPair => fieldCards.Count == 0 ? new List<TrumpCard>() : fieldCards.Last();
+    private List<TrumpCard> cemeteryCards;
+    public List<TrumpCard> CemeteryCards => cemeteryCards;
 
     private int currentPlayerId = 0;
     public int CurrentPlayerId => currentPlayerId;
     private int PassCount = 0;
     private int lastPlayCardPlayerId = 0;
     public int LastPlayCardPlayerId => lastPlayCardPlayerId;
+    private int GetRandomPlayerIndex()
+    {
+        Random rnd = new Random();
+        return rnd.Next(1, GamePlayMemberCount);
+    }
 
     private int GetNextPlayerId => currentPlayerId + 1 >= GamePlayMemberCount ? 0 : currentPlayerId + 1;
 
+    private List<IDaihugoObserver> observers = new List<IDaihugoObserver>();
+    public IDisposable Subscribe(IDaihugoObserver observer)
+    {
+        if (!observers.Contains(observer))
+            observers.Add(observer);
+        return new Unsubscriber(observers, observer);
+    }
+
     public Daihugo()
     {
-        SetStart();
-        // foreach (var player in gamePlayers)
-        // {
-        //     Debug.Log($"player:" + player.PlayerId);
-        //     var cardCount = 0;
-        //     foreach (var item in player.Hand)
-        //     {
-        //         Debug.Log($"{cardCount} item:" + item.CardName);
-        //         cardCount++;
-        //     }
-        // }
 
     }
 
     public void SetStart()
     {
         DeckCards = new List<TrumpCard>();
-        FieldCards = new List<List<TrumpCard>>();
-        CemeteryCards = new List<TrumpCard>();
+        fieldCards = new List<List<TrumpCard>>();
+        cemeteryCards = new List<TrumpCard>();
+
         foreach (var type in DaihugoGameRule.SuitTypes)
         {
             for (var i = 1; i < DaihugoGameRule.Numbers.Length; i++)
@@ -56,11 +60,12 @@ public class Daihugo
         {
             gamePlayers.Add(new GamePlayer(i, DealTheCards()));
         }
-        //ランダムなプレイヤーに余ったカードを配る
-        Random rnd = new Random();
-        DealLastCard(rnd.Next(1, GamePlayMemberCount));
 
-        StartRound();
+        //ランダムなプレイヤーに余ったカードを配る
+        DealLastCard(GetRandomPlayerIndex());
+        lastPlayCardPlayerId = GamePlayers.First().PlayerId;
+        PassCount = 0;
+        SendStartSet();
     }
     private List<TrumpCard> DealTheCards()
     {
@@ -83,9 +88,10 @@ public class Daihugo
         gamePlayers[index].DealCard(hand);
     }
 
-    private void StartRound()
+    public void StartRound()
     {
-        ChangeNextPlayerTurn(GamePlayers.First().PlayerId);
+        ChangeNextPlayerTurn(lastPlayCardPlayerId);
+        SendStartRound();
     }
     public void PlayFieldCards(List<TrumpCard> playCards)
     {
@@ -95,7 +101,7 @@ public class Daihugo
         }
         else
         {
-            FieldCards.Add(playCards);
+            fieldCards.Add(playCards);
             PassCount = 0;
             lastPlayCardPlayerId = CurrentPlayerId;
         }
@@ -110,8 +116,6 @@ public class Daihugo
         }
     }
 
-
-
     private void ChangeNextPlayerTurn(int nextPlayerId)
     {
         currentPlayerId = nextPlayerId;
@@ -119,19 +123,65 @@ public class Daihugo
         {
             gamePlayers[i].RefreshIsMyturn(i == nextPlayerId);
         }
+        SendPlayerChange();
     }
 
     public void RefreshCemeteryCards(List<TrumpCard> cards)
     {
-        CemeteryCards = cards;
+        cemeteryCards = cards;
     }
 
     private void EndRound()
     {
-        RefreshCemeteryCards(FieldCards.SelectMany(v => v).ToList());
-        FieldCards = new List<List<TrumpCard>>();
+        RefreshCemeteryCards(fieldCards.SelectMany(v => v).ToList());
+        fieldCards = new List<List<TrumpCard>>();
         ChangeNextPlayerTurn(LastPlayCardPlayerId);
-        //todo endRound Action
+        SendEndRound();
     }
 
+    private void EndSet()
+    {
+        //todo create result
+        //todo NextSet
+        SendEndSet();
+    }
+
+    public void SendStartSet()
+    {
+        foreach (var observer in observers)
+        {
+            observer.OnStartSet();
+        }
+    }
+
+    public void SendStartRound()
+    {
+        foreach (var observer in observers)
+        {
+            observer.OnStartRound();
+        }
+    }
+    public void SendPlayerChange()
+    {
+        foreach (var observer in observers)
+        {
+            observer.OnChangePlayerTurn(GamePlayers.First(p => p.PlayerId == GetNextPlayerId));
+        }
+    }
+
+    public void SendEndRound()
+    {
+        foreach (var observer in observers)
+        {
+            observer.OnEndRound();
+        }
+    }
+
+    public void SendEndSet()
+    {
+        foreach (var observer in observers)
+        {
+            observer.OnEndSet();
+        }
+    }
 }
