@@ -4,6 +4,7 @@ using System.Collections.Generic;
 public class GamePlayer
 {
     public int PlayerId;
+    public bool IsMyTurn;
     public List<TrumpCard> CurrentSelectCards => handCards.Where(c => c.IsSelect).ToList();
     private List<TrumpCard> handCards;
     public List<TrumpCard> Hand => handCards;
@@ -11,6 +12,11 @@ public class GamePlayer
     {
         PlayerId = id;
         DealCard(cards);
+    }
+
+    public void RefreshIsMyturn(bool val)
+    {
+        IsMyTurn = val;
     }
 
     public void DealCard(List<TrumpCard> cards)
@@ -36,18 +42,6 @@ public class GamePlayer
         }
         results.Reverse();
         return results;
-    }
-
-    public void SelectCard(TrumpCard trumpCard)
-    {
-        foreach (var item in handCards)
-        {
-            if (item.cardNumber.Number == trumpCard.cardNumber.Number &&
-                item.Suit == trumpCard.Suit)
-            {
-                item.IsSelect = !item.IsSelect;
-            }
-        }
     }
 
     public void PlayCards()

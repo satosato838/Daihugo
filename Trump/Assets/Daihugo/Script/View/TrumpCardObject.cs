@@ -59,7 +59,6 @@ public class TrumpCardObject : MonoBehaviour
 
     public void RefreshOnState(TrumpCard selectFirstCard)
     {
-
         //nullならボタンはアクティブにして終了
         if (selectFirstCard == null)
         {

@@ -1,6 +1,6 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -9,6 +9,7 @@ public class PlayerObject : MonoBehaviour
     [SerializeField] TrumpCardObject trumpCardObject;
     [SerializeField] HorizontalLayoutGroup HandPos;
     [SerializeField] Button _playBtn;
+    [SerializeField] Image _playerStateBg;
 
     private List<TrumpCardObject> trumpCardObjects;
     private List<TrumpCard> SelectCards => _gamePlayer.CurrentSelectCards;
@@ -27,9 +28,15 @@ public class PlayerObject : MonoBehaviour
     public void Init(GamePlayer gamePlayer, Action<List<TrumpCard>> callback)
     {
         _gamePlayer = gamePlayer;
-        SetInteractable(false);
+        SetInteractablePlayBtn(false);
         RefreshCards();
         playCardAction = callback;
+    }
+
+    public void RefreshGamePlayerState(bool IsMyTurn, List<TrumpCard> fieldLastCards)
+    {
+        _gamePlayer.IsMyTurn = IsMyTurn;
+        SetInteractablePlayBtn(_gamePlayer.IsMyTurn);
     }
     private void RefreshCards()
     {
@@ -46,16 +53,18 @@ public class PlayerObject : MonoBehaviour
                 SelectCard(v);
             });
 
-            if (_gamePlayer.PlayerId == 0)
-            {
-                hand.SetCardImage(item);
-            }
-            else
-            {
-                hand.SetBG();
-            }
+            // if (_gamePlayer.PlayerId == 0)
+            // {
+            //     hand.SetCardImage(item);
+            // }
+            // else
+            // {
+            //     hand.SetBG();
+            // }
+
             //debug
-            //hand.SetCardImage(item);
+            hand.SetCardImage(item);
+
             trumpCardObjects.Add(hand);
         }
     }
@@ -67,17 +76,17 @@ public class PlayerObject : MonoBehaviour
             if (_gamePlayer.Hand.Count(c => c.IsSelect) == 0)
             {
                 trumpCardObjects[i].RefreshOnState(null);
-                SetInteractable(false);
+                SetInteractablePlayBtn(false);
             }
             else
             {
                 trumpCardObjects[i].RefreshOnState(_gamePlayer.Hand.First(c => c.IsSelect));
-                SetInteractable(true);
+                SetInteractablePlayBtn(true);
             }
         }
     }
 
-    private void SetInteractable(bool val)
+    private void SetInteractablePlayBtn(bool val)
     {
         if (_playBtn != null) _playBtn.interactable = val;
     }
