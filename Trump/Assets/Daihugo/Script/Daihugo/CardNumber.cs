@@ -68,6 +68,69 @@ public class CardNumber
         }
 
     }
+    public CardNumber(DaihugoGameRule.Number number)
+    {
+        switch (number)
+        {
+            case DaihugoGameRule.Number.Ace:
+                Number = DaihugoGameRule.Number.Ace;
+                Effect = DaihugoGameRule.Effect.None;
+                break;
+            case DaihugoGameRule.Number.Two:
+                Number = DaihugoGameRule.Number.Two;
+                Effect = DaihugoGameRule.Effect.None;
+                break;
+            case DaihugoGameRule.Number.Three:
+                Number = DaihugoGameRule.Number.Three;
+                Effect = DaihugoGameRule.Effect.None;
+                break;
+            case DaihugoGameRule.Number.Four:
+                Number = DaihugoGameRule.Number.Four;
+                Effect = DaihugoGameRule.Effect.None;
+                break;
+            case DaihugoGameRule.Number.Five:
+                Number = DaihugoGameRule.Number.Five;
+                Effect = DaihugoGameRule.Effect.None;
+                break;
+            case DaihugoGameRule.Number.Six:
+                Number = DaihugoGameRule.Number.Six;
+                Effect = DaihugoGameRule.Effect.None;
+                break;
+            case DaihugoGameRule.Number.Seven:
+                Number = DaihugoGameRule.Number.Seven;
+                Effect = DaihugoGameRule.Effect.None;
+                break;
+            case DaihugoGameRule.Number.Eight:
+                Number = DaihugoGameRule.Number.Eight;
+                Effect = DaihugoGameRule.Effect.Eight_Enders;
+                break;
+            case DaihugoGameRule.Number.Nine:
+                Number = DaihugoGameRule.Number.Nine;
+                Effect = DaihugoGameRule.Effect.None;
+                break;
+            case DaihugoGameRule.Number.Ten:
+                Number = DaihugoGameRule.Number.Ten;
+                Effect = DaihugoGameRule.Effect.None;
+                break;
+            case DaihugoGameRule.Number.Jack:
+                Number = DaihugoGameRule.Number.Jack;
+                Effect = DaihugoGameRule.Effect.Eleven_Back;
+                break;
+            case DaihugoGameRule.Number.Queen:
+                Number = DaihugoGameRule.Number.Queen;
+                Effect = DaihugoGameRule.Effect.None;
+                break;
+            case DaihugoGameRule.Number.King:
+                Number = DaihugoGameRule.Number.King;
+                Effect = DaihugoGameRule.Effect.None;
+                break;
+            case DaihugoGameRule.Number.Joker:
+                Number = DaihugoGameRule.Number.Joker;
+                Effect = DaihugoGameRule.Effect.None;
+                break;
+        }
+
+    }
 
     public string NumberName()
     {

@@ -12,7 +12,7 @@ public class TrumpCardObject : MonoBehaviour
     [SerializeField] private Transform _moveUpPos;
     [SerializeField] private Transform _defaultPos;
     TrumpCard TrumpCardData;
-    public DaihugoGameRule.Number Number => TrumpCardData.cardNumber.Number;
+    public DaihugoGameRule.Number Number => TrumpCardData.Number;
     Action<TrumpCard> onClick;
     void Start()
     {
@@ -33,7 +33,19 @@ public class TrumpCardObject : MonoBehaviour
         TrumpCardData = trumpCard;
         StartCoroutine(LoadImage(trumpCard.CardName + ".png"));
         RefreshCardImagePos();
-        _button.interactable = true;
+        RefreshButtonInteractable(TrumpCardData.IsSelectable);
+    }
+
+    public void RefreshButtonInteractable(bool val)
+    {
+        if (TrumpCardData.IsSelectable)
+        {
+            _button.interactable = val;
+        }
+        else
+        {
+            _button.interactable = false;
+        }
     }
 
     public void SetBG()
@@ -62,24 +74,24 @@ public class TrumpCardObject : MonoBehaviour
         //nullならボタンはアクティブにして終了
         if (selectFirstCard == null)
         {
-            _button.interactable = true;
+            RefreshButtonInteractable(true);
             return;
         }
         //選択した自分自身なら何もせず終了
-        if (TrumpCardData.cardNumber.Number == selectFirstCard.cardNumber.Number &&
+        if (TrumpCardData.Number == selectFirstCard.Number &&
             TrumpCardData.Suit == selectFirstCard.Suit)
         {
             return;
         }
         //もし何か選択中なら同じ数字かジョーカーのみ選択可能にする
-        bool isInteractable = TrumpCardData.cardNumber.Number == selectFirstCard.cardNumber.Number ||
-                              TrumpCardData.cardNumber.Number == DaihugoGameRule.Number.Joker;
-        _button.interactable = isInteractable;
+        bool isInteractable = TrumpCardData.Number == selectFirstCard.Number ||
+                              TrumpCardData.Number == DaihugoGameRule.Number.Joker;
+        RefreshButtonInteractable(isInteractable);
     }
 
     private void OnClick()
     {
-        TrumpCard trumpCard = new TrumpCard(TrumpCardData.Suit, TrumpCardData.cardNumber);
+        TrumpCard trumpCard = new TrumpCard(TrumpCardData.Suit, new CardNumber(TrumpCardData.Number));
         trumpCard.IsSelect = !TrumpCardData.IsSelect;
         TrumpCardData.IsSelect = trumpCard.IsSelect;
         RefreshCardImagePos();

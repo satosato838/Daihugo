@@ -21,11 +21,11 @@ public class DaihugoController : MonoBehaviour
 
     private void PlayHands(List<TrumpCard> trumpCards)
     {
-        Daihugo.RefreshPlayFieldCards(trumpCards);
-        foreach (var item in Daihugo.FieldCardPairs)
-        {
-            Debug.Log("Number:" + item.cardNumber.Number + ": Suit" + item.Suit);
-        }
+        Daihugo.PlayFieldCards(trumpCards);
+        // foreach (var item in Daihugo.FieldCardPairs)
+        // {
+        //     Debug.Log("Number:" + item.Number + ": Suit" + item.Suit);
+        // }
         fieldController.RefreshCards(Daihugo.FieldCardPairs);
 
         RefreshPlayersState();

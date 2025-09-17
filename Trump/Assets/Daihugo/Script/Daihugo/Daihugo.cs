@@ -15,12 +15,15 @@ public class Daihugo
 
     private int currentPlayerId = 0;
     public int CurrentPlayerId => currentPlayerId;
+    private int PassCount = 0;
+    private int lastPlayCardPlayerId = 0;
+    public int LastPlayCardPlayerId => lastPlayCardPlayerId;
 
     private int GetNextPlayerId => currentPlayerId + 1 >= GamePlayMemberCount ? 0 : currentPlayerId + 1;
 
     public Daihugo()
     {
-        RoundStart();
+        SetStart();
         // foreach (var player in gamePlayers)
         // {
         //     Debug.Log($"player:" + player.PlayerId);
@@ -34,7 +37,7 @@ public class Daihugo
 
     }
 
-    public void RoundStart()
+    public void SetStart()
     {
         DeckCards = new List<TrumpCard>();
         FieldCards = new List<List<TrumpCard>>();
@@ -57,9 +60,8 @@ public class Daihugo
         Random rnd = new Random();
         DealLastCard(rnd.Next(1, GamePlayMemberCount));
 
-        ChangeNextPlayerTurn(GamePlayers.First().PlayerId);
+        StartRound();
     }
-
     private List<TrumpCard> DealTheCards()
     {
         var result = new List<TrumpCard>();
@@ -81,24 +83,55 @@ public class Daihugo
         gamePlayers[index].DealCard(hand);
     }
 
-    public void RefreshPlayFieldCards(List<TrumpCard> playCards)
+    private void StartRound()
     {
-        FieldCards.Add(playCards);
-        ChangeNextPlayerTurn(GetNextPlayerId);
+        ChangeNextPlayerTurn(GamePlayers.First().PlayerId);
     }
+    public void PlayFieldCards(List<TrumpCard> playCards)
+    {
+        if (playCards.Count() == 0)
+        {
+            PassCount++;
+        }
+        else
+        {
+            FieldCards.Add(playCards);
+            PassCount = 0;
+            lastPlayCardPlayerId = CurrentPlayerId;
+        }
+
+        if (PassCount == GamePlayMemberCount - 1)
+        {
+            EndRound();
+        }
+        else
+        {
+            ChangeNextPlayerTurn(GetNextPlayerId);
+        }
+    }
+
+
 
     private void ChangeNextPlayerTurn(int nextPlayerId)
     {
         currentPlayerId = nextPlayerId;
         for (var i = 0; i < gamePlayers.Count; i++)
         {
-            gamePlayers[i].IsMyTurn = i == nextPlayerId;
+            gamePlayers[i].RefreshIsMyturn(i == nextPlayerId);
         }
     }
 
     public void RefreshCemeteryCards(List<TrumpCard> cards)
     {
         CemeteryCards = cards;
+    }
+
+    private void EndRound()
+    {
+        RefreshCemeteryCards(FieldCards.SelectMany(v => v).ToList());
+        FieldCards = new List<List<TrumpCard>>();
+        ChangeNextPlayerTurn(LastPlayCardPlayerId);
+        //todo endRound Action
     }
 
 }

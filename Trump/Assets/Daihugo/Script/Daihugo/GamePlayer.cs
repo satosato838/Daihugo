@@ -4,10 +4,12 @@ using System.Collections.Generic;
 public class GamePlayer
 {
     public int PlayerId;
-    public bool IsMyTurn;
+    private bool isMyTurn;
+    public bool IsMyTurn => isMyTurn;
     public List<TrumpCard> CurrentSelectCards => handCards.Where(c => c.IsSelect).ToList();
     private List<TrumpCard> handCards;
     public List<TrumpCard> Hand => handCards;
+
     public GamePlayer(int id, List<TrumpCard> cards)
     {
         PlayerId = id;
@@ -16,8 +18,36 @@ public class GamePlayer
 
     public void RefreshIsMyturn(bool val)
     {
-        IsMyTurn = val;
+        isMyTurn = val;
     }
+
+    public void RefreshSelectableHandCards(List<TrumpCard> fieldCards)
+    {
+        if (fieldCards.Count == 0)
+        {
+            foreach (var card in handCards)
+            {
+                card.RefreshIsSelectable(true);
+            }
+        }
+        else
+        {
+            var fieldNumber = (int)fieldCards.First().Number;
+            foreach (var card in handCards)
+            {
+                if (card.Number == DaihugoGameRule.Number.Joker)
+                {
+                    card.RefreshIsSelectable(true);
+                }
+                else
+                {
+                    var cardCount = handCards.Count(v => v.Number == card.Number || v.Number == DaihugoGameRule.Number.Joker);
+                    card.RefreshIsSelectable(cardCount >= fieldCards.Count && fieldNumber < (int)card.Number);
+                }
+            }
+        }
+    }
+
 
     public void DealCard(List<TrumpCard> cards)
     {
@@ -32,7 +62,7 @@ public class GamePlayer
         {
             for (int j = i; j < results.Count; j++)
             {
-                if (results[i].cardNumber.Number < results[j].cardNumber.Number)
+                if (results[i].Number < results[j].Number)
                 {
                     var x = results[j];
                     results[j] = results[i];

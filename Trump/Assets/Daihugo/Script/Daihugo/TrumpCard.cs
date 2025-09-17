@@ -1,16 +1,18 @@
 public class TrumpCard
 {
-    public DaihugoGameRule.SuitType Suit;
-    public CardNumber cardNumber;
-
+    private DaihugoGameRule.SuitType suitType;
+    public DaihugoGameRule.SuitType Suit => suitType;
+    private CardNumber cardNumber;
+    public DaihugoGameRule.Number Number => cardNumber.Number;
     public string CardName;
     public bool IsSelect;
+    public bool IsSelectable;
     public TrumpCard(DaihugoGameRule.SuitType suit, CardNumber number)
     {
-        Suit = suit;
-        IsSelect = false;
+        suitType = suit;
+        RefreshIsSelectable(true);
         cardNumber = number;
-        if (suit == DaihugoGameRule.SuitType.Joker)
+        if (suitType == DaihugoGameRule.SuitType.Joker)
         {
             CardName = "Joker";
         }
@@ -30,5 +32,10 @@ public class TrumpCard
         {
             cardNumber.Effect = DaihugoGameRule.Effect.Counter_Spade_3;
         }
+    }
+
+    public void RefreshIsSelectable(bool val)
+    {
+        IsSelectable = val;
     }
 }

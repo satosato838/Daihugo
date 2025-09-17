@@ -6,20 +6,32 @@ using UnityEngine.UI;
 
 public class PlayerObject : MonoBehaviour
 {
-    [SerializeField] TrumpCardObject trumpCardObject;
-    [SerializeField] HorizontalLayoutGroup HandPos;
-    [SerializeField] Button _playBtn;
-    [SerializeField] Image _playerStateBg;
+    [SerializeField] private Image _bg;
+    [SerializeField] private Color _activeColor = new Color(0.5f, 0.5f, 0, 0.5f);
+    [SerializeField] private Color _disActiveColor = new Color(0, 0, 0, 0.5f);
+    [SerializeField] private TrumpCardObject trumpCardObject;
+    [SerializeField] private HorizontalLayoutGroup HandPos;
+    [SerializeField] private Button _playBtn;
+    [SerializeField] private Button _passBtn;
 
-    private List<TrumpCardObject> trumpCardObjects;
+    private List<TrumpCardObject> handCardObjects;
     private List<TrumpCard> SelectCards => _gamePlayer.CurrentSelectCards;
     private GamePlayer _gamePlayer;
+    public bool IsMyTurn => _gamePlayer.IsMyTurn;
+
     Action<List<TrumpCard>> playCardAction;
     void Start()
     {
         if (_playBtn != null)
         {
             _playBtn.onClick.AddListener(() =>
+            {
+                OnPlayButtonClick();
+            });
+        }
+        if (_passBtn != null)
+        {
+            _passBtn.onClick.AddListener(() =>
             {
                 OnPlayButtonClick();
             });
@@ -31,16 +43,42 @@ public class PlayerObject : MonoBehaviour
         SetInteractablePlayBtn(false);
         RefreshCards();
         playCardAction = callback;
+        RefreshBGColor();
     }
 
-    public void RefreshGamePlayerState(bool IsMyTurn, List<TrumpCard> fieldLastCards)
+    public void RefreshGamePlayerState(bool isMyTurn, List<TrumpCard> fieldLastCards)
     {
-        _gamePlayer.IsMyTurn = IsMyTurn;
-        SetInteractablePlayBtn(_gamePlayer.IsMyTurn);
+        _gamePlayer.RefreshIsMyturn(isMyTurn);
+        if (IsMyTurn)
+        {
+            foreach (var item in fieldLastCards) Debug.Log("fieldLastCards:" + item.CardName);
+            _gamePlayer.RefreshSelectableHandCards(fieldLastCards);
+            RefreshCards();
+        }
+        else
+        {
+            RefreshHandCardState(false);
+        }
+
+        SetInteractablePlayBtn(IsMyTurn);
+        RefreshBGColor();
+    }
+
+    private void RefreshBGColor()
+    {
+        _bg.color = IsMyTurn ? _activeColor : _disActiveColor;
+    }
+
+    private void RefreshHandCardState(bool val)
+    {
+        foreach (var item in handCardObjects)
+        {
+            item.RefreshButtonInteractable(val);
+        }
     }
     private void RefreshCards()
     {
-        trumpCardObjects = new List<TrumpCardObject>();
+        handCardObjects = new List<TrumpCardObject>();
         foreach (Transform transform in HandPos.transform)
         {
             Destroy(transform.gameObject);
@@ -65,7 +103,7 @@ public class PlayerObject : MonoBehaviour
             //debug
             hand.SetCardImage(item);
 
-            trumpCardObjects.Add(hand);
+            handCardObjects.Add(hand);
         }
     }
 
@@ -75,12 +113,12 @@ public class PlayerObject : MonoBehaviour
         {
             if (_gamePlayer.Hand.Count(c => c.IsSelect) == 0)
             {
-                trumpCardObjects[i].RefreshOnState(null);
+                handCardObjects[i].RefreshOnState(null);
                 SetInteractablePlayBtn(false);
             }
             else
             {
-                trumpCardObjects[i].RefreshOnState(_gamePlayer.Hand.First(c => c.IsSelect));
+                handCardObjects[i].RefreshOnState(_gamePlayer.Hand.First(c => c.IsSelect));
                 SetInteractablePlayBtn(true);
             }
         }
@@ -97,7 +135,8 @@ public class PlayerObject : MonoBehaviour
         _gamePlayer.PlayCards();
         RefreshCards();
     }
-
-
-
+    public void OnPassButtonClick()
+    {
+        playCardAction?.Invoke(new List<TrumpCard>());
+    }
 }
