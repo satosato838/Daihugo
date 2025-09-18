@@ -32,9 +32,20 @@ public static class DaihugoGameRule
         None,
         Eight_Enders,
         Eleven_Back,
-        Revolution,
-        Counter_Revolution,
         Counter_Spade_3
+    }
+    public enum DaihugoState
+    {
+        None,
+        Revolution,
+    }
+    public enum GameRank
+    {
+        Heimin = 0,
+        DaiHugo,
+        Hugo,
+        Hinmin,
+        DaiHinmin,
     }
 
     public static SuitType[] SuitTypes => new SuitType[] { SuitType.Spade, SuitType.Diamond, SuitType.Clover, SuitType.Heart };

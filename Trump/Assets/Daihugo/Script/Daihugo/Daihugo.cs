@@ -1,7 +1,8 @@
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
+using System.Collections.Generic;
+
 
 public class Daihugo : IDaihugoObservable
 {
@@ -13,19 +14,51 @@ public class Daihugo : IDaihugoObservable
     public List<TrumpCard> LastFieldCardPair => fieldCards.Count == 0 ? new List<TrumpCard>() : fieldCards.Last();
     private List<TrumpCard> cemeteryCards;
     public List<TrumpCard> CemeteryCards => cemeteryCards;
+    private List<DaihugoSetResult> daihugoSetResults;
+    private DaihugoSetResult GetCurrentSetResult => daihugoSetResults.Last();
+    private DaihugoGameRule.DaihugoState currentState;
+    private DaihugoGameRule.DaihugoState GetCurrentState => currentState;
 
-    private int currentPlayerId = 0;
-    public int CurrentPlayerId => currentPlayerId;
+    private int currentPlayerIndex = 0;
+    public int CurrentPlayerIndex => currentPlayerIndex;
+    public int CurrentPlayerId => GamePlayers[currentPlayerIndex].PlayerId;
     private int PassCount = 0;
     private int lastPlayCardPlayerId = 0;
     public int LastPlayCardPlayerId => lastPlayCardPlayerId;
+    public Daihugo()
+    {
+        daihugoSetResults = new List<DaihugoSetResult>();
+    }
     private int GetRandomPlayerIndex()
     {
-        Random rnd = new Random();
+        System.Random rnd = new System.Random();
         return rnd.Next(1, GamePlayMemberCount);
     }
 
-    private int GetNextPlayerId => currentPlayerId + 1 >= GamePlayMemberCount ? 0 : currentPlayerId + 1;
+    private int GetNextPlayerId()
+    {
+        if (GamePlayers.All(p => p.IsPlay))
+        {
+            return currentPlayerIndex + 1 >= GamePlayers.Count ? 0 : currentPlayerIndex + 1;
+        }
+        else
+        {
+            // まだプレイしていない人がいる → 次の未プレイのプレイヤーを探す
+            for (int i = 1; i <= GamePlayers.Count; i++)
+            {
+                int nextIndex = (currentPlayerIndex + i) % GamePlayers.Count;
+                if (!GamePlayers[nextIndex].IsPlay)
+                {
+                    return nextIndex;
+                }
+            }
+
+            // 理論上ここに来ることはない（上の条件で else に入ってるから）
+            throw new InvalidOperationException("未プレイのプレイヤーが見つかりませんでした。");
+        }
+    }
+
+    private int GetPlayerIndex(int playerId) => GamePlayers.FindIndex(x => x.PlayerId == playerId);
 
     private List<IDaihugoObserver> observers = new List<IDaihugoObserver>();
     public IDisposable Subscribe(IDaihugoObserver observer)
@@ -34,12 +67,6 @@ public class Daihugo : IDaihugoObservable
             observers.Add(observer);
         return new Unsubscriber(observers, observer);
     }
-
-    public Daihugo()
-    {
-
-    }
-
     public void SetStart()
     {
         DeckCards = new List<TrumpCard>();
@@ -58,16 +85,21 @@ public class Daihugo : IDaihugoObservable
         gamePlayers = new List<GamePlayer>();
         for (var i = 0; i < GamePlayMemberCount; i++)
         {
-            gamePlayers.Add(new GamePlayer(i, DealTheCards()));
+            gamePlayers.Add(new GamePlayer(i, DealTheCards(), DaihugoGameRule.GameRank.Heimin));
         }
 
         //ランダムなプレイヤーに余ったカードを配る
         DealLastCard(GetRandomPlayerIndex());
         lastPlayCardPlayerId = GamePlayers.First().PlayerId;
+        currentState = DaihugoGameRule.DaihugoState.None;
         PassCount = 0;
         ChangeNextPlayerTurn(lastPlayCardPlayerId);
         SendStartSet();
+
+        var resultData = new DaihugoSetResult();
+        daihugoSetResults.Add(resultData);
     }
+
     private List<TrumpCard> DealTheCards()
     {
         var result = new List<TrumpCard>();
@@ -96,15 +128,21 @@ public class Daihugo : IDaihugoObservable
     }
     public void PlayFieldCards(List<TrumpCard> playCards)
     {
+
         if (playCards.Count() == 0)
         {
             PassCount++;
         }
         else
         {
+            if (playCards.Count() == 4)
+            {
+                Kakumei();
+            }
+
             fieldCards.Add(playCards);
             PassCount = 0;
-            lastPlayCardPlayerId = CurrentPlayerId;
+            lastPlayCardPlayerId = CurrentPlayerIndex;
         }
 
         if (PassCount == GamePlayMemberCount - 1)
@@ -113,17 +151,73 @@ public class Daihugo : IDaihugoObservable
         }
         else
         {
-            ChangeNextPlayerTurn(GetNextPlayerId);
+            ChangeNextPlayerTurn(GetNextPlayerId());
         }
         SendPlayerChange();
     }
-
-    private void ChangeNextPlayerTurn(int nextPlayerId)
+    private void Kakumei()
     {
-        currentPlayerId = nextPlayerId;
-        for (var i = 0; i < gamePlayers.Count; i++)
+        currentState = GetCurrentState == DaihugoGameRule.DaihugoState.None ? DaihugoGameRule.DaihugoState.Revolution : DaihugoGameRule.DaihugoState.None;
+        SendKakumei();
+    }
+
+    /// playerのそのセット終了検知処理
+    public void EndSetPlayer(int playerId, List<TrumpCard> lastPlayCards)
+    {
+        //通常通りに終わっていれば大富豪から順にランクつける
+        //反則上がりの場合は大貧民からランクつける
+        gamePlayers[GetPlayerIndex(playerId)].RefreshIsPlay(false);
+        gamePlayers[GetPlayerIndex(playerId)].RefreshIsMyturn(false);
+        var endPlayer = new GamePlayer(playerId);
+        GetCurrentSetResult.AddSetEndPlayer(endPlayer, IsForbiddenWin(lastPlayCards));
+        if (GetCurrentSetResult.ResultPlayersCount == GamePlayMemberCount - 1)
         {
-            gamePlayers[i].RefreshIsMyturn(i == nextPlayerId);
+            EndSet();
+        }
+    }
+    //反則上がりしてないかのチェック処理
+    //Joker(1枚出し時)
+    //2（通常時）
+    //3（革命時）
+    //8
+    //だった場合反則上がりとして大貧民からランクつけする
+    private bool IsForbiddenWin(List<TrumpCard> lastPlayCards)
+    {
+        if (lastPlayCards.Any(v => v.Number == DaihugoGameRule.Number.Eight))
+        {
+            return true;
+        }
+        else if (GetCurrentState == DaihugoGameRule.DaihugoState.None && lastPlayCards.Any(v => v.Number == DaihugoGameRule.Number.Two))
+        {
+            return true;
+        }
+        else if (GetCurrentState == DaihugoGameRule.DaihugoState.Revolution && lastPlayCards.Any(v => v.Number == DaihugoGameRule.Number.Three))
+        {
+            return true;
+        }
+        else if (lastPlayCards.Count == 1 && lastPlayCards[0].Number == DaihugoGameRule.Number.Joker)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    private void ChangeNextPlayerTurn(int nextPlayerIndex)
+    {
+        currentPlayerIndex = nextPlayerIndex;
+        foreach (var p in gamePlayers)
+        {
+            p.RefreshIsMyturn(false);
+        }
+        if (gamePlayers[currentPlayerIndex].IsPlay)
+        {
+            gamePlayers[currentPlayerIndex].RefreshIsMyturn(true);
+        }
+        else
+        {
+            var playerId = gamePlayers.First(p => p.IsPlay).PlayerId;
+            currentPlayerIndex = GetPlayerIndex(playerId);
         }
     }
 
@@ -142,8 +236,6 @@ public class Daihugo : IDaihugoObservable
 
     private void EndSet()
     {
-        //todo create result
-        //todo NextSet
         SendEndSet();
     }
 
@@ -166,7 +258,14 @@ public class Daihugo : IDaihugoObservable
     {
         foreach (var observer in observers)
         {
-            observer.OnChangePlayerTurn(GamePlayers.First(p => p.PlayerId == GetNextPlayerId));
+            observer.OnChangePlayerTurn(GamePlayers[currentPlayerIndex]);
+        }
+    }
+    public void SendKakumei()
+    {
+        foreach (var observer in observers)
+        {
+            observer.OnKakumei(currentState);
         }
     }
 

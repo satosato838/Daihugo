@@ -27,6 +27,10 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
         // }
         _fieldController.RefreshCards(_daihugoInstance.LastFieldCardPair);
     }
+    private void EndSet(int playerId, List<TrumpCard> lastPlayCards)
+    {
+        _daihugoInstance.EndSetPlayer(playerId, lastPlayCards);
+    }
 
     private void RefreshPlayersState()
     {
@@ -43,7 +47,12 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
             playerObjects[i].Init(_daihugoInstance.GamePlayers[i], v =>
             {
                 PlayHands(v);
-            });
+            },
+            (id, v) =>
+            {
+                EndSet(id, v);
+            }
+            );
         }
         _fieldController.Init();
         _cemeteryController.Init();
@@ -60,6 +69,10 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
         Debug.Log("OnChangePlayerTurn gamePlayer:" + gamePlayer.PlayerId);
         RefreshPlayersState();
     }
+    public void OnKakumei(DaihugoGameRule.DaihugoState state)
+    {
+        Debug.Log("OnKakumei:" + state);
+    }
 
     public void OnEndRound()
     {
@@ -75,8 +88,7 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
 
     public void OnEndSet()
     {
-        //todo create set result data
-        throw new NotImplementedException();
+        Debug.Log("OnEndSet");
     }
 
 

@@ -5,6 +5,7 @@ public interface IDaihugoObserver
     void OnStartSet();
     void OnStartRound();
     void OnChangePlayerTurn(GamePlayer gamePlayer);
+    void OnKakumei(DaihugoGameRule.DaihugoState state);
     void OnEndRound();
     void OnEndSet();
 }
