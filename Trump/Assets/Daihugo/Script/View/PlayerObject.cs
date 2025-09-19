@@ -16,6 +16,8 @@ public class PlayerObject : MonoBehaviour
     [SerializeField] private Button _playBtn;
     [SerializeField] private Button _passBtn;
 
+    private bool IsMyPlayer => _gamePlayer.PlayerId == 0;
+
     private List<TrumpCardObject> handCardObjects;
     private List<TrumpCard> SelectCards => _gamePlayer.CurrentSelectCards;
     private GamePlayer _gamePlayer;
@@ -94,6 +96,8 @@ public class PlayerObject : MonoBehaviour
         {
             Destroy(transform.gameObject);
         }
+        var scale = IsMyPlayer ? 1 : 0.3f;
+        HandPos.transform.localScale = new Vector3(scale, scale, scale);
         foreach (var item in _gamePlayer.HandCards)
         {
             var hand = Instantiate(trumpCardObject, HandPos.transform);
@@ -116,6 +120,8 @@ public class PlayerObject : MonoBehaviour
 
             handCardObjects.Add(hand);
         }
+        HandPos.CalculateLayoutInputHorizontal();
+        HandPos.SetLayoutHorizontal();
     }
 
     public void SelectCard(TrumpCard trumpCard)

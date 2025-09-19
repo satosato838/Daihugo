@@ -16,6 +16,7 @@ public class Daihugo : IDaihugoObservable
     public List<TrumpCard> CemeteryCards => cemeteryCards;
     private List<DaihugoSetResult> daihugoSetResults;
     private DaihugoSetResult GetCurrentSetResult => daihugoSetResults.Last();
+    private DaihugoGameRule.DaihugoState defaultState = DaihugoGameRule.DaihugoState.None;
     private DaihugoGameRule.DaihugoState beforeState;
     private DaihugoGameRule.DaihugoState currentState;
     public DaihugoGameRule.DaihugoState GetCurrentState => currentState;
@@ -90,7 +91,7 @@ public class Daihugo : IDaihugoObservable
         gamePlayers = new List<GamePlayer>();
         for (var i = 0; i < GamePlayMemberCount; i++)
         {
-            gamePlayers.Add(new GamePlayer(i, DealTheCards(), DaihugoGameRule.GameRank.Heimin, DaihugoGameRule.DaihugoState.Revolution));
+            gamePlayers.Add(new GamePlayer(i, DealTheCards(), DaihugoGameRule.GameRank.Heimin, defaultState));
         }
 
         //ランダムなプレイヤーに余ったカードを配る
