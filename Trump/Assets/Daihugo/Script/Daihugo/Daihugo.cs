@@ -179,21 +179,24 @@ public class Daihugo : IDaihugoObservable
             //8切りなので強制的に全員パスしたことにする
             PassCount = GamePlayMemberCount - 1;
             currentRoundCardEffects.Add(DaihugoGameRule.Effect.Eight_Enders);
+            SendCardEffect();
         }
         else if (playCards.Any(card => card.Effect == DaihugoGameRule.Effect.Eleven_Back))
         {
             beforeState = currentState;
             currentRoundCardEffects.Add(DaihugoGameRule.Effect.Eleven_Back);
             Kakumei();
+            SendCardEffect();
         }
         else if (fieldCards.Count == 1 &&
                  LastFieldCardPair.First().Number == DaihugoGameRule.Number.Joker &&
                  playCards.First().Effect == DaihugoGameRule.Effect.Counter_Spade_3)
         {
             currentRoundCardEffects.Add(DaihugoGameRule.Effect.Counter_Spade_3);
+            SendCardEffect();
         }
 
-        SendCardEffect();
+
     }
 
     private void Kakumei()

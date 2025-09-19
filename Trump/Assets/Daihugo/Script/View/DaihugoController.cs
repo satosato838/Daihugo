@@ -10,6 +10,7 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
     [SerializeField] private Sprite _kakumeiImage;
     [SerializeField] private PlayerObject[] _playerObjects;
     [SerializeField] private FieldController _fieldController;
+    [SerializeField] private EffectCutInController _effectCutInController;
     [SerializeField] private CemeteryController _cemeteryController;
     private Daihugo _daihugoInstance;
 
@@ -62,6 +63,7 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
         _cemeteryController.Init();
         RefreshPlayersState();
         _bg.sprite = _daihugoInstance.GetCurrentState == DaihugoGameRule.DaihugoState.None ? _nomalImage : _kakumeiImage;
+        _effectCutInController.Play("1Round", 0.5f);
     }
 
     private void CemeteryAnimationEnd()
@@ -86,6 +88,7 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
             item.Kakumei(state);
         }
         _bg.sprite = state == DaihugoGameRule.DaihugoState.None ? _nomalImage : _kakumeiImage;
+        _effectCutInController.Play(state == DaihugoGameRule.DaihugoState.None ? "Counter Revolution" : DaihugoGameRule.DaihugoState.Revolution.ToString());
     }
 
     public void OnEndRound()
@@ -97,6 +100,7 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
     public void OnCardEffect(DaihugoGameRule.Effect effect)
     {
         Debug.Log("OnCardEffect:" + effect);
+        _effectCutInController.Play(effect.ToString());
     }
 
     public void OnEndSet()
