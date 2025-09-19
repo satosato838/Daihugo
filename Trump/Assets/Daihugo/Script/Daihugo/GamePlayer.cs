@@ -1,7 +1,6 @@
+using System;
 using System.Linq;
 using System.Collections.Generic;
-using System;
-using System.Diagnostics;
 
 public class GamePlayer
 {
@@ -15,15 +14,15 @@ public class GamePlayer
     private bool isMyTurn;
     public bool IsMyTurn => isMyTurn;
     public List<TrumpCard> CurrentSelectCards => handCards.Where(c => c.IsSelect).ToList();
-    private List<TrumpCard> FeildCards;
+    private List<TrumpCard> fieldCards;
     private List<TrumpCard> handCards;
     public List<TrumpCard> HandCards => handCards;
-    public bool IsCardPlay => FeildCards.Count == 0 ? true : FeildCards.Count == CurrentSelectCards.Count;
+    public bool IsCardPlay => fieldCards.Count == 0 ? true : fieldCards.Count == CurrentSelectCards.Count;
 
     public GamePlayer(int id, List<TrumpCard> cards, DaihugoGameRule.GameRank rank, DaihugoGameRule.DaihugoState daihugoState)
     {
         PlayerId = id;
-        FeildCards = new List<TrumpCard>();
+        fieldCards = new List<TrumpCard>();
         RefreshIsPlay(true);
         RefreshRank(rank);
         DealCard(cards);
@@ -32,7 +31,7 @@ public class GamePlayer
     public GamePlayer(int id)
     {
         PlayerId = id;
-        FeildCards = new List<TrumpCard>();
+        fieldCards = new List<TrumpCard>();
     }
 
     public void RefreshGameState(DaihugoGameRule.DaihugoState daihugoState)
@@ -60,13 +59,13 @@ public class GamePlayer
         var index = handCards.FindIndex(c => c.Suit == selectCard.Suit && c.Number == selectCard.Number);
         handCards[index].RefreshIsSelect(selectCard.IsSelect);
 
-        RefreshSelectableHandCards(FeildCards);
+        RefreshSelectableHandCards(fieldCards);
     }
 
-    public void RefreshSelectableHandCards(List<TrumpCard> fieldCards)
+    public void RefreshSelectableHandCards(List<TrumpCard> fields)
     {
-        FeildCards = fieldCards;
-        if (FeildCards.Count == 0)
+        fieldCards = fields;
+        if (fieldCards.Count == 0)
         {
             foreach (var card in handCards)
             {
@@ -75,7 +74,7 @@ public class GamePlayer
         }
         else
         {
-            var selectingOver = CurrentSelectCards.Count >= FeildCards.Count;
+            var selectingOver = CurrentSelectCards.Count >= fieldCards.Count;
             if (selectingOver)
             {
                 foreach (var card in handCards)
@@ -85,7 +84,7 @@ public class GamePlayer
                 return;
             }
 
-            var fieldNumber = (int)FeildCards.First().Number;
+            var fieldNumber = (int)fieldCards.First().Number;
             foreach (var card in handCards)
             {
                 if (card.Number == DaihugoGameRule.Number.Joker)
@@ -96,7 +95,7 @@ public class GamePlayer
                 else
                 {
                     var handCardCount = handCards.Count(v => v.Number == card.Number || v.Number == DaihugoGameRule.Number.Joker);
-                    card.RefreshIsSelectable(IsPlayCard(handCardCount, FeildCards.Count, fieldNumber, (int)card.Number));
+                    card.RefreshIsSelectable(IsPlayCard(handCardCount, fieldCards.Count, fieldNumber, (int)card.Number));
                 }
             }
         }
