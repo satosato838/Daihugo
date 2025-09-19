@@ -56,7 +56,7 @@ GameObject:
   - component: {fileID: 7744364014519931052}
   - component: {fileID: 8389900052833146292}
   m_Layer: 5
-  m_Name: Card
+  m_Name: TrumpCard
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -17,7 +17,6 @@ public class PlayerObject : MonoBehaviour
     [SerializeField] private Button _passBtn;
 
     private List<TrumpCardObject> handCardObjects;
-    private List<TrumpCard> FeildCards;
     private List<TrumpCard> SelectCards => _gamePlayer.CurrentSelectCards;
     private GamePlayer _gamePlayer;
     public bool IsMyTurn => _gamePlayer.IsMyTurn;
@@ -44,13 +43,17 @@ public class PlayerObject : MonoBehaviour
     public void Init(GamePlayer gamePlayer, Action<List<TrumpCard>> callback, Action<int, List<TrumpCard>> setEndCallback)
     {
         _gamePlayer = gamePlayer;
-        FeildCards = new List<TrumpCard>();
         _playerName.text = "GamePlayer_" + _gamePlayer.PlayerId.ToString();
         SetInteractablePlayBtn(false);
         RefreshCards();
         playCardAction = callback;
         setEndAction = setEndCallback;
         RefreshBGColor();
+    }
+
+    public void Kakumei(DaihugoGameRule.DaihugoState state)
+    {
+        _gamePlayer.RefreshGameState(state);
     }
 
     public void RefreshGamePlayerState(bool isMyTurn, List<TrumpCard> fieldLastCards)
@@ -91,10 +94,10 @@ public class PlayerObject : MonoBehaviour
         {
             Destroy(transform.gameObject);
         }
-        foreach (var item in _gamePlayer.Hand)
+        foreach (var item in _gamePlayer.HandCards)
         {
             var hand = Instantiate(trumpCardObject, HandPos.transform);
-            hand.Init(v =>
+            hand.Init(item, v =>
             {
                 SelectCard(v);
             });
@@ -109,7 +112,7 @@ public class PlayerObject : MonoBehaviour
             // }
 
             //debug
-            hand.SetCardImage(item);
+            hand.ShowFrontCardImage();
 
             handCardObjects.Add(hand);
         }
@@ -117,7 +120,8 @@ public class PlayerObject : MonoBehaviour
 
     public void SelectCard(TrumpCard trumpCard)
     {
-        for (var i = 0; i < _gamePlayer.Hand.Count; i++)
+        _gamePlayer.SelectCard(trumpCard);
+        for (var i = 0; i < _gamePlayer.HandCards.Count; i++)
         {
             if (_gamePlayer.CurrentSelectCards.Count == 0)
             {

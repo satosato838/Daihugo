@@ -5,8 +5,8 @@ public class TrumpCard
     private CardNumber cardNumber;
     public DaihugoGameRule.Number Number => cardNumber.Number;
     public string CardName;
-    public bool IsSelect;
-    public bool IsSelectable;
+    public bool IsSelect { get; private set; }
+    public bool IsSelectable { get; private set; }
     public TrumpCard(DaihugoGameRule.SuitType suit, CardNumber number)
     {
         suitType = suit;
@@ -32,6 +32,10 @@ public class TrumpCard
         {
             cardNumber.Effect = DaihugoGameRule.Effect.Counter_Spade_3;
         }
+    }
+    public void RefreshIsSelect(bool val)
+    {
+        IsSelect = val;
     }
 
     public void RefreshIsSelectable(bool val)

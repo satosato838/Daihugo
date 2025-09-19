@@ -17,7 +17,7 @@ public class Daihugo : IDaihugoObservable
     private List<DaihugoSetResult> daihugoSetResults;
     private DaihugoSetResult GetCurrentSetResult => daihugoSetResults.Last();
     private DaihugoGameRule.DaihugoState currentState;
-    private DaihugoGameRule.DaihugoState GetCurrentState => currentState;
+    public DaihugoGameRule.DaihugoState GetCurrentState => currentState;
 
     private int currentPlayerIndex = 0;
     public int CurrentPlayerIndex => currentPlayerIndex;
@@ -82,16 +82,17 @@ public class Daihugo : IDaihugoObservable
         }
         DeckCards.Add(new TrumpCard(DaihugoGameRule.SuitType.Joker, new CardNumber(DaihugoGameRule.Numbers.Length)));
         DeckCards = DeckCards.OrderBy(a => Guid.NewGuid()).ToList();
+
         gamePlayers = new List<GamePlayer>();
         for (var i = 0; i < GamePlayMemberCount; i++)
         {
-            gamePlayers.Add(new GamePlayer(i, DealTheCards(), DaihugoGameRule.GameRank.Heimin));
+            gamePlayers.Add(new GamePlayer(i, DealTheCards(), DaihugoGameRule.GameRank.Heimin, DaihugoGameRule.DaihugoState.Revolution));
         }
 
         //ランダムなプレイヤーに余ったカードを配る
         DealLastCard(GetRandomPlayerIndex());
         lastPlayCardPlayerId = GamePlayers.First().PlayerId;
-        currentState = DaihugoGameRule.DaihugoState.None;
+        currentState = GamePlayers.First().GameState;
         PassCount = 0;
         ChangeNextPlayerTurn(lastPlayCardPlayerId);
         SendStartSet();
@@ -114,7 +115,7 @@ public class Daihugo : IDaihugoObservable
 
     private void DealLastCard(int index)
     {
-        var hand = gamePlayers[index].Hand;
+        var hand = gamePlayers[index].HandCards;
         var card = DeckCards.Last();
         hand.Add(card);
         DeckCards.Remove(card);

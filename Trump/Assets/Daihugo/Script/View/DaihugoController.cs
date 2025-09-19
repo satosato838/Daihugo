@@ -1,10 +1,14 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class DaihugoController : MonoBehaviour, IDaihugoObserver
 {
-    [SerializeField] private PlayerObject[] playerObjects;
+    [SerializeField] private Image _bg;
+    [SerializeField] private Sprite _nomalImage;
+    [SerializeField] private Sprite _kakumeiImage;
+    [SerializeField] private PlayerObject[] _playerObjects;
     [SerializeField] private FieldController _fieldController;
     [SerializeField] private CemeteryController _cemeteryController;
     private Daihugo _daihugoInstance;
@@ -36,7 +40,7 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
     {
         for (var i = 0; i < _daihugoInstance.GamePlayers.Count; i++)
         {
-            playerObjects[i].RefreshGamePlayerState(_daihugoInstance.GamePlayers[i].IsMyTurn, _daihugoInstance.LastFieldCardPair);
+            _playerObjects[i].RefreshGamePlayerState(_daihugoInstance.GamePlayers[i].IsMyTurn, _daihugoInstance.LastFieldCardPair);
         }
     }
 
@@ -44,7 +48,7 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
     {
         for (var i = 0; i < _daihugoInstance.GamePlayers.Count; i++)
         {
-            playerObjects[i].Init(_daihugoInstance.GamePlayers[i], v =>
+            _playerObjects[i].Init(_daihugoInstance.GamePlayers[i], v =>
             {
                 PlayHands(v);
             },
@@ -57,6 +61,7 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
         _fieldController.Init();
         _cemeteryController.Init();
         RefreshPlayersState();
+        _bg.sprite = _daihugoInstance.GetCurrentState == DaihugoGameRule.DaihugoState.None ? _nomalImage : _kakumeiImage;
     }
 
     public void OnStartRound()
@@ -72,6 +77,11 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
     public void OnKakumei(DaihugoGameRule.DaihugoState state)
     {
         Debug.Log("OnKakumei:" + state);
+        foreach (var item in _playerObjects)
+        {
+            item.Kakumei(state);
+        }
+        _bg.sprite = state == DaihugoGameRule.DaihugoState.None ? _nomalImage : _kakumeiImage;
     }
 
     public void OnEndRound()

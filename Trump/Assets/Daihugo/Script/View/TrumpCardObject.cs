@@ -23,15 +23,15 @@ public class TrumpCardObject : MonoBehaviour
         });
     }
 
-    public void Init(Action<TrumpCard> onclick)
+    public void Init(TrumpCard trumpCard, Action<TrumpCard> onclick)
     {
+        TrumpCardData = trumpCard;
         onClick = onclick;
     }
 
-    public void SetCardImage(TrumpCard trumpCard)
+    public void ShowFrontCardImage()
     {
-        TrumpCardData = trumpCard;
-        StartCoroutine(LoadImage(trumpCard.CardName + ".png"));
+        StartCoroutine(LoadImage(TrumpCardData.CardName + ".png"));
         RefreshCardImagePos();
         RefreshButtonInteractable(TrumpCardData.IsSelectable);
     }
@@ -91,12 +91,9 @@ public class TrumpCardObject : MonoBehaviour
 
     private void OnClick()
     {
-        TrumpCard trumpCard = new TrumpCard(TrumpCardData.Suit, new CardNumber(TrumpCardData.Number));
-        trumpCard.IsSelect = !TrumpCardData.IsSelect;
-        TrumpCardData.IsSelect = trumpCard.IsSelect;
+        TrumpCardData.RefreshIsSelect(!TrumpCardData.IsSelect);
         RefreshCardImagePos();
-
-        onClick?.Invoke(trumpCard);
+        onClick?.Invoke(TrumpCardData);
     }
 
     private void RefreshCardImagePos()

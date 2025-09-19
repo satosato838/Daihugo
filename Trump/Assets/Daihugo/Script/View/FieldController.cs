@@ -1,11 +1,11 @@
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections.Generic;
 
 public class FieldController : MonoBehaviour
 {
-    [SerializeField] TrumpCardObject trumpCardObject;
-    [SerializeField] HorizontalLayoutGroup FieldPos;
+    [SerializeField] TrumpCardObject _trumpCardObject;
+    [SerializeField] HorizontalLayoutGroup _fieldPos;
     private List<TrumpCardObject> trumpCardObjects;
     public void Init()
     {
@@ -15,20 +15,20 @@ public class FieldController : MonoBehaviour
     public void RefreshCards(List<TrumpCard> playCards)
     {
         trumpCardObjects = new List<TrumpCardObject>();
-        foreach (Transform transform in FieldPos.transform)
+        foreach (Transform transform in _fieldPos.transform)
         {
             Destroy(transform.gameObject);
         }
         foreach (var item in playCards)
         {
-            var hand = Instantiate(trumpCardObject, FieldPos.transform);
-            hand.Init(v =>
+            var hand = Instantiate(_trumpCardObject, _fieldPos.transform);
+            hand.Init(item, v =>
             {
                 //SelectCard(v);
             });
 
-            //debug
-            hand.SetCardImage(item);
+            hand.ShowFrontCardImage();
+
             trumpCardObjects.Add(hand);
         }
     }
