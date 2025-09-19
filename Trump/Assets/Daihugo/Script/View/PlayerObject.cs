@@ -36,17 +36,17 @@ public class PlayerObject : MonoBehaviour
         {
             _passBtn.onClick.AddListener(() =>
             {
-                OnPlayButtonClick();
+                OnPassButtonClick();
             });
         }
     }
-    public void Init(GamePlayer gamePlayer, Action<List<TrumpCard>> callback, Action<int, List<TrumpCard>> setEndCallback)
+    public void Init(GamePlayer gamePlayer, Action<List<TrumpCard>> playCardCallback, Action<int, List<TrumpCard>> setEndCallback)
     {
         _gamePlayer = gamePlayer;
         _playerName.text = "GamePlayer_" + _gamePlayer.PlayerId.ToString();
         SetInteractablePlayBtn(false);
         RefreshCards();
-        playCardAction = callback;
+        playCardAction = playCardCallback;
         setEndAction = setEndCallback;
         RefreshBGColor();
     }
@@ -97,7 +97,7 @@ public class PlayerObject : MonoBehaviour
         foreach (var item in _gamePlayer.HandCards)
         {
             var hand = Instantiate(trumpCardObject, HandPos.transform);
-            hand.Init(item, v =>
+            hand.Init(item, true, v =>
             {
                 SelectCard(v);
             });

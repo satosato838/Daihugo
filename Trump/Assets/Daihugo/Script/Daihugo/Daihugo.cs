@@ -16,8 +16,12 @@ public class Daihugo : IDaihugoObservable
     public List<TrumpCard> CemeteryCards => cemeteryCards;
     private List<DaihugoSetResult> daihugoSetResults;
     private DaihugoSetResult GetCurrentSetResult => daihugoSetResults.Last();
+    private DaihugoGameRule.DaihugoState beforeState;
     private DaihugoGameRule.DaihugoState currentState;
     public DaihugoGameRule.DaihugoState GetCurrentState => currentState;
+
+    private List<DaihugoGameRule.Effect> currentRoundCardEffects;
+    public List<DaihugoGameRule.Effect> GetCurrentRoundCardEffects => currentRoundCardEffects;
 
     private int currentPlayerIndex = 0;
     public int CurrentPlayerIndex => currentPlayerIndex;
@@ -31,7 +35,7 @@ public class Daihugo : IDaihugoObservable
     }
     private int GetRandomPlayerIndex()
     {
-        System.Random rnd = new System.Random();
+        Random rnd = new Random();
         return rnd.Next(1, GamePlayMemberCount);
     }
 
@@ -93,6 +97,10 @@ public class Daihugo : IDaihugoObservable
         DealLastCard(GetRandomPlayerIndex());
         lastPlayCardPlayerId = GamePlayers.First().PlayerId;
         currentState = GamePlayers.First().GameState;
+        currentRoundCardEffects = new List<DaihugoGameRule.Effect>
+        {
+            DaihugoGameRule.Effect.None
+        };
         PassCount = 0;
         ChangeNextPlayerTurn(lastPlayCardPlayerId);
         SendStartSet();
@@ -124,6 +132,10 @@ public class Daihugo : IDaihugoObservable
 
     public void StartRound()
     {
+        currentRoundCardEffects = new List<DaihugoGameRule.Effect>
+        {
+            DaihugoGameRule.Effect.None
+        };
         ChangeNextPlayerTurn(lastPlayCardPlayerId);
         SendStartRound();
     }
@@ -145,6 +157,8 @@ public class Daihugo : IDaihugoObservable
             PassCount = 0;
             lastPlayCardPlayerId = CurrentPlayerIndex;
         }
+        //CardEffect
+        ActivateCardEffect(playCards);
 
         if (PassCount == GamePlayMemberCount - 1)
         {
@@ -156,6 +170,31 @@ public class Daihugo : IDaihugoObservable
         }
         SendPlayerChange();
     }
+
+    private void ActivateCardEffect(List<TrumpCard> playCards)
+    {
+        if (playCards.Any(card => card.Effect == DaihugoGameRule.Effect.Eight_Enders))
+        {
+            //8切りなので強制的に全員パスしたことにする
+            PassCount = GamePlayMemberCount - 1;
+            currentRoundCardEffects.Add(DaihugoGameRule.Effect.Eight_Enders);
+        }
+        else if (playCards.Any(card => card.Effect == DaihugoGameRule.Effect.Eleven_Back))
+        {
+            beforeState = currentState;
+            currentRoundCardEffects.Add(DaihugoGameRule.Effect.Eleven_Back);
+            Kakumei();
+        }
+        else if (fieldCards.Count == 1 &&
+                 LastFieldCardPair.First().Number == DaihugoGameRule.Number.Joker &&
+                 playCards.First().Effect == DaihugoGameRule.Effect.Counter_Spade_3)
+        {
+            currentRoundCardEffects.Add(DaihugoGameRule.Effect.Counter_Spade_3);
+        }
+
+        SendCardEffect();
+    }
+
     private void Kakumei()
     {
         currentState = GetCurrentState == DaihugoGameRule.DaihugoState.None ? DaihugoGameRule.DaihugoState.Revolution : DaihugoGameRule.DaihugoState.None;
@@ -229,10 +268,20 @@ public class Daihugo : IDaihugoObservable
 
     private void EndRound()
     {
+        EndCardEffect();
         RefreshCemeteryCards(fieldCards.SelectMany(v => v).ToList());
         fieldCards = new List<List<TrumpCard>>();
         ChangeNextPlayerTurn(LastPlayCardPlayerId);
         SendEndRound();
+    }
+
+    private void EndCardEffect()
+    {
+        if (currentRoundCardEffects.Any(v => v == DaihugoGameRule.Effect.Eleven_Back))
+        {
+            currentState = beforeState;
+            SendKakumei();
+        }
     }
 
     private void EndSet()
@@ -266,7 +315,16 @@ public class Daihugo : IDaihugoObservable
     {
         foreach (var observer in observers)
         {
-            observer.OnKakumei(currentState);
+            observer.OnKakumei(GetCurrentState);
+        }
+    }
+
+    public void SendCardEffect()
+    {
+
+        foreach (var observer in observers)
+        {
+            observer.OnCardEffect(GetCurrentRoundCardEffects.Last());
         }
     }
 

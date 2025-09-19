@@ -4,6 +4,7 @@ public class TrumpCard
     public DaihugoGameRule.SuitType Suit => suitType;
     private CardNumber cardNumber;
     public DaihugoGameRule.Number Number => cardNumber.Number;
+    public DaihugoGameRule.Effect Effect => cardNumber.Effect;
     public string CardName;
     public bool IsSelect { get; private set; }
     public bool IsSelectable { get; private set; }

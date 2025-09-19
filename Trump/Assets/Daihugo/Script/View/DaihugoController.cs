@@ -64,6 +64,10 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
         _bg.sprite = _daihugoInstance.GetCurrentState == DaihugoGameRule.DaihugoState.None ? _nomalImage : _kakumeiImage;
     }
 
+    private void CemeteryAnimationEnd()
+    {
+        _daihugoInstance.StartRound();
+    }
     public void OnStartRound()
     {
         _fieldController.Init();
@@ -90,10 +94,9 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
         //todo cemeteryAnimation
         Invoke(nameof(CemeteryAnimationEnd), 2.0f);
     }
-
-    private void CemeteryAnimationEnd()
+    public void OnCardEffect(DaihugoGameRule.Effect effect)
     {
-        _daihugoInstance.StartRound();
+        Debug.Log("OnCardEffect:" + effect);
     }
 
     public void OnEndSet()
@@ -107,4 +110,6 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
     {
         thisDisposable.Dispose();
     }
+
+
 }

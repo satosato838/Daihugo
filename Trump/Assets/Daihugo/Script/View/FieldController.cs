@@ -22,7 +22,7 @@ public class FieldController : MonoBehaviour
         foreach (var item in playCards)
         {
             var hand = Instantiate(_trumpCardObject, _fieldPos.transform);
-            hand.Init(item, v =>
+            hand.Init(item, false, v =>
             {
                 //SelectCard(v);
             });

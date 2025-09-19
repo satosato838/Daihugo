@@ -11,6 +11,7 @@ public class TrumpCardObject : MonoBehaviour
     [SerializeField] private Button _button;
     [SerializeField] private Transform _moveUpPos;
     [SerializeField] private Transform _defaultPos;
+    private bool IsHand;
     TrumpCard TrumpCardData;
     public DaihugoGameRule.Number Number => TrumpCardData.Number;
     Action<TrumpCard> onClick;
@@ -23,9 +24,10 @@ public class TrumpCardObject : MonoBehaviour
         });
     }
 
-    public void Init(TrumpCard trumpCard, Action<TrumpCard> onclick)
+    public void Init(TrumpCard trumpCard, bool isHand, Action<TrumpCard> onclick)
     {
         TrumpCardData = trumpCard;
+        IsHand = isHand;
         onClick = onclick;
     }
 
@@ -91,8 +93,12 @@ public class TrumpCardObject : MonoBehaviour
 
     private void OnClick()
     {
-        TrumpCardData.RefreshIsSelect(!TrumpCardData.IsSelect);
-        RefreshCardImagePos();
+        if (IsHand)
+        {
+            TrumpCardData.RefreshIsSelect(!TrumpCardData.IsSelect);
+            RefreshCardImagePos();
+        }
+
         onClick?.Invoke(TrumpCardData);
     }
 
