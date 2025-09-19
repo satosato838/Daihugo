@@ -152,6 +152,7 @@ public class Daihugo : IDaihugoObservable
             if (playCards.Count() == 4)
             {
                 Kakumei();
+                SendDaihugoStateEffect();
             }
 
             fieldCards.Add(playCards);
@@ -188,7 +189,7 @@ public class Daihugo : IDaihugoObservable
             Kakumei();
             SendCardEffect();
         }
-        else if (fieldCards.Count == 1 &&
+        else if (LastFieldCardPair.Count == 1 &&
                  LastFieldCardPair.First().Number == DaihugoGameRule.Number.Joker &&
                  playCards.First().Effect == DaihugoGameRule.Effect.Counter_Spade_3)
         {
@@ -329,6 +330,13 @@ public class Daihugo : IDaihugoObservable
         foreach (var observer in observers)
         {
             observer.OnCardEffect(GetCurrentRoundCardEffects.Last());
+        }
+    }
+    public void SendDaihugoStateEffect()
+    {
+        foreach (var observer in observers)
+        {
+            observer.OnDaihugoStateEffect(currentState);
         }
     }
 

@@ -88,7 +88,6 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
             item.Kakumei(state);
         }
         _bg.sprite = state == DaihugoGameRule.DaihugoState.None ? _nomalImage : _kakumeiImage;
-        _effectCutInController.Play(state == DaihugoGameRule.DaihugoState.None ? "Counter Revolution" : DaihugoGameRule.DaihugoState.Revolution.ToString());
     }
 
     public void OnEndRound()
@@ -102,6 +101,13 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
         Debug.Log("OnCardEffect:" + effect);
         _effectCutInController.Play(effect.ToString());
     }
+    public void OnDaihugoStateEffect(DaihugoGameRule.DaihugoState state)
+    {
+        Debug.Log("OnDaihugoStateEffect:" + state);
+        _effectCutInController.Play(state == DaihugoGameRule.DaihugoState.None ? "Counter Revolution" : DaihugoGameRule.DaihugoState.Revolution.ToString());
+
+    }
+
 
     public void OnEndSet()
     {
