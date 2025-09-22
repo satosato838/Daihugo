@@ -107,7 +107,7 @@ public class Daihugo : IDaihugoObservable
     private List<TrumpCard> CreateDeck(bool isDebug = false)
     {
         var result = new List<TrumpCard>();
-        var numbers = isDebug ? new DaihugoGameRule.Number[] { DaihugoGameRule.Number.Three, DaihugoGameRule.Number.Five, DaihugoGameRule.Number.Eight } :
+        var numbers = isDebug ? new DaihugoGameRule.Number[] { DaihugoGameRule.Number.Three, DaihugoGameRule.Number.Five, DaihugoGameRule.Number.Seven } :
                      DaihugoGameRule.Numbers;
 
         foreach (var type in DaihugoGameRule.SuitTypes)
