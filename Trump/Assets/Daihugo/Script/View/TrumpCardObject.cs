@@ -17,7 +17,6 @@ public class TrumpCardObject : MonoBehaviour
     Action<TrumpCard> onClick;
     void Start()
     {
-        SetDefaultPos();
         _button.onClick.AddListener(() =>
         {
             OnClick();
@@ -29,6 +28,7 @@ public class TrumpCardObject : MonoBehaviour
         TrumpCardData = trumpCard;
         IsHand = isHand;
         onClick = onclick;
+        RefreshCardImagePos();
     }
 
     public void ShowFrontCardImage()
@@ -104,22 +104,6 @@ public class TrumpCardObject : MonoBehaviour
 
     private void RefreshCardImagePos()
     {
-        if (TrumpCardData.IsSelect)
-        {
-            SetMoveUpPos();
-        }
-        else
-        {
-            SetDefaultPos();
-        }
-    }
-    private void SetMoveUpPos()
-    {
-        _Image.transform.localPosition = _moveUpPos.localPosition;
-    }
-
-    private void SetDefaultPos()
-    {
-        _Image.transform.localPosition = _defaultPos.localPosition;
+        _Image.transform.localPosition = TrumpCardData.IsSelect ? _moveUpPos.localPosition : _defaultPos.localPosition;
     }
 }
