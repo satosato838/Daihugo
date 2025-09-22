@@ -2,10 +2,12 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using UnityEngine;
 
 
 public class Daihugo : IDaihugoObservable
 {
+    private bool IsDebug;
     private int GamePlayMemberCount => 4;
     private List<TrumpCard> DeckCards;
     private List<GamePlayer> gamePlayers;
@@ -30,13 +32,14 @@ public class Daihugo : IDaihugoObservable
     private int PassCount = 0;
     private int lastPlayCardPlayerId = 0;
     public int LastPlayCardPlayerId => lastPlayCardPlayerId;
-    public Daihugo()
+    public Daihugo(bool isDebug = false)
     {
+        IsDebug = isDebug;
         daihugoSetResults = new List<DaihugoSetResult>();
     }
     private int GetRandomPlayerIndex()
     {
-        Random rnd = new Random();
+        System.Random rnd = new System.Random();
         return rnd.Next(1, GamePlayMemberCount);
     }
 
@@ -74,28 +77,19 @@ public class Daihugo : IDaihugoObservable
     }
     public void SetStart()
     {
-        DeckCards = new List<TrumpCard>();
         fieldCards = new List<List<TrumpCard>>();
         cemeteryCards = new List<TrumpCard>();
 
-        foreach (var type in DaihugoGameRule.SuitTypes)
-        {
-            for (var i = 1; i < DaihugoGameRule.Numbers.Length; i++)
-            {
-                DeckCards.Add(new TrumpCard(type, new CardNumber(i)));
-            }
-        }
-        DeckCards.Add(new TrumpCard(DaihugoGameRule.SuitType.Joker, new CardNumber(DaihugoGameRule.Numbers.Length)));
-        DeckCards = DeckCards.OrderBy(a => Guid.NewGuid()).ToList();
+        DeckCards = CreateDeck(isDebug: IsDebug);
 
         gamePlayers = new List<GamePlayer>();
         for (var i = 0; i < GamePlayMemberCount; i++)
         {
-            gamePlayers.Add(new GamePlayer(i, DealTheCards(), DaihugoGameRule.GameRank.Heimin, defaultState));
+            gamePlayers.Add(new GamePlayer(i, DealTheCards(isDebug: IsDebug), DaihugoGameRule.GameRank.Heimin, defaultState));
         }
 
         //ランダムなプレイヤーに余ったカードを配る
-        DealLastCard(GetRandomPlayerIndex());
+        if (!IsDebug) DealLastCard(GetRandomPlayerIndex());
         lastPlayCardPlayerId = GamePlayers.First().PlayerId;
         currentState = GamePlayers.First().GameState;
         currentRoundCardEffects = new List<DaihugoGameRule.Effect>
@@ -110,14 +104,40 @@ public class Daihugo : IDaihugoObservable
         daihugoSetResults.Add(resultData);
     }
 
-    private List<TrumpCard> DealTheCards()
+    private List<TrumpCard> CreateDeck(bool isDebug = false)
     {
         var result = new List<TrumpCard>();
-        for (var j = 0; j < DaihugoGameRule.Numbers.Length - 1; j++)
+        var numbers = isDebug ? new DaihugoGameRule.Number[] { DaihugoGameRule.Number.Three, DaihugoGameRule.Number.Five, DaihugoGameRule.Number.Eight } :
+                     DaihugoGameRule.Numbers;
+
+        foreach (var type in DaihugoGameRule.SuitTypes)
         {
-            var card = DeckCards.First();
-            result.Add(card);
-            DeckCards.Remove(card);
+            for (var i = 1; i < numbers.Length; i++)
+            {
+                result.Add(new TrumpCard(type, new CardNumber(numbers[i])));
+            }
+        }
+        if (!isDebug) result.Add(new TrumpCard(DaihugoGameRule.SuitType.Joker, new CardNumber(DaihugoGameRule.Number.Joker)));
+        return result.OrderBy(a => Guid.NewGuid()).ToList();
+    }
+
+    private List<TrumpCard> DealTheCards(bool isDebug = false)
+    {
+        var result = new List<TrumpCard>();
+        var handCardCount = isDebug ? 3 : DaihugoGameRule.Numbers.Length;
+        Debug.Log("DeckCards.Count:" + handCardCount);
+        for (var j = 0; j < handCardCount - 1; j++)
+        {
+            try
+            {
+                var card = DeckCards.First();
+                result.Add(card);
+                DeckCards.Remove(card);
+            }
+            catch
+            {
+                break;
+            }
         }
         return result;
     }

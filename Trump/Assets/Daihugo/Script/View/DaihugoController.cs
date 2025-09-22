@@ -12,12 +12,13 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
     [SerializeField] private FieldController _fieldController;
     [SerializeField] private EffectCutInController _effectCutInController;
     [SerializeField] private CemeteryController _cemeteryController;
+    [SerializeField] private bool _isDebug;
     private Daihugo _daihugoInstance;
 
     IDisposable thisDisposable;
     void Start()
     {
-        _daihugoInstance = new Daihugo();
+        _daihugoInstance = new Daihugo(isDebug: _isDebug);
         thisDisposable = _daihugoInstance.Subscribe(this);
 
         _daihugoInstance.SetStart();

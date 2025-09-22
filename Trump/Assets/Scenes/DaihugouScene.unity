@@ -5071,6 +5071,7 @@ MonoBehaviour:
   _fieldController: {fileID: 1100299011}
   _effectCutInController: {fileID: 1515653735}
   _cemeteryController: {fileID: 1769578479}
+  _isDebug: 1
 --- !u!1 &1817982771
 GameObject:
   m_ObjectHideFlags: 0
