@@ -16,8 +16,8 @@ public class Daihugo : IDaihugoObservable
     public List<TrumpCard> LastFieldCardPair => fieldCards.Count == 0 ? new List<TrumpCard>() : fieldCards.Last();
     private List<TrumpCard> cemeteryCards;
     public List<TrumpCard> CemeteryCards => cemeteryCards;
-    private List<DaihugoSetResult> daihugoSetResults;
-    private DaihugoSetResult GetCurrentSetResult => daihugoSetResults.Last();
+    private List<DaihugoRoundResult> daihugoRoundResults;
+    private DaihugoRoundResult GetCurrentRoundResult => daihugoRoundResults.Last();
     private DaihugoGameRule.DaihugoState defaultState = DaihugoGameRule.DaihugoState.None;
     private DaihugoGameRule.DaihugoState beforeState;
     private DaihugoGameRule.DaihugoState currentState;
@@ -35,7 +35,7 @@ public class Daihugo : IDaihugoObservable
     public Daihugo(bool isDebug = false)
     {
         IsDebug = isDebug;
-        daihugoSetResults = new List<DaihugoSetResult>();
+        daihugoRoundResults = new List<DaihugoRoundResult>();
     }
     private int GetRandomPlayerIndex()
     {
@@ -45,18 +45,23 @@ public class Daihugo : IDaihugoObservable
 
     private int GetNextPlayerId()
     {
+
+        Debug.Log("GetNextPlayerId:" + GamePlayers.All(p => p.IsPlay));
         if (GamePlayers.All(p => p.IsPlay))
         {
             return currentPlayerIndex + 1 >= GamePlayers.Count ? 0 : currentPlayerIndex + 1;
         }
         else
         {
-            // まだプレイしていない人がいる → 次の未プレイのプレイヤーを探す
+            // 
             for (int i = 1; i <= GamePlayers.Count; i++)
             {
                 int nextIndex = (currentPlayerIndex + i) % GamePlayers.Count;
-                if (!GamePlayers[nextIndex].IsPlay)
+                Debug.Log($"({currentPlayerIndex} + {i}) % {GamePlayers.Count}:" + (currentPlayerIndex + i) % GamePlayers.Count);
+                Debug.Log($"GamePlayers[{nextIndex}].IsPlay:" + GamePlayers[nextIndex].IsPlay);
+                if (GamePlayers[nextIndex].IsPlay)
                 {
+                    Debug.Log("GetNextPlayerId nextIndex:" + nextIndex);
                     return nextIndex;
                 }
             }
@@ -75,7 +80,7 @@ public class Daihugo : IDaihugoObservable
             observers.Add(observer);
         return new Unsubscriber(observers, observer);
     }
-    public void SetStart()
+    public void RoundStart()
     {
         fieldCards = new List<List<TrumpCard>>();
         cemeteryCards = new List<TrumpCard>();
@@ -97,10 +102,10 @@ public class Daihugo : IDaihugoObservable
         };
         PassCount = 0;
         ChangeNextPlayerTurn(lastPlayCardPlayerId);
-        SendStartSet();
+        SendStartRound();
 
-        var resultData = new DaihugoSetResult();
-        daihugoSetResults.Add(resultData);
+        var resultData = new DaihugoRoundResult();
+        daihugoRoundResults.Add(resultData);
     }
 
     private List<TrumpCard> CreateDeck(bool isDebug = false)
@@ -153,14 +158,14 @@ public class Daihugo : IDaihugoObservable
         }
     }
 
-    public void StartRound()
+    public void StageStart()
     {
         currentRoundCardEffects = new List<DaihugoGameRule.Effect>
         {
             DaihugoGameRule.Effect.None
         };
         ChangeNextPlayerTurn(lastPlayCardPlayerId);
-        SendStartRound();
+        SendStartStage();
     }
     public void PlayFieldCards(List<TrumpCard> playCards)
     {
@@ -186,7 +191,7 @@ public class Daihugo : IDaihugoObservable
 
         if (PassCount == GamePlayMemberCount - 1)
         {
-            EndRound();
+            StageEnd();
         }
         else
         {
@@ -218,8 +223,6 @@ public class Daihugo : IDaihugoObservable
             currentRoundCardEffects.Add(DaihugoGameRule.Effect.Counter_Spade_3);
             SendCardEffect();
         }
-
-
     }
 
     private void Kakumei()
@@ -228,18 +231,23 @@ public class Daihugo : IDaihugoObservable
         SendKakumei();
     }
 
-    /// playerのそのセット終了検知処理
-    public void EndSetPlayer(int playerId, List<TrumpCard> lastPlayCards)
+    ///プレイヤーが上がった場合の処理
+    public void EndRoundPlayer(int playerId, List<TrumpCard> lastPlayCards)
     {
+        var endPlayerIndex = GetPlayerIndex(playerId);
         //通常通りに終わっていれば大富豪から順にランクつける
         //反則上がりの場合は大貧民からランクつける
-        gamePlayers[GetPlayerIndex(playerId)].RefreshIsPlay(false);
-        gamePlayers[GetPlayerIndex(playerId)].RefreshIsMyturn(false);
+        gamePlayers[endPlayerIndex].RefreshIsPlay(false);
+        gamePlayers[endPlayerIndex].RefreshIsMyturn(false);
+
         var endPlayer = new GamePlayer(playerId);
-        GetCurrentSetResult.AddSetEndPlayer(endPlayer, IsForbiddenWin(lastPlayCards));
-        if (GetCurrentSetResult.ResultPlayersCount == GamePlayMemberCount - 1)
+        GetCurrentRoundResult.AddRoundEndPlayer(endPlayer, IsForbiddenWin(lastPlayCards));
+
+        gamePlayers[endPlayerIndex].RefreshRank(GetCurrentRoundResult.GetPlayerIdRank(endPlayerIndex));
+        SendToGoOut(endPlayerIndex);
+        if (GetCurrentRoundResult.ResultPlayersCount == GamePlayMemberCount - 1)
         {
-            EndSet();
+            RoundEnd();
         }
     }
     //反則上がりしてないかのチェック処理
@@ -293,13 +301,13 @@ public class Daihugo : IDaihugoObservable
         cemeteryCards = cards;
     }
 
-    private void EndRound()
+    private void StageEnd()
     {
         EndCardEffect();
         RefreshCemeteryCards(fieldCards.SelectMany(v => v).ToList());
         fieldCards = new List<List<TrumpCard>>();
         ChangeNextPlayerTurn(LastPlayCardPlayerId);
-        SendEndRound();
+        SendEndStage();
     }
 
     private void EndCardEffect()
@@ -311,17 +319,9 @@ public class Daihugo : IDaihugoObservable
         }
     }
 
-    private void EndSet()
+    private void RoundEnd()
     {
-        SendEndSet();
-    }
-
-    public void SendStartSet()
-    {
-        foreach (var observer in observers)
-        {
-            observer.OnStartSet();
-        }
+        SendEndRound();
     }
 
     public void SendStartRound()
@@ -329,6 +329,14 @@ public class Daihugo : IDaihugoObservable
         foreach (var observer in observers)
         {
             observer.OnStartRound();
+        }
+    }
+
+    public void SendStartStage()
+    {
+        foreach (var observer in observers)
+        {
+            observer.OnStartStage();
         }
     }
     public void SendPlayerChange()
@@ -362,11 +370,19 @@ public class Daihugo : IDaihugoObservable
         }
     }
 
-    public void SendToGoOut()
+    public void SendToGoOut(int playerIndex)
     {
         foreach (var observer in observers)
         {
-            observer.OnToGoOut();
+            observer.OnToGoOut(playerIndex);
+        }
+    }
+
+    public void SendEndStage()
+    {
+        foreach (var observer in observers)
+        {
+            observer.OnEndStage();
         }
     }
 
@@ -375,14 +391,6 @@ public class Daihugo : IDaihugoObservable
         foreach (var observer in observers)
         {
             observer.OnEndRound();
-        }
-    }
-
-    public void SendEndSet()
-    {
-        foreach (var observer in observers)
-        {
-            observer.OnEndSet();
         }
     }
 }

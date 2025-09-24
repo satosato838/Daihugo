@@ -21,7 +21,7 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
         _daihugoInstance = new Daihugo(isDebug: _isDebug);
         thisDisposable = _daihugoInstance.Subscribe(this);
 
-        _daihugoInstance.SetStart();
+        _daihugoInstance.RoundStart();
     }
 
     private void PlayHands(List<TrumpCard> trumpCards)
@@ -35,7 +35,7 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
     }
     private void EndSet(int playerId, List<TrumpCard> lastPlayCards)
     {
-        _daihugoInstance.EndSetPlayer(playerId, lastPlayCards);
+        _daihugoInstance.EndRoundPlayer(playerId, lastPlayCards);
     }
 
     private void RefreshPlayersState()
@@ -45,13 +45,13 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
             _playerObjects[i].RefreshGamePlayerState(_daihugoInstance.GamePlayers[i].IsMyTurn, _daihugoInstance.LastFieldCardPair);
         }
     }
-    private void RefreshPlayerRank()
+    private void RefreshPlayerRank(int goOutPlayerIndex)
     {
-        var currentPlayer = _playerObjects[_daihugoInstance.CurrentPlayerIndex];
-        currentPlayer.SetPlayerRank(_daihugoInstance.GamePlayers[_daihugoInstance.CurrentPlayerIndex].PlayerRank);
+        var currentPlayer = _playerObjects[goOutPlayerIndex];
+        currentPlayer.SetPlayerRank(_daihugoInstance.GamePlayers[goOutPlayerIndex].PlayerRank);
     }
 
-    public void OnStartSet()
+    public void OnStartRound()
     {
         for (var i = 0; i < _daihugoInstance.GamePlayers.Count; i++)
         {
@@ -67,6 +67,7 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
         }
         _fieldController.Init();
         _cemeteryController.Init();
+        Debug.Log("OnStartRound :" + _daihugoInstance.CurrentPlayerId);
         RefreshPlayersState();
         _bg.sprite = _daihugoInstance.GetCurrentState == DaihugoGameRule.DaihugoState.None ? _nomalImage : _kakumeiImage;
         _effectCutInController.Play("1Round", 0.5f);
@@ -74,11 +75,12 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
 
     private void CemeteryAnimationEnd()
     {
-        _daihugoInstance.StartRound();
+        _daihugoInstance.StageStart();
     }
-    public void OnStartRound()
+    public void OnStartStage()
     {
         _fieldController.Init();
+        Debug.Log("OnStartStage :" + _daihugoInstance.CurrentPlayerId);
         RefreshPlayersState();
     }
     public void OnChangePlayerTurn(GamePlayer gamePlayer)
@@ -96,7 +98,7 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
         _bg.sprite = state == DaihugoGameRule.DaihugoState.None ? _nomalImage : _kakumeiImage;
     }
 
-    public void OnEndRound()
+    public void OnEndStage()
     {
         _cemeteryController.RefreshCards(_daihugoInstance.CemeteryCards);
         //todo cemeteryAnimation
@@ -113,13 +115,13 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
         _effectCutInController.Play(state == DaihugoGameRule.DaihugoState.None ? "Counter Revolution" : DaihugoGameRule.DaihugoState.Revolution.ToString());
     }
 
-    public void OnToGoOut()
+    public void OnToGoOut(int goOutPlayerIndex)
     {
-        Debug.Log("OnToGoOut:");
-        RefreshPlayerRank();
+        Debug.Log("OnToGoOut:" + goOutPlayerIndex);
+        RefreshPlayerRank(goOutPlayerIndex);
     }
 
-    public void OnEndSet()
+    public void OnEndRound()
     {
         Debug.Log("OnEndSet");
     }

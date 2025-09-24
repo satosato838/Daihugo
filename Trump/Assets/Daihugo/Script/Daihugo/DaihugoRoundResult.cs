@@ -1,20 +1,32 @@
 
 using System.Collections.Generic;
+using System.Linq;
 
-public class DaihugoSetResult
+public class DaihugoRoundResult
 {
     private List<GamePlayer> ResultPlayers;
     public int ResultPlayersCount => ResultPlayers.Count;
 
-    public DaihugoSetResult()
+    public DaihugoRoundResult()
     {
         ResultPlayers = new List<GamePlayer>();
     }
 
-    public void AddSetEndPlayer(GamePlayer gamePlayer, bool IsForbiddenWin)
+    public void AddRoundEndPlayer(GamePlayer gamePlayer, bool IsForbiddenWin)
     {
         gamePlayer.RefreshRank(IsForbiddenWin ? GetNextPlayersByDescendingRank() : GetNextPlayersByAscendingRank());
         ResultPlayers.Add(gamePlayer);
+    }
+    public DaihugoGameRule.GameRank GetPlayerIdRank(int playerId)
+    {
+        if (ResultPlayers.Any(p => p.PlayerId == playerId))
+        {
+            return ResultPlayers.Find(p => p.PlayerId == playerId).PlayerRank;
+        }
+        else
+        {
+            throw new System.Exception("not found player");
+        }
     }
     public DaihugoGameRule.GameRank GetNextPlayersByAscendingRank()
     {

@@ -68,7 +68,7 @@ public class PlayerObject : MonoBehaviour
     public void RefreshGamePlayerState(bool isMyTurn, List<TrumpCard> fieldLastCards)
     {
         _gamePlayer.RefreshIsMyturn(isMyTurn);
-        //Debug.Log(isMyTurn + ":IsMyTurn: RefreshGamePlayerState GamePlayerId:" + _gamePlayer.PlayerId);
+        Debug.Log($"PlayerObject:IsMyTurn{IsMyTurn}: RefreshGamePlayerState GamePlayerId:{_gamePlayer.PlayerId}");
         if (IsMyTurn)
         {
             foreach (var item in fieldLastCards) Debug.Log("fieldLastCards:" + item.CardName);
