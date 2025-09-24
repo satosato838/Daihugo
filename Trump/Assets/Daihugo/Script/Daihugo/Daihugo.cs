@@ -261,7 +261,7 @@ public class Daihugo : IDaihugoObservable
         DealLastCard(GetRandomPlayerIndex());
         var resultData = new DaihugoRoundResult();
         daihugoRoundResults.Add(resultData);
-
+        //1Round目ゲームプレイヤーの先頭を親にする
         lastPlayCardPlayerId = GamePlayers.First().PlayerId;
         currentState = GamePlayers.First().GameState;
         SendStartRound();
@@ -289,15 +289,13 @@ public class Daihugo : IDaihugoObservable
         {
             p.RefreshIsMyturn(false);
         }
-        if (gamePlayers[currentPlayerIndex].IsPlay)
+        //もしこのラウンド開始するはずだったプレイヤーが上がってたら
+        //リストの先頭にいたまだ試合中の人を親にする
+        if (!gamePlayers[currentPlayerIndex].IsPlay)
         {
-            gamePlayers[currentPlayerIndex].RefreshIsMyturn(true);
+            currentPlayerIndex = GetPlayerIndex(gamePlayers.First(p => p.IsPlay).PlayerId);
         }
-        else
-        {
-            var playerId = gamePlayers.First(p => p.IsPlay).PlayerId;
-            currentPlayerIndex = GetPlayerIndex(playerId);
-        }
+        gamePlayers[currentPlayerIndex].RefreshIsMyturn(true);
         //Debug.Log($"ChangeNextPlayerTurn nextPlayerIndex {nextPlayerIndex} currentPlayerIndex{currentPlayerIndex}");
     }
 
@@ -315,6 +313,7 @@ public class Daihugo : IDaihugoObservable
 
         gamePlayers[endPlayerIndex].RefreshRank(GetCurrentRoundResult.GetPlayerIdRank(endPlayerIndex));
         SendToGoOut(endPlayerIndex);
+        Debug.Log("EndRoundPlayer");
         if (GetCurrentRoundResult.ResultPlayersCount == GamePlayingMemberCount - 1)
         {
             RoundEnd();
