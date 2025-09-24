@@ -57,8 +57,8 @@ public class Daihugo : IDaihugoObservable
             for (int i = 1; i <= GamePlayers.Count; i++)
             {
                 int nextIndex = (currentPlayerIndex + i) % GamePlayers.Count;
-                Debug.Log($"({currentPlayerIndex} + {i}) % {GamePlayers.Count}:" + (currentPlayerIndex + i) % GamePlayers.Count);
-                Debug.Log($"GamePlayers[{nextIndex}].IsPlay:" + GamePlayers[nextIndex].IsPlay);
+                Debug.Log($"GetNextPlayerId ({currentPlayerIndex} + {i}) % {GamePlayers.Count}:" + (currentPlayerIndex + i) % GamePlayers.Count);
+                Debug.Log($"GetNextPlayerId GamePlayers[{nextIndex}].IsPlay:" + GamePlayers[nextIndex].IsPlay);
                 if (GamePlayers[nextIndex].IsPlay)
                 {
                     Debug.Log("GetNextPlayerId nextIndex:" + nextIndex);
@@ -167,7 +167,7 @@ public class Daihugo : IDaihugoObservable
         ChangeNextPlayerTurn(lastPlayCardPlayerId);
         SendStartStage();
     }
-    public void PlayFieldCards(List<TrumpCard> playCards)
+    public void PlayHands(List<TrumpCard> playCards)
     {
 
         if (playCards.Count() == 0)

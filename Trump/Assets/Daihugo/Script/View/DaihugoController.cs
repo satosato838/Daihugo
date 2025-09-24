@@ -26,14 +26,14 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
 
     private void PlayHands(List<TrumpCard> trumpCards)
     {
-        _daihugoInstance.PlayFieldCards(trumpCards);
+        _daihugoInstance.PlayHands(trumpCards);
         // foreach (var item in Daihugo.FieldCardPairs)
         // {
         //     Debug.Log("Number:" + item.Number + ": Suit" + item.Suit);
         // }
         _fieldController.RefreshCards(_daihugoInstance.LastFieldCardPair);
     }
-    private void EndSet(int playerId, List<TrumpCard> lastPlayCards)
+    private void EndRoundPlayer(int playerId, List<TrumpCard> lastPlayCards)
     {
         _daihugoInstance.EndRoundPlayer(playerId, lastPlayCards);
     }
@@ -61,7 +61,7 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
             },
             (id, v) =>
             {
-                EndSet(id, v);
+                EndRoundPlayer(id, v);
             }
             );
         }

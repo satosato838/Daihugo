@@ -1,9 +1,9 @@
+using TMPro;
 using System;
 using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
 
 public class PlayerObject : MonoBehaviour
 {
@@ -25,7 +25,7 @@ public class PlayerObject : MonoBehaviour
     public bool IsMyTurn => _gamePlayer.IsMyTurn;
 
     Action<List<TrumpCard>> playCardAction;
-    Action<int, List<TrumpCard>> setEndAction;
+    Action<int, List<TrumpCard>> roundEndAction;
     void Start()
     {
         if (_playBtn != null)
@@ -45,13 +45,13 @@ public class PlayerObject : MonoBehaviour
     }
     public void Init(GamePlayer gamePlayer, Action<List<TrumpCard>> playCardCallback, Action<int, List<TrumpCard>> setEndCallback)
     {
-        _gamePlayer = gamePlayer;
+        _gamePlayer = new GamePlayer(gamePlayer.PlayerId, gamePlayer.HandCards, gamePlayer.PlayerRank, gamePlayer.GameState);
         _txt_playerName.text = "GamePlayer_" + _gamePlayer.PlayerId.ToString();
         _txt_playerRank.text = "";
         SetInteractablePlayBtn(false);
         RefreshCards();
         playCardAction = playCardCallback;
-        setEndAction = setEndCallback;
+        roundEndAction = setEndCallback;
         RefreshBGColor();
     }
     public void SetPlayerRank(DaihugoGameRule.GameRank rank)
@@ -68,7 +68,7 @@ public class PlayerObject : MonoBehaviour
     public void RefreshGamePlayerState(bool isMyTurn, List<TrumpCard> fieldLastCards)
     {
         _gamePlayer.RefreshIsMyturn(isMyTurn);
-        Debug.Log($"PlayerObject:IsMyTurn{IsMyTurn}: RefreshGamePlayerState GamePlayerId:{_gamePlayer.PlayerId}");
+        Debug.Log($"PlayerObject RefreshGamePlayerState IsMyTurn:{IsMyTurn}: GamePlayerId:{_gamePlayer.PlayerId}");
         if (IsMyTurn)
         {
             foreach (var item in fieldLastCards) Debug.Log("fieldLastCards:" + item.CardName);
@@ -160,7 +160,7 @@ public class PlayerObject : MonoBehaviour
         {
             if (v == 0)
             {
-                setEndAction?.Invoke(_gamePlayer.PlayerId, SelectCards);
+                roundEndAction?.Invoke(_gamePlayer.PlayerId, SelectCards);
             }
         });
         RefreshCards();
