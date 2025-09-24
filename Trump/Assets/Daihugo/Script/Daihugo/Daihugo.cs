@@ -81,7 +81,6 @@ public class Daihugo : IDaihugoObservable
         cemeteryCards = new List<TrumpCard>();
 
         DeckCards = CreateDeck(isDebug: IsDebug);
-
         gamePlayers = new List<GamePlayer>();
         for (var i = 0; i < GamePlayMemberCount; i++)
         {
@@ -112,7 +111,7 @@ public class Daihugo : IDaihugoObservable
 
         foreach (var type in DaihugoGameRule.SuitTypes)
         {
-            for (var i = 1; i < numbers.Length; i++)
+            for (var i = 0; i < numbers.Length; i++)
             {
                 if (numbers[i] == DaihugoGameRule.Number.Joker) break;
                 result.Add(new TrumpCard(type, new CardNumber(numbers[i])));
