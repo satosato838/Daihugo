@@ -51,7 +51,7 @@ public class PlayerObject : MonoBehaviour
     {
         _gamePlayer = new GamePlayer(gamePlayer.PlayerId, gamePlayer.HandCards, gamePlayer.PlayerRank, gamePlayer.GameState);
         _txt_playerName.text = "GamePlayer_" + _gamePlayer.PlayerId.ToString();
-        _txt_playerRank.text = "";
+        SetPlayerRank(_gamePlayer.PlayerRank);
         SetInteractablePlayBtn(false);
         RefreshCards();
         playCardAction = playCardCallback;
@@ -60,7 +60,7 @@ public class PlayerObject : MonoBehaviour
     }
     public void SetPlayerRank(DaihugoGameRule.GameRank rank)
     {
-        _txt_playerRank.text = "Rank:" + rank.ToString();
+        _txt_playerRank.text = rank == DaihugoGameRule.GameRank.Heimin ? "" : "Rank:" + rank.ToString();
     }
 
 
@@ -72,7 +72,7 @@ public class PlayerObject : MonoBehaviour
     public void RefreshGamePlayerState(bool isMyTurn, List<TrumpCard> fieldLastCards)
     {
         _gamePlayer.RefreshIsMyturn(isMyTurn);
-        //Debug.Log($"PlayerObject RefreshGamePlayerState IsMyTurn:{IsMyTurn}: GamePlayerId:{_gamePlayer.PlayerId}");
+        Debug.Log($"PlayerObject RefreshGamePlayerState IsMyTurn:{IsMyTurn}: GamePlayerId:{_gamePlayer.PlayerId}");
         if (IsMyTurn)
         {
             //foreach (var item in fieldLastCards) Debug.Log("fieldLastCards:" + item.CardName);

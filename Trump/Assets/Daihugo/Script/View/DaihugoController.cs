@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -45,9 +46,9 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
 
     private void RefreshPlayersState()
     {
-        for (var i = 0; i < _daihugoInstance.GamePlayers.Count; i++)
+        for (var i = 0; i < _playerObjects.Length; i++)
         {
-            _playerObjects[i].RefreshGamePlayerState(_daihugoInstance.GamePlayers[i].IsMyTurn, _daihugoInstance.LastFieldCardPair);
+            _playerObjects[i].RefreshGamePlayerState(_daihugoInstance.GamePlayers.First(p => p.PlayerId == i).IsMyTurn, _daihugoInstance.LastFieldCardPair);
         }
     }
     private void RefreshPlayerRank(int goOutPlayerIndex)
@@ -61,7 +62,7 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
         Debug.Log("<color=cyan>" + "OnStartRound CurrentPlayerId:" + _daihugoInstance.CurrentPlayerId + "</color>");
         for (var i = 0; i < _daihugoInstance.GamePlayers.Count; i++)
         {
-            _playerObjects[i].Init(_daihugoInstance.GamePlayers[i], v =>
+            _playerObjects[i].Init(_daihugoInstance.GamePlayers.First(p => p.PlayerId == i), v =>
             {
                 PlayHands(v);
             },

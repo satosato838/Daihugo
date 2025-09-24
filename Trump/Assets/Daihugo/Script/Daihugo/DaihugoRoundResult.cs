@@ -1,4 +1,5 @@
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -16,6 +17,11 @@ public class DaihugoRoundResult
     {
         gamePlayer.RefreshRank(IsForbiddenWin ? GetNextPlayersByDescendingRank() : GetNextPlayersByAscendingRank());
         ResultPlayers.Add(gamePlayer);
+    }
+
+    public void DebugShufflePlayers()
+    {
+        ResultPlayers = ResultPlayers.OrderBy(a => Guid.NewGuid()).ToList();
     }
     public DaihugoGameRule.GameRank GetPlayerIdRank(int playerId)
     {
@@ -37,5 +43,10 @@ public class DaihugoRoundResult
     {
         var ranks = new DaihugoGameRule.GameRank[] { DaihugoGameRule.GameRank.DaiHinmin, DaihugoGameRule.GameRank.Hinmin, DaihugoGameRule.GameRank.Hugo, DaihugoGameRule.GameRank.DaiHugo };
         return ranks[ResultPlayers.Count];
+    }
+
+    public List<GamePlayer> GetNextGamePlayers()
+    {
+        return ResultPlayers.OrderByDescending(p => p.PlayerRank).ToList();
     }
 }
