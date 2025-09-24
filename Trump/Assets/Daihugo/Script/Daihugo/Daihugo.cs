@@ -89,7 +89,7 @@ public class Daihugo : IDaihugoObservable
         }
 
         //ランダムなプレイヤーに余ったカードを配る
-        if (!IsDebug) DealLastCard(GetRandomPlayerIndex());
+        DealLastCard(GetRandomPlayerIndex());
         lastPlayCardPlayerId = GamePlayers.First().PlayerId;
         currentState = GamePlayers.First().GameState;
         currentRoundCardEffects = new List<DaihugoGameRule.Effect>
@@ -114,10 +114,11 @@ public class Daihugo : IDaihugoObservable
         {
             for (var i = 1; i < numbers.Length; i++)
             {
+                if (numbers[i] == DaihugoGameRule.Number.Joker) break;
                 result.Add(new TrumpCard(type, new CardNumber(numbers[i])));
             }
         }
-        if (!isDebug) result.Add(new TrumpCard(DaihugoGameRule.SuitType.Joker, new CardNumber(DaihugoGameRule.Number.Joker)));
+        result.Add(new TrumpCard(DaihugoGameRule.SuitType.Joker, new CardNumber(DaihugoGameRule.Number.Joker)));
         return result.OrderBy(a => Guid.NewGuid()).ToList();
     }
 
@@ -125,7 +126,6 @@ public class Daihugo : IDaihugoObservable
     {
         var result = new List<TrumpCard>();
         var handCardCount = isDebug ? 3 : DaihugoGameRule.Numbers.Length;
-        Debug.Log("DeckCards.Count:" + handCardCount);
         for (var j = 0; j < handCardCount - 1; j++)
         {
             try
@@ -144,11 +144,14 @@ public class Daihugo : IDaihugoObservable
 
     private void DealLastCard(int index)
     {
-        var hand = gamePlayers[index].HandCards;
-        var card = DeckCards.Last();
-        hand.Add(card);
-        DeckCards.Remove(card);
-        gamePlayers[index].DealCard(hand);
+        if (DeckCards.Count > 1)
+        {
+            var hand = gamePlayers[index].HandCards;
+            var card = DeckCards.Last();
+            hand.Add(card);
+            DeckCards.Remove(card);
+            gamePlayers[index].DealCard(hand);
+        }
     }
 
     public void StartRound()
@@ -357,6 +360,14 @@ public class Daihugo : IDaihugoObservable
         foreach (var observer in observers)
         {
             observer.OnDaihugoStateEffect(currentState);
+        }
+    }
+
+    public void SendToGoOut()
+    {
+        foreach (var observer in observers)
+        {
+            observer.OnToGoOut();
         }
     }
 

@@ -45,6 +45,11 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
             _playerObjects[i].RefreshGamePlayerState(_daihugoInstance.GamePlayers[i].IsMyTurn, _daihugoInstance.LastFieldCardPair);
         }
     }
+    private void RefreshPlayerRank()
+    {
+        var currentPlayer = _playerObjects[_daihugoInstance.CurrentPlayerIndex];
+        currentPlayer.SetPlayerRank(_daihugoInstance.GamePlayers[_daihugoInstance.CurrentPlayerIndex].PlayerRank);
+    }
 
     public void OnStartSet()
     {
@@ -106,17 +111,18 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
     {
         Debug.Log("OnDaihugoStateEffect:" + state);
         _effectCutInController.Play(state == DaihugoGameRule.DaihugoState.None ? "Counter Revolution" : DaihugoGameRule.DaihugoState.Revolution.ToString());
-
     }
 
+    public void OnToGoOut()
+    {
+        Debug.Log("OnToGoOut:");
+        RefreshPlayerRank();
+    }
 
     public void OnEndSet()
     {
         Debug.Log("OnEndSet");
     }
-
-
-
     private void OnDestroy()
     {
         thisDisposable.Dispose();

@@ -34,6 +34,7 @@ public class TrumpCardObject : MonoBehaviour
     public void ShowFrontCardImage()
     {
         StartCoroutine(LoadImage(TrumpCardData.CardName + ".png"));
+
         RefreshCardImagePos();
         RefreshButtonInteractable(TrumpCardData.IsSelectable);
     }

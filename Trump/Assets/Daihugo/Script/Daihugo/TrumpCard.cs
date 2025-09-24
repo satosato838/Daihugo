@@ -1,3 +1,4 @@
+
 public class TrumpCard
 {
     private DaihugoGameRule.SuitType suitType;
@@ -13,7 +14,7 @@ public class TrumpCard
         suitType = suit;
         RefreshIsSelectable(true);
         cardNumber = number;
-        if (suitType == DaihugoGameRule.SuitType.Joker)
+        if (suitType == DaihugoGameRule.SuitType.Joker && number.Number == DaihugoGameRule.Number.Joker)
         {
             CardName = "Joker";
         }
@@ -28,6 +29,7 @@ public class TrumpCard
                 _ => throw new System.Exception("Not found Suit Type")
             } + number.NumberName();
         }
+        //UnityEngine.Debug.Log($"CardName:" + CardName);
 
         if (suit == DaihugoGameRule.SuitType.Spade && cardNumber.Number == DaihugoGameRule.Number.Three)
         {

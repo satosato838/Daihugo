@@ -149,6 +149,7 @@ public class CardNumber
             DaihugoGameRule.Number.Jack => "11",
             DaihugoGameRule.Number.Queen => "12",
             DaihugoGameRule.Number.King => "13",
+            DaihugoGameRule.Number.Joker => "",
             _ => throw new Exception("Not found Number Name")
         };
     }

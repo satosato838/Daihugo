@@ -8,7 +8,8 @@ using TMPro;
 public class PlayerObject : MonoBehaviour
 {
     [SerializeField] private Image _bg;
-    [SerializeField] private TextMeshProUGUI _playerName;
+    [SerializeField] private TextMeshProUGUI _txt_playerName;
+    [SerializeField] private TextMeshProUGUI _txt_playerRank;
     [SerializeField] private Color _activeColor = new Color(0.5f, 0.5f, 0, 0.5f);
     [SerializeField] private Color _disActiveColor = new Color(0, 0, 0, 0.5f);
     [SerializeField] private TrumpCardObject trumpCardObject;
@@ -45,13 +46,19 @@ public class PlayerObject : MonoBehaviour
     public void Init(GamePlayer gamePlayer, Action<List<TrumpCard>> playCardCallback, Action<int, List<TrumpCard>> setEndCallback)
     {
         _gamePlayer = gamePlayer;
-        _playerName.text = "GamePlayer_" + _gamePlayer.PlayerId.ToString();
+        _txt_playerName.text = "GamePlayer_" + _gamePlayer.PlayerId.ToString();
+        _txt_playerRank.text = "";
         SetInteractablePlayBtn(false);
         RefreshCards();
         playCardAction = playCardCallback;
         setEndAction = setEndCallback;
         RefreshBGColor();
     }
+    public void SetPlayerRank(DaihugoGameRule.GameRank rank)
+    {
+        _txt_playerRank.text = "Rank:" + rank.ToString();
+    }
+
 
     public void Kakumei(DaihugoGameRule.DaihugoState state)
     {
