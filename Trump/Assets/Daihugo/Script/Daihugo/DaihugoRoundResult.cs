@@ -19,9 +19,16 @@ public class DaihugoRoundResult
         ResultPlayers.Add(gamePlayer);
     }
 
-    public void DebugShufflePlayers()
+    public void CreateDebugData()
     {
-        ResultPlayers = ResultPlayers.OrderBy(a => Guid.NewGuid()).ToList();
+        var ids = new int[] { 0, 1, 2, 3 };
+        var ranks = new DaihugoGameRule.GameRank[] { DaihugoGameRule.GameRank.DaiHugo, DaihugoGameRule.GameRank.Hugo, DaihugoGameRule.GameRank.Hinmin, DaihugoGameRule.GameRank.DaiHinmin };
+        ids = ids.OrderBy(a => Guid.NewGuid()).ToArray();
+        ranks = ranks.OrderBy(a => Guid.NewGuid()).ToArray();
+        for (var i = 0; i < 4; i++)
+        {
+            AddRoundEndPlayer(new GamePlayer(ids[i], new List<TrumpCard>(), ranks[i], DaihugoGameRule.DaihugoState.None), false);
+        }
     }
     public DaihugoGameRule.GameRank GetPlayerIdRank(int playerId)
     {

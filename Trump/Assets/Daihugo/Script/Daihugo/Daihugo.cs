@@ -41,11 +41,7 @@ public class Daihugo : IDaihugoObservable
         var resultData = new DaihugoRoundResult();
         if (IsDebug)
         {
-            resultData.AddRoundEndPlayer(new GamePlayer(0, new List<TrumpCard>(), DaihugoGameRule.GameRank.DaiHugo, DaihugoGameRule.DaihugoState.None), false);
-            resultData.AddRoundEndPlayer(new GamePlayer(1, new List<TrumpCard>(), DaihugoGameRule.GameRank.Hugo, DaihugoGameRule.DaihugoState.None), false);
-            resultData.AddRoundEndPlayer(new GamePlayer(2, new List<TrumpCard>(), DaihugoGameRule.GameRank.Hinmin, DaihugoGameRule.DaihugoState.None), false);
-            resultData.AddRoundEndPlayer(new GamePlayer(3, new List<TrumpCard>(), DaihugoGameRule.GameRank.DaiHinmin, DaihugoGameRule.DaihugoState.None), false);
-            resultData.DebugShufflePlayers();
+            resultData.CreateDebugData();
             daihugoRoundResults.Add(resultData);
         }
 
