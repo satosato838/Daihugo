@@ -2,6 +2,7 @@ using TMPro;
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
+using System;
 
 public class EffectCutInController : MonoBehaviour
 {
@@ -42,7 +43,7 @@ public class EffectCutInController : MonoBehaviour
     //         });
     //     });
     // }
-    public void Play(string effectName, float delayTime = 0.0f)
+    public void Play(string effectName, float delayTime = 0.0f, Action callback = null)
     {
         _text.transform.localScale = Vector3.one;
         _text.text = effectName;
@@ -60,7 +61,11 @@ public class EffectCutInController : MonoBehaviour
             DOTween.To(() => val, v => val = v, 0, 0.3f)
                 .OnUpdate(() => BaseImageAnimation(val))
         )
-        .OnComplete(() => Reset());
+        .OnComplete(() =>
+        {
+            Reset();
+            callback?.Invoke();
+        });
     }
 
     private void BaseImageAnimation(float y)

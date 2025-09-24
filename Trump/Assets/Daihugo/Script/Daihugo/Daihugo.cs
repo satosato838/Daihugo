@@ -8,6 +8,7 @@ using UnityEngine;
 public class Daihugo : IDaihugoObservable
 {
     private bool IsDebug;
+    private int EntryPlayerCount => GamePlayers.Count();
     private int GamePlayingMemberCount => GamePlayers.Count(p => p.IsPlay);
     private int StageStartGamePlayingMemberCount;
     private List<TrumpCard> DeckCards;
@@ -30,6 +31,7 @@ public class Daihugo : IDaihugoObservable
     private int currentPlayerIndex = 0;
     public int CurrentPlayerIndex => currentPlayerIndex;
     public int CurrentPlayerId => GamePlayers[currentPlayerIndex].PlayerId;
+    public int CurrentRoundIndex => daihugoRoundResults.Count;
     private int PassCount = 0;
     private int lastPlayCardPlayerId = 0;
     #region GetPlayerData
@@ -39,7 +41,7 @@ public class Daihugo : IDaihugoObservable
         return rnd.Next(1, GamePlayingMemberCount);
     }
 
-    private int GetNextPlayerId(string name)
+    private int GetNextPlayerId()
     {
         //Debug.Log(name + ":GetNextPlayerId:" + GamePlayers.All(p => p.IsPlay));
         if (GamePlayers.All(p => p.IsPlay))
@@ -147,15 +149,26 @@ public class Daihugo : IDaihugoObservable
         }
 
         ActivateCardEffect(playCards);
-        //今のステージ開始した人数時の参加中数-1のプレイヤーがパスしたら次のステージに遷移
-        //Debug.Log($"PassCount {PassCount} == StageStartMemberCount - 1 {StageStartGamePlayingMemberCount - 1}");
-        if (PassCount == StageStartGamePlayingMemberCount - 1)
+
+        Debug.Log($"GamePlayingMemberCount {GamePlayingMemberCount} PassCount {PassCount} == StageStartMemberCount - 1 {StageStartGamePlayingMemberCount - 1}");
+        if (GamePlayingMemberCount == 2)
+        {
+            if (PassCount >= 1)
+            {
+                StageEnd();
+            }
+            else
+            {
+                ChangeNextPlayerTurn(GetNextPlayerId());
+            }
+        }
+        else if (PassCount == StageStartGamePlayingMemberCount - 1)
         {
             StageEnd();
         }
         else
         {
-            ChangeNextPlayerTurn(GetNextPlayerId("PlayHands"));
+            ChangeNextPlayerTurn(GetNextPlayerId());
         }
         SendPlayerChange();
     }
@@ -265,8 +278,6 @@ public class Daihugo : IDaihugoObservable
         lastPlayCardPlayerId = GamePlayers.First().PlayerId;
         currentState = GamePlayers.First().GameState;
         SendStartRound();
-
-        StageStart();
     }
 
     public void StageStart()
@@ -313,8 +324,8 @@ public class Daihugo : IDaihugoObservable
 
         gamePlayers[endPlayerIndex].RefreshRank(GetCurrentRoundResult.GetPlayerIdRank(endPlayerIndex));
         SendToGoOut(endPlayerIndex);
-        Debug.Log("EndRoundPlayer");
-        if (GetCurrentRoundResult.ResultPlayersCount == GamePlayingMemberCount - 1)
+        //Debug.Log($"EndRoundPlayer ResultPlayersCount:{GetCurrentRoundResult.ResultPlayersCount} == EntryPlayerCount - 1:{EntryPlayerCount - 1}");
+        if (GetCurrentRoundResult.ResultPlayersCount == EntryPlayerCount - 1)
         {
             RoundEnd();
         }
@@ -327,7 +338,7 @@ public class Daihugo : IDaihugoObservable
         fieldCards = new List<List<TrumpCard>>();
         if (GamePlayers[GetPlayerIndex(lastPlayCardPlayerId)].IsPlay)
         {
-            lastPlayCardPlayerId = GetNextPlayerId("StageEnd");
+            lastPlayCardPlayerId = GetNextPlayerId();
         }
         else
         {

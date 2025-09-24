@@ -21,6 +21,11 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
         _daihugoInstance = new Daihugo(isDebug: _isDebug);
         thisDisposable = _daihugoInstance.Subscribe(this);
 
+        StartRound();
+    }
+
+    private void StartRound()
+    {
         _daihugoInstance.RoundStart(playerCount: 4);
     }
 
@@ -53,7 +58,7 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
 
     public void OnStartRound()
     {
-        Debug.Log("OnStartRound :" + _daihugoInstance.CurrentPlayerId);
+        Debug.Log("<color=cyan>" + "OnStartRound CurrentPlayerId:" + _daihugoInstance.CurrentPlayerId + "</color>");
         for (var i = 0; i < _daihugoInstance.GamePlayers.Count; i++)
         {
             _playerObjects[i].Init(_daihugoInstance.GamePlayers[i], v =>
@@ -70,7 +75,10 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
         _cemeteryController.Init();
         RefreshPlayersState();
         _bg.sprite = _daihugoInstance.GetCurrentState == DaihugoGameRule.DaihugoState.None ? _nomalImage : _kakumeiImage;
-        _effectCutInController.Play("1Round", 0.5f);
+        _effectCutInController.Play(_daihugoInstance.CurrentRoundIndex + "Round", 0.5f, () =>
+        {
+            _daihugoInstance.StageStart();
+        });
     }
 
     private void CemeteryAnimationEnd()
@@ -80,17 +88,17 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
     public void OnStartStage()
     {
         _fieldController.Init();
-        Debug.Log("OnStartStage :" + _daihugoInstance.CurrentPlayerId);
+        Debug.Log("<color=cyan>" + "OnStartStage CurrentPlayerId:" + _daihugoInstance.CurrentPlayerId + "</color>");
         RefreshPlayersState();
     }
     public void OnChangePlayerTurn(GamePlayer gamePlayer)
     {
-        Debug.Log("OnChangePlayerTurn gamePlayer:" + gamePlayer.PlayerId);
+        Debug.Log("<color=cyan>" + "OnChangePlayerTurn PlayerId:" + gamePlayer.PlayerId + "</color>");
         RefreshPlayersState();
     }
     public void OnKakumei(DaihugoGameRule.DaihugoState state)
     {
-        Debug.Log("OnKakumei:" + state);
+        Debug.Log("<color=cyan>" + "OnKakumei DaihugoState:" + state + "</color>");
         foreach (var item in _playerObjects)
         {
             item.Kakumei(state);
@@ -100,35 +108,39 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
 
     public void OnEndStage()
     {
+        Debug.Log("<color=cyan>" + "OnEndStage:" + "</color>");
         _cemeteryController.RefreshCards(_daihugoInstance.CemeteryCards);
         //todo cemeteryAnimation
         Invoke(nameof(CemeteryAnimationEnd), 2.0f);
     }
     public void OnCardEffect(DaihugoGameRule.Effect effect)
     {
-        Debug.Log("OnCardEffect:" + effect);
+        Debug.Log("<color=cyan>" + "OnCardEffect:" + effect + "</color>");
         _effectCutInController.Play(effect.ToString());
     }
     public void OnDaihugoStateEffect(DaihugoGameRule.DaihugoState state)
     {
-        Debug.Log("OnDaihugoStateEffect:" + state);
+        Debug.Log("<color=cyan>" + "OnDaihugoStateEffect:" + state + "</color>");
         _effectCutInController.Play(state == DaihugoGameRule.DaihugoState.None ? "Counter Revolution" : DaihugoGameRule.DaihugoState.Revolution.ToString());
     }
 
     public void OnToGoOut(int goOutPlayerIndex)
     {
-        Debug.Log("OnToGoOut:" + goOutPlayerIndex);
+        Debug.Log("<color=cyan>" + "OnToGoOut goOutPlayerIndex:" + goOutPlayerIndex + "</color>");
         RefreshPlayerRank(goOutPlayerIndex);
     }
 
     public void OnEndRound()
     {
-        Debug.Log("OnEndSet");
+        Debug.Log("<color=cyan>" + "OnEndRound" + "</color>");
+        _effectCutInController.Play("End Round", 0.5f, () =>
+        {
+            StartRound();
+        });
+
     }
     private void OnDestroy()
     {
         thisDisposable.Dispose();
     }
-
-
 }
