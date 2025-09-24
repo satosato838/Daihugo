@@ -21,7 +21,7 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
         _daihugoInstance = new Daihugo(isDebug: _isDebug);
         thisDisposable = _daihugoInstance.Subscribe(this);
 
-        _daihugoInstance.RoundStart();
+        _daihugoInstance.RoundStart(playerCount: 4);
     }
 
     private void PlayHands(List<TrumpCard> trumpCards)
@@ -53,6 +53,7 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
 
     public void OnStartRound()
     {
+        Debug.Log("OnStartRound :" + _daihugoInstance.CurrentPlayerId);
         for (var i = 0; i < _daihugoInstance.GamePlayers.Count; i++)
         {
             _playerObjects[i].Init(_daihugoInstance.GamePlayers[i], v =>
@@ -67,7 +68,6 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
         }
         _fieldController.Init();
         _cemeteryController.Init();
-        Debug.Log("OnStartRound :" + _daihugoInstance.CurrentPlayerId);
         RefreshPlayersState();
         _bg.sprite = _daihugoInstance.GetCurrentState == DaihugoGameRule.DaihugoState.None ? _nomalImage : _kakumeiImage;
         _effectCutInController.Play("1Round", 0.5f);

@@ -23,15 +23,17 @@ public class PlayerObject : MonoBehaviour
     private List<TrumpCard> SelectCards => _gamePlayer.CurrentSelectCards;
     private GamePlayer _gamePlayer;
     public bool IsMyTurn => _gamePlayer.IsMyTurn;
-
-    Action<List<TrumpCard>> playCardAction;
-    Action<int, List<TrumpCard>> roundEndAction;
+    private Action<List<TrumpCard>> playCardAction;
+    private Action<int, List<TrumpCard>> roundEndAction;
+    private float _lastClickTime;
     void Start()
     {
         if (_playBtn != null)
         {
             _playBtn.onClick.AddListener(() =>
             {
+                if (Time.time - _lastClickTime < 0.2f) return;
+                _lastClickTime = Time.time;
                 OnPlayButtonClick();
             });
         }
@@ -39,6 +41,8 @@ public class PlayerObject : MonoBehaviour
         {
             _passBtn.onClick.AddListener(() =>
             {
+                if (Time.time - _lastClickTime < 0.2f) return;
+                _lastClickTime = Time.time;
                 OnPassButtonClick();
             });
         }

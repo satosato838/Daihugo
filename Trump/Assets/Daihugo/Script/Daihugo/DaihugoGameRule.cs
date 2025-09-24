@@ -48,6 +48,8 @@ public static class DaihugoGameRule
         DaiHinmin,
     }
 
+    public static int KakumeiPlayCardCount => 4;
+
     public static SuitType[] SuitTypes => new SuitType[] { SuitType.Spade, SuitType.Diamond, SuitType.Clover, SuitType.Heart };
     public static Number[] Numbers => new Number[] {
         Number.Three,
