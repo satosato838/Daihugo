@@ -39,6 +39,14 @@ public static class DaihugoGameRule
         None,
         Revolution,
     }
+
+    public enum GameState
+    {
+        None,
+        GamePlay,
+        CardChange,
+        Result,
+    }
     public enum GameRank
     {
         Heimin = 0,
