@@ -70,7 +70,7 @@ public class Daihugo : IDaihugoObservable
 
     private int GetNextPlayerId()
     {
-        Debug.Log("GetNextPlayerId:" + GamePlayers.All(p => p.IsPlay));
+        Debug.Log("GetNextPlayerId GamePlayers.All(p => p.IsPlay):" + GamePlayers.All(p => p.IsPlay));
         if (GamePlayers.All(p => p.IsPlay))
         {
             return currentPlayerIndex + 1 >= GamePlayers.Count ? 0 : currentPlayerIndex + 1;
@@ -359,11 +359,7 @@ public class Daihugo : IDaihugoObservable
         EndCardEffect();
         RefreshCemeteryCards(fieldCards.SelectMany(v => v).ToList());
         fieldCards = new List<List<TrumpCard>>();
-        if (GamePlayers[GetPlayerIndex(lastPlayCardPlayerId)].IsPlay)
-        {
-            lastPlayCardPlayerId = GetNextPlayerId();
-        }
-        else
+        if (!GamePlayers[GetPlayerIndex(lastPlayCardPlayerId)].IsPlay)
         {
             lastPlayCardPlayerId = GamePlayers.First(p => p.IsPlay).PlayerId;
         }
