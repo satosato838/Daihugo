@@ -405,6 +405,8 @@ public class Daihugo : IDaihugoObservable
         //Debug.Log($"EndRoundPlayer ResultPlayersCount:{GetCurrentRoundResult.ResultPlayersCount} == EntryPlayerCount - 1:{EntryPlayerCount - 1}");
         if (GetCurrentRoundResult.ResultPlayersCount == EntryPlayerCount - 1)
         {
+            //最後まで残ったプレイヤーは反則上がり判定にして強制終了
+            GetCurrentRoundResult.AddRoundEndPlayer(gamePlayers.First(p => p.IsPlay), IsForbiddenWin: true);
             RoundEnd();
         }
     }
