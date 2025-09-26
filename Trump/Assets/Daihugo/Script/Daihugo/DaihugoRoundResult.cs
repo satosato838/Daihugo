@@ -27,7 +27,7 @@ public class DaihugoRoundResult
         ranks = ranks.OrderBy(a => Guid.NewGuid()).ToArray();
         for (var i = 0; i < 4; i++)
         {
-            AddRoundEndPlayer(new GamePlayer(ids[i], new List<TrumpCard>(), ranks[i], DaihugoGameRule.DaihugoState.None), false);
+            AddRoundEndPlayer(new GamePlayer(ids[i], new List<TrumpCard>(), ranks[i], DaihugoGameRule.DaihugoState.None, DaihugoGameRule.GameState.CardChange), false);
         }
     }
     public DaihugoGameRule.GameRank GetPlayerIdRank(int playerId)
