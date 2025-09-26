@@ -14,6 +14,7 @@ public class FieldController : MonoBehaviour
 
     public void RefreshCards(List<TrumpCard> playCards)
     {
+        //Debug.Log("FieldController RefreshCards playCardsCount:" + playCards.Count);
         trumpCardObjects = new List<TrumpCardObject>();
         foreach (Transform transform in _fieldPos.transform)
         {

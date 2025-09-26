@@ -1,8 +1,10 @@
 using System;
 using System.Linq;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+
 
 public class DaihugoController : MonoBehaviour, IDaihugoObserver
 {
@@ -74,7 +76,7 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
 
     public void OnStartRound(DaihugoGameRule.GameState state)
     {
-        Debug.Log($"<color=cyan> OnStartRound DaihugoGameRule.GameState {state}, CurrentPlayerId:{_daihugoInstance.CurrentPlayerId} </color>");
+        Debug.Log($"<color=red> OnStartRound DaihugoGameRule.GameState {state}, CurrentPlayerId:{_daihugoInstance.CurrentPlayerId} </color>");
         for (var i = 0; i < _daihugoInstance.EntryPlayerCount; i++)
         {
             _playerObjects[i].Init(_daihugoInstance.GamePlayers.First(p => p.PlayerId == i),
@@ -100,20 +102,25 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
             }
             else
             {
-                StageStart();
+                StartCoroutine(StageStart(0.0f));
             }
 
         });
     }
 
-    private void StageStart()
+    private IEnumerator StageStart(float delay)
     {
-        _daihugoInstance.StageStart();
+        Debug.Log($"<color=yellow> StageStart DaihugoGameRule.GameState {_daihugoInstance.GetGameCurrentState}</color>");
+        yield return new WaitForSeconds(delay);
+        if (_daihugoInstance.GetGameCurrentState == DaihugoGameRule.GameState.GamePlay)
+        {
+            _daihugoInstance.StageStart();
+        }
     }
     public void OnStartStage()
     {
         _fieldController.Init();
-        Debug.Log($"<color=cyan> OnStartStage DaihugoGameRule.GameState {_daihugoInstance.GetGameCurrentState}, CurrentPlayerId:{_daihugoInstance.CurrentPlayerId} </color>");
+        Debug.Log($"<color=yellow> OnStartStage DaihugoGameRule.GameState {_daihugoInstance.GetGameCurrentState}, CurrentPlayerId:{_daihugoInstance.CurrentPlayerId} </color>");
         RefreshPlayersState(_daihugoInstance.GetGameCurrentState);
     }
     public void OnChangePlayerTurn(GamePlayer gamePlayer)
@@ -133,9 +140,14 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
 
     public void OnEndStage()
     {
-        Debug.Log("<color=cyan>" + "OnEndStage:" + "</color>");
-        _cemeteryController.RefreshCards(_daihugoInstance.CemeteryCards);
-        Invoke(nameof(StageStart), 2.0f);
+        Debug.Log("<color=yellow>" + "OnEndStage GetGameCurrentState:" + _daihugoInstance.GetGameCurrentState + "</color>");
+        _fieldController.Init();
+        _cemeteryController.Init();
+        RefreshPlayersState(_daihugoInstance.GetGameCurrentState);
+        _effectCutInController.Play("Change Dealer", 0.5f, () =>
+        {
+            StartCoroutine(StageStart(0.0f));
+        });
     }
     public void OnCardEffect(DaihugoGameRule.Effect effect)
     {
@@ -169,7 +181,7 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
                 }
                 _effectCutInController.Play("PLAY THE GAME", 0.5f, () =>
                 {
-                    StageStart();
+                    StartCoroutine(StageStart(0.0f));
                 });
             });
         }
@@ -190,7 +202,7 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
 
     public void OnEndRound(DaihugoGameRule.GameState state)
     {
-        Debug.Log($"<color=cyan>OnEndRound DaihugoGameRule.GameState {state}</color>");
+        Debug.Log($"<color=red>OnEndRound DaihugoGameRule.GameState {state}</color>");
         _effectCutInController.Play("End Round", 0.5f, () =>
         {
             StartRound();

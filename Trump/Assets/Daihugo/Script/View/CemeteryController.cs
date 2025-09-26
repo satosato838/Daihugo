@@ -10,6 +10,7 @@ public class CemeteryController : MonoBehaviour
     private List<TrumpCardObject> trumpCardObjects;
     public void Init()
     {
+        //Debug.Log("CemeteryController Init");
         RefreshCards(new List<TrumpCard>());
         ResetText();
     }

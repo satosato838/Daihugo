@@ -70,7 +70,7 @@ public class Daihugo : IDaihugoObservable
 
     private int GetNextPlayerId()
     {
-        Debug.Log("GetNextPlayerId GamePlayers.All(p => p.IsPlay):" + GamePlayers.All(p => p.IsPlay));
+        //Debug.Log("GetNextPlayerId GamePlayers.All(p => p.IsPlay):" + GamePlayers.All(p => p.IsPlay));
         if (GamePlayers.All(p => p.IsPlay))
         {
             return currentPlayerIndex + 1 >= GamePlayers.Count ? 0 : currentPlayerIndex + 1;
@@ -177,7 +177,7 @@ public class Daihugo : IDaihugoObservable
 
         ActivateCardEffect(playCards);
 
-        Debug.Log($"GamePlayingMemberCount {GamePlayingMemberCount} PassCount {PassCount} == StageStartMemberCount - 1 {StageStartGamePlayingMemberCount - 1}");
+        //Debug.Log($"GamePlayingMemberCount {GamePlayingMemberCount} PassCount {PassCount} == StageStartMemberCount - 1 {StageStartGamePlayingMemberCount - 1}");
         if (GamePlayingMemberCount == 2)
         {
             if (PassCount >= 1)
@@ -341,9 +341,9 @@ public class Daihugo : IDaihugoObservable
         DealLastCard(rnd.Next(1, EntryPlayerCount));
 
         lastPlayCardPlayerId = GamePlayers.First().PlayerId;
-
-        currentState = GamePlayers.First().DaihugoState;
+        currentState = DaihugoGameRule.DaihugoState.None;
         currentGameState = CurrentRoundIndex == 1 ? DaihugoGameRule.GameState.GamePlay : DaihugoGameRule.GameState.CardChange;
+        //Debug.Log($"RoundStart CurrentRoundIndex:{CurrentRoundIndex} currentGameState:{currentGameState}");
         SendStartRound();
     }
 
@@ -367,7 +367,7 @@ public class Daihugo : IDaihugoObservable
 
     private void ChangeNextPlayerTurn(int nextPlayerIndex)
     {
-        Debug.Log($"before ChangeNextPlayerTurn nextPlayerIndex {nextPlayerIndex} CurrentPlayerIndex {currentPlayerIndex}");
+        //Debug.Log($"before ChangeNextPlayerTurn nextPlayerIndex {nextPlayerIndex} CurrentPlayerIndex {currentPlayerIndex}");
         currentPlayerIndex = nextPlayerIndex;
         foreach (var p in gamePlayers)
         {
@@ -377,15 +377,15 @@ public class Daihugo : IDaihugoObservable
         //リストの先頭にいたまだ試合中の人を親にする
         if (!gamePlayers[currentPlayerIndex].IsPlay)
         {
-            Debug.Log($"!gamePlayers[currentPlayerIndex].IsPlay ChangeNextPlayerTurn nextPlayerIndex {nextPlayerIndex} CurrentPlayerIndex {currentPlayerIndex}");
+            //Debug.Log($"!gamePlayers[currentPlayerIndex].IsPlay ChangeNextPlayerTurn nextPlayerIndex {nextPlayerIndex} CurrentPlayerIndex {currentPlayerIndex}");
             currentPlayerIndex = GetPlayerIndex(gamePlayers.First(p => p.IsPlay).PlayerId);
         }
         else
         {
-            Debug.Log($"gamePlayers[currentPlayerIndex].IsPlay ChangeNextPlayerTurn nextPlayerIndex {nextPlayerIndex} CurrentPlayerIndex {currentPlayerIndex}");
+            //Debug.Log($"gamePlayers[currentPlayerIndex].IsPlay ChangeNextPlayerTurn nextPlayerIndex {nextPlayerIndex} CurrentPlayerIndex {currentPlayerIndex}");
         }
         gamePlayers[currentPlayerIndex].RefreshIsMyturn(true);
-        Debug.Log($"after ChangeNextPlayerTurn nextPlayerIndex {nextPlayerIndex} CurrentPlayerIndex {currentPlayerIndex}");
+        //Debug.Log($"after ChangeNextPlayerTurn nextPlayerIndex {nextPlayerIndex} CurrentPlayerIndex {currentPlayerIndex}");
     }
 
     ///プレイヤーが上がった場合の処理
@@ -426,6 +426,7 @@ public class Daihugo : IDaihugoObservable
     private void RoundEnd()
     {
         currentGameState = CurrentRoundIndex == 5 ? DaihugoGameRule.GameState.Result : DaihugoGameRule.GameState.None;
+        //Debug.Log("RoundEnd currentGameState:" + currentGameState);
         SendEndRound();
     }
 
@@ -433,6 +434,7 @@ public class Daihugo : IDaihugoObservable
     {
         foreach (var observer in observers)
         {
+            //Debug.Log("SendStartRound OnStartRound:" + GetGameCurrentState);
             observer.OnStartRound(GetGameCurrentState);
         }
     }
