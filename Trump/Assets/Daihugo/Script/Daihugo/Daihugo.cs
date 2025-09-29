@@ -23,6 +23,7 @@ public class Daihugo : IDaihugoObservable
     private List<(int playerId, List<TrumpCard> cards)> cardChangeList;
     private List<DaihugoRoundResult> daihugoRoundResults;
     private DaihugoRoundResult GetCurrentRoundResult => daihugoRoundResults.Last();
+    public List<DaihugoRoundResult> GetRoundResults => daihugoRoundResults;
     private (DaihugoGameRule.DaihugoState daihugoState, DaihugoGameRule.GameRank rank, DaihugoGameRule.GameState gameState) defaultValue = (DaihugoGameRule.DaihugoState.None, DaihugoGameRule.GameRank.Heimin, DaihugoGameRule.GameState.None);
     private DaihugoGameRule.DaihugoState beforeState;
     private DaihugoGameRule.DaihugoState currentState;

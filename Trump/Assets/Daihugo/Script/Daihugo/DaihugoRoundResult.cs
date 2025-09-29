@@ -9,6 +9,8 @@ public class DaihugoRoundResult
     private List<GamePlayer> ResultPlayers;
     public int ResultPlayersCount => ResultPlayers.Count;
 
+    public List<GamePlayer> GetResultPlayers => ResultPlayers;
+
     public DaihugoRoundResult()
     {
         ResultPlayers = new List<GamePlayer>();

@@ -22,9 +22,14 @@ public class TallotController : MonoBehaviour
                 tallotPrefab.Init(new Tallot(item));
             }
         }
-        _objTitle.SetActive(true);
         _btn_GameStart.onClick.AddListener(() => { GameStart(); });
         _btn_Quit.onClick.AddListener(() => { Quit(); });
+        Show();
+    }
+
+    public void Show()
+    {
+        _objTitle.SetActive(true);
     }
 
     private void GameStart()
