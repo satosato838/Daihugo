@@ -2013,6 +2013,7 @@ GameObject:
   m_Component:
   - component: {fileID: 253717124}
   - component: {fileID: 253717125}
+  - component: {fileID: 253717126}
   m_Layer: 0
   m_Name: ResultController
   m_TagString: Untagged
@@ -2056,6 +2057,26 @@ MonoBehaviour:
   - {fileID: 1700478974}
   - {fileID: 1506111880}
   - {fileID: 2046285126}
+  _winnerCutIn: {fileID: 253717126}
+--- !u!114 &253717126
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 253717123}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1a86682c3262d4c66ad7cd41a77293e3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _object: {fileID: 1781391121}
+  _base: {fileID: 622600953}
+  _basePlaySize: 300
+  _text: {fileID: 998193101}
+  _startPos: {fileID: 364270028}
+  _showPos: {fileID: 1329596371}
+  _endPos: {fileID: 523558440}
 --- !u!1 &274999232
 GameObject:
   m_ObjectHideFlags: 0
@@ -7157,7 +7178,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 897811251}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -8073,8 +8094,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4281479730
-  m_fontColor: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -14778,7 +14799,7 @@ MonoBehaviour:
   _effectCutInController: {fileID: 1515653735}
   _cemeteryController: {fileID: 1769578479}
   _resultController: {fileID: 253717125}
-  _isDebug: 0
+  _isDebug: 1
   _isDebugCard: 1
 --- !u!1 &1807621279
 GameObject:

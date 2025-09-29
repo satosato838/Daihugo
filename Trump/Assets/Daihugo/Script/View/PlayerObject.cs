@@ -52,10 +52,10 @@ public class PlayerObject : MonoBehaviour
     }
     public void Init(GamePlayer gamePlayer, Action<int, List<TrumpCard>> playCardCallback, Action<int, List<TrumpCard>> setEndCallback)
     {
-        foreach (var item in gamePlayer.HandCards)
-        {
-            Debug.Log(gamePlayer.PlayerId + ":PlayerItems:" + item.CardName);
-        }
+        // foreach (var item in gamePlayer.HandCards)
+        // {
+        //     Debug.Log(gamePlayer.PlayerId + ":PlayerItems:" + item.CardName);
+        // }
         _gamePlayer = new GamePlayer(gamePlayer.PlayerId, gamePlayer.HandCards, gamePlayer.PlayerRank, gamePlayer.DaihugoState, gamePlayer.GameState);
         _txt_playerName.text = "GamePlayer_" + _gamePlayer.PlayerId.ToString();
         SetPlayerRank(_gamePlayer.PlayerRank);

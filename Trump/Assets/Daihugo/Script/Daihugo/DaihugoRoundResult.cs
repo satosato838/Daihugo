@@ -2,6 +2,7 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using UnityEngine;
 
 
 public class DaihugoRoundResult
@@ -19,6 +20,14 @@ public class DaihugoRoundResult
     public void AddRoundEndPlayer(GamePlayer gamePlayer, bool IsForbiddenWin)
     {
         gamePlayer.RefreshRank(IsForbiddenWin ? GetNextPlayersByDescendingRank() : GetNextPlayersByAscendingRank());
+        //Debug.Log($"AddRoundEndPlayer gamePlayer Id:{gamePlayer.PlayerId} , Rank:{gamePlayer.PlayerRank}");
+        ResultPlayers.Add(gamePlayer);
+    }
+
+    public void AddBoobyPlayer(GamePlayer gamePlayer)
+    {
+        gamePlayer.RefreshRank(ResultPlayers.Any(p => p.PlayerRank == DaihugoGameRule.GameRank.DaiHinmin) ? DaihugoGameRule.GameRank.Hinmin : DaihugoGameRule.GameRank.DaiHinmin);
+        //Debug.Log($"AddBoobyPlayer gamePlayer Id:{gamePlayer.PlayerId} , Rank:{gamePlayer.PlayerRank}");
         ResultPlayers.Add(gamePlayer);
     }
 
@@ -30,7 +39,8 @@ public class DaihugoRoundResult
         ranks = ranks.OrderBy(a => Guid.NewGuid()).ToArray();
         for (var i = 0; i < 4; i++)
         {
-            AddRoundEndPlayer(new GamePlayer(ids[i], new List<TrumpCard>(), ranks[i], DaihugoGameRule.DaihugoState.None, DaihugoGameRule.GameState.CardChange), false);
+            var gamePlayer = new GamePlayer(ids[i], new List<TrumpCard>(), ranks[i], DaihugoGameRule.DaihugoState.None, DaihugoGameRule.GameState.CardChange);
+            ResultPlayers.Add(gamePlayer);
         }
     }
     public DaihugoGameRule.GameRank GetPlayerIdRank(int playerId)
@@ -54,7 +64,6 @@ public class DaihugoRoundResult
         var ranks = new DaihugoGameRule.GameRank[] { DaihugoGameRule.GameRank.DaiHinmin, DaihugoGameRule.GameRank.Hinmin, DaihugoGameRule.GameRank.Hugo, DaihugoGameRule.GameRank.DaiHugo };
         return ranks[ResultPlayers.Count];
     }
-
     public List<GamePlayer> GetNextGamePlayers()
     {
         return ResultPlayers.OrderByDescending(p => p.PlayerRank).ToList();

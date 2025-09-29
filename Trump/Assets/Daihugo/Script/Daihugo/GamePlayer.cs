@@ -171,8 +171,14 @@ public class GamePlayer
 
         List<TrumpCard> GetStrongestCards(List<TrumpCard> trumpCards)
         {
+            //Debug.Log(PlayerId + " itrumpCards:" + trumpCards.Count);
+            if (trumpCards.Count == 0) return new List<TrumpCard>();
             try
             {
+                // foreach (var item in trumpCards)
+                // {
+                //     Debug.Log(PlayerId + " item CardName:" + item.CardName);
+                // }
                 var maxValue = trumpCards.Max(c => (int)c.Number);
                 return trumpCards.Where(c => (int)c.Number == maxValue).ToList();
             }

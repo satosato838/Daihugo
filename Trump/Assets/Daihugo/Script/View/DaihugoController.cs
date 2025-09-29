@@ -24,7 +24,7 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
     IDisposable thisDisposable;
     void Start()
     {
-        _daihugoInstance = new Daihugo(isDebug: _isDebug, isDebugCard: _isDebugCard);
+        _daihugoInstance = new Daihugo(roundCount: _isDebug ? 1 : 5, isDebug: _isDebug, isDebugCard: _isDebugCard);
         thisDisposable = _daihugoInstance.Subscribe(this);
         _daihugoObject.SetActive(false);
     }

@@ -18,4 +18,14 @@ public class ResultItem : MonoBehaviour
             _txtPlayerRank[i].text = results[i].PlayerRank.ToString();
         }
     }
+
+    public void Init()
+    {
+        _txtRound.text = "--";
+        for (var i = 0; i < _txtPlayerName.Length; i++)
+        {
+            _txtPlayerName[i].text = "--";
+            _txtPlayerRank[i].text = "--";
+        }
+    }
 }
