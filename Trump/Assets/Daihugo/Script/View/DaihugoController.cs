@@ -24,14 +24,14 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
     IDisposable thisDisposable;
     void Start()
     {
-        _daihugoInstance = new Daihugo(roundCount: _isDebug ? 1 : 5, isDebug: _isDebug, isDebugCard: _isDebugCard);
-        thisDisposable = _daihugoInstance.Subscribe(this);
         _daihugoObject.SetActive(false);
     }
 
     public void GameStart()
     {
         _daihugoObject.SetActive(true);
+        _daihugoInstance = new Daihugo(roundCount: _isDebug ? 1 : 5, isDebug: _isDebug, isDebugCard: _isDebugCard);
+        thisDisposable = _daihugoInstance.Subscribe(this);
         StartRound(playerCount: 4);
     }
 
@@ -216,13 +216,13 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
             {
                 _daihugoObject.SetActive(false);
                 _resultController.ShowResult(_daihugoInstance.GetRoundResults);
+                thisDisposable.Dispose();
             }
             else
             {
                 StartRound(_daihugoInstance.EntryPlayerCount);
             }
         });
-
     }
     private void OnDestroy()
     {
