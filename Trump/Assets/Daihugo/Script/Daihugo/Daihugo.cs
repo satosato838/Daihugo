@@ -7,6 +7,7 @@ using UnityEngine;
 
 public class Daihugo : IDaihugoObservable
 {
+    private int _gameRoundCount;
     private bool IsDebug;
     private bool IsDebugCard;
     public int EntryPlayerCount => GamePlayers.Count();
@@ -23,6 +24,7 @@ public class Daihugo : IDaihugoObservable
     private List<(int playerId, List<TrumpCard> cards)> cardChangeList;
     private List<DaihugoRoundResult> daihugoRoundResults;
     private DaihugoRoundResult GetCurrentRoundResult => daihugoRoundResults.Last();
+    public List<DaihugoRoundResult> GetRoundResults => daihugoRoundResults;
     private (DaihugoGameRule.DaihugoState daihugoState, DaihugoGameRule.GameRank rank, DaihugoGameRule.GameState gameState) defaultValue = (DaihugoGameRule.DaihugoState.None, DaihugoGameRule.GameRank.Heimin, DaihugoGameRule.GameState.None);
     private DaihugoGameRule.DaihugoState beforeState;
     private DaihugoGameRule.DaihugoState currentState;
@@ -46,8 +48,22 @@ public class Daihugo : IDaihugoObservable
         var resultData = new DaihugoRoundResult();
         if (IsDebug)
         {
-            resultData.CreateDebugData();
-            daihugoRoundResults.Add(resultData);
+            // var resultData1 = new DaihugoRoundResult();
+            // resultData1.CreateDebugData();
+            // daihugoRoundResults.Add(resultData1);
+            // //Debug.Log("1roundCount:" + CurrentRoundIndex);
+            // var resultData2 = new DaihugoRoundResult();
+            // resultData2.CreateDebugData();
+            // daihugoRoundResults.Add(resultData2);
+            // //Debug.Log("2roundCount:" + CurrentRoundIndex);
+            // var resultData3 = new DaihugoRoundResult();
+            // resultData3.CreateDebugData();
+            // daihugoRoundResults.Add(resultData3);
+            // //Debug.Log("3roundCount:" + CurrentRoundIndex);
+            // var resultData4 = new DaihugoRoundResult();
+            // resultData4.CreateDebugData();
+            // daihugoRoundResults.Add(resultData4);
+            // //Debug.Log("4roundCount:" + CurrentRoundIndex);
         }
 
         if (daihugoRoundResults.Count == 0)
@@ -59,13 +75,17 @@ public class Daihugo : IDaihugoObservable
         }
         else
         {
-            gamePlayers = daihugoRoundResults.First().GetNextGamePlayers();
+            gamePlayers = daihugoRoundResults.Last().GetNextGamePlayers();
             foreach (var player in gamePlayers)
             {
                 player.DealCard(DealTheCards(isDebug: IsDebugCard));
             }
         }
         daihugoRoundResults.Add(resultData);
+        foreach (var item in daihugoRoundResults)
+        {
+            Debug.Log("item:" + item.ResultPlayersCount);
+        }
     }
 
     private int GetNextPlayerId()
@@ -320,8 +340,9 @@ public class Daihugo : IDaihugoObservable
             observers.Add(observer);
         return new Unsubscriber(observers, observer);
     }
-    public Daihugo(bool isDebug = false, bool isDebugCard = false)
+    public Daihugo(int roundCount, bool isDebug = false, bool isDebugCard = false)
     {
+        _gameRoundCount = roundCount;
         IsDebug = isDebug;
         IsDebugCard = isDebugCard;
         daihugoRoundResults = new List<DaihugoRoundResult>();
@@ -405,8 +426,8 @@ public class Daihugo : IDaihugoObservable
         //Debug.Log($"EndRoundPlayer ResultPlayersCount:{GetCurrentRoundResult.ResultPlayersCount} == EntryPlayerCount - 1:{EntryPlayerCount - 1}");
         if (GetCurrentRoundResult.ResultPlayersCount == EntryPlayerCount - 1)
         {
-            //最後まで残ったプレイヤーは反則上がり判定にして強制終了
-            GetCurrentRoundResult.AddRoundEndPlayer(gamePlayers.First(p => p.IsPlay), IsForbiddenWin: true);
+            //最後まで残ったプレイヤーは最下位プレイヤーとして登録
+            GetCurrentRoundResult.AddBoobyPlayer(gamePlayers.First(p => p.IsPlay));
             RoundEnd();
         }
     }
@@ -427,7 +448,7 @@ public class Daihugo : IDaihugoObservable
 
     private void RoundEnd()
     {
-        currentGameState = CurrentRoundIndex == 5 ? DaihugoGameRule.GameState.Result : DaihugoGameRule.GameState.None;
+        currentGameState = CurrentRoundIndex == _gameRoundCount ? DaihugoGameRule.GameState.Result : DaihugoGameRule.GameState.None;
         //Debug.Log("RoundEnd currentGameState:" + currentGameState);
         SendEndRound();
     }

@@ -16,6 +16,7 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
     [SerializeField] private FieldController _fieldController;
     [SerializeField] private EffectCutInController _effectCutInController;
     [SerializeField] private CemeteryController _cemeteryController;
+    [SerializeField] private ResultController _resultController;
     [SerializeField] private bool _isDebug;
     [SerializeField] private bool _isDebugCard;
     private Daihugo _daihugoInstance;
@@ -23,7 +24,7 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
     IDisposable thisDisposable;
     void Start()
     {
-        _daihugoInstance = new Daihugo(isDebug: _isDebug, isDebugCard: _isDebugCard);
+        _daihugoInstance = new Daihugo(roundCount: _isDebug ? 1 : 5, isDebug: _isDebug, isDebugCard: _isDebugCard);
         thisDisposable = _daihugoInstance.Subscribe(this);
         _daihugoObject.SetActive(false);
     }
@@ -211,7 +212,15 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
         Debug.Log($"<color=red>OnEndRound DaihugoGameRule.GameState {state}</color>");
         _effectCutInController.Play("End Round", 0.5f, () =>
         {
-            StartRound(_daihugoInstance.EntryPlayerCount);
+            if (_daihugoInstance.GetGameCurrentState == DaihugoGameRule.GameState.Result)
+            {
+                _daihugoObject.SetActive(false);
+                _resultController.ShowResult(_daihugoInstance.GetRoundResults);
+            }
+            else
+            {
+                StartRound(_daihugoInstance.EntryPlayerCount);
+            }
         });
 
     }
