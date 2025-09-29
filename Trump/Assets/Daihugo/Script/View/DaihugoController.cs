@@ -8,6 +8,7 @@ using UnityEngine.UI;
 
 public class DaihugoController : MonoBehaviour, IDaihugoObserver
 {
+    [SerializeField] private GameObject _daihugoObject;
     [SerializeField] private Image _bg;
     [SerializeField] private Sprite _nomalImage;
     [SerializeField] private Sprite _kakumeiImage;
@@ -24,13 +25,18 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
     {
         _daihugoInstance = new Daihugo(isDebug: _isDebug, isDebugCard: _isDebugCard);
         thisDisposable = _daihugoInstance.Subscribe(this);
-
-        StartRound();
+        _daihugoObject.SetActive(false);
     }
 
-    private void StartRound()
+    public void GameStart()
     {
-        _daihugoInstance.RoundStart(playerCount: 4);
+        _daihugoObject.SetActive(true);
+        StartRound(playerCount: 4);
+    }
+
+    private void StartRound(int playerCount)
+    {
+        _daihugoInstance.RoundStart(playerCount);
     }
 
     private void PlayHands(int playerId, List<TrumpCard> trumpCards)
@@ -205,7 +211,7 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
         Debug.Log($"<color=red>OnEndRound DaihugoGameRule.GameState {state}</color>");
         _effectCutInController.Play("End Round", 0.5f, () =>
         {
-            StartRound();
+            StartRound(_daihugoInstance.EntryPlayerCount);
         });
 
     }

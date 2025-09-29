@@ -1,13 +1,17 @@
-using System.Collections.Generic;
-using System.Linq;
-using DG.Tweening;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class TallotController : MonoBehaviour
 {
+    [SerializeField] GameObject _objTitle;
     [SerializeField] GameObject GridPrefab;
     [SerializeField] CardObject TallotPrefab;
     [SerializeField] Sprite[] Tallots;
+
+    [SerializeField] DaihugoController _daihugoController;
+
+    [SerializeField] Button _btn_GameStart;
+    [SerializeField] Button _btn_Quit;
     void Start()
     {
         for (var i = 0; i < 4; i++)
@@ -18,6 +22,20 @@ public class TallotController : MonoBehaviour
                 tallotPrefab.Init(new Tallot(item));
             }
         }
+        _objTitle.SetActive(true);
+        _btn_GameStart.onClick.AddListener(() => { GameStart(); });
+        _btn_Quit.onClick.AddListener(() => { Quit(); });
+    }
+
+    private void GameStart()
+    {
+        _objTitle.SetActive(false);
+        _daihugoController.GameStart();
+    }
+
+    private void Quit()
+    {
+        Application.Quit();
     }
 
 }
