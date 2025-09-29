@@ -197,7 +197,7 @@ public class Daihugo : IDaihugoObservable
 
         ActivateCardEffect(playCards);
 
-        //Debug.Log($"StageStartGamePlayingMemberCount {GamePlayingMemberCount} PassCount {PassCount} == StageStartMemberCount - 1 {StageStartGamePlayingMemberCount - 1}");
+        Debug.Log($"StageStartGamePlayingMemberCount {StageStartGamePlayingMemberCount} PassCount {PassCount} == StageStartMemberCount - 1 {StageStartGamePlayingMemberCount - 1}");
         if (StageStartGamePlayingMemberCount == 2)
         {
             if (PassCount >= 1)

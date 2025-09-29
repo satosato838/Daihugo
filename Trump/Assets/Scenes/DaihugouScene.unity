@@ -14799,7 +14799,7 @@ MonoBehaviour:
   _effectCutInController: {fileID: 1515653735}
   _cemeteryController: {fileID: 1769578479}
   _resultController: {fileID: 253717125}
-  _isDebug: 1
+  _isDebug: 0
   _isDebugCard: 1
 --- !u!1 &1807621279
 GameObject:
@@ -17187,11 +17187,11 @@ SceneRoots:
   - {fileID: 410087041}
   - {fileID: 832575519}
   - {fileID: 450454391}
-  - {fileID: 310200138}
-  - {fileID: 717683738}
   - {fileID: 1807170808}
   - {fileID: 253717124}
   - {fileID: 1100299012}
   - {fileID: 1769578478}
   - {fileID: 1515653736}
   - {fileID: 274999233}
+  - {fileID: 310200138}
+  - {fileID: 717683738}

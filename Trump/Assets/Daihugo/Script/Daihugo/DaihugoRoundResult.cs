@@ -51,7 +51,8 @@ public class DaihugoRoundResult
         }
         else
         {
-            throw new System.Exception("not found player");
+            foreach (var item in ResultPlayers) Debug.LogError("ResultPlayer:" + item.PlayerId);
+            throw new Exception("not found playerId:" + playerId);
         }
     }
     public DaihugoGameRule.GameRank GetNextPlayersByAscendingRank()
