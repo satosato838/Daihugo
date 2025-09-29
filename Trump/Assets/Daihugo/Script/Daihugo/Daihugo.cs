@@ -82,10 +82,10 @@ public class Daihugo : IDaihugoObservable
             }
         }
         daihugoRoundResults.Add(resultData);
-        foreach (var item in daihugoRoundResults)
-        {
-            Debug.Log("item:" + item.ResultPlayersCount);
-        }
+        // foreach (var item in daihugoRoundResults)
+        // {
+        //     Debug.Log("daihugoRoundResults itemCount:" + item.ResultPlayersCount);
+        // }
     }
 
     private int GetNextPlayerId()
