@@ -204,28 +204,35 @@ public class GamePlayer
     public void AddCards(List<TrumpCard> cards)
     {
         handCards.AddRange(cards);
+        AllRefreshSelectCard();
         handCards = BubbleSortCard(handCards);
     }
     public void DealCard(List<TrumpCard> cards)
     {
         handCards = cards;
+        AllRefreshSelectCard();
         handCards = BubbleSortCard(handCards);
         if (GameState == DaihugoGameRule.GameState.CardChange)
         {
             UpdateSelectableCardsForExchange();
         }
     }
+    private void AllRefreshSelectCard()
+    {
+        foreach (var item in handCards) item.RefreshIsSelect(false);
+    }
+
 
     private List<TrumpCard> BubbleSortCard(List<TrumpCard> trumpCards)
     {
         var results = trumpCards;
+
         for (int i = 0; i < results.Count; i++)
         {
             for (int j = i; j < results.Count; j++)
             {
                 if (results[i].Number < results[j].Number)
                 {
-                    if (results[j].IsSelect) results[j].RefreshIsSelect(false);
                     var x = results[j];
                     results[j] = results[i];
                     results[i] = x;
