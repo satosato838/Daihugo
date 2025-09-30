@@ -26,7 +26,7 @@ public class TrumpCardObject : MonoBehaviour
         });
     }
 
-    public void Init(TrumpCard trumpCard, bool isHand, Action<TrumpCard> onclick)
+    public void Init(TrumpCard trumpCard, bool isHand, Action<TrumpCard> onclick = null)
     {
         TrumpCardData = trumpCard;
         IsHand = isHand;
@@ -97,6 +97,7 @@ public class TrumpCardObject : MonoBehaviour
 
     private void OnClick()
     {
+        if (onClick == null) return;
         if (IsHand)
         {
             TrumpCardData.RefreshIsSelect(!TrumpCardData.IsSelect);
