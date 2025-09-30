@@ -30,11 +30,7 @@ public class TrumpCardObject : MonoBehaviour
     {
         TrumpCardData = trumpCard;
         IsHand = isHand;
-        if (onclick != null)
-        {
-            onClick = onclick;
-        }
-
+        onClick = onclick;
         RefreshCardImagePos();
     }
 

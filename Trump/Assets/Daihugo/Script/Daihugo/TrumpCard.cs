@@ -13,6 +13,7 @@ public class TrumpCard
     {
         suitType = suit;
         RefreshIsSelectable(true);
+        RefreshIsSelect(false);
         cardNumber = number;
         if (suitType == DaihugoGameRule.SuitType.Joker && number.Number == DaihugoGameRule.Number.Joker)
         {

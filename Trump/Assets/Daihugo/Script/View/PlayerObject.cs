@@ -165,8 +165,7 @@ public class PlayerObject : MonoBehaviour
         foreach (var item in trumpCards)
         {
             var exchangeCard = Instantiate(trumpCardObject, _ExchangeCardPos.transform);
-            item.RefreshIsSelect(false);
-            exchangeCard.Init(item, isHand: false);
+            exchangeCard.Init(new TrumpCard(item.Suit, new CardNumber(item.Number)), isHand: false);
 
             // if (IsMyPlayer)
             // {
@@ -219,7 +218,7 @@ public class PlayerObject : MonoBehaviour
         playCardAction?.Invoke(_gamePlayer.PlayerId, SelectCards);
         _gamePlayer.PlayCards(v =>
         {
-            if (v == 0)
+            if (_gamePlayer.GameState == DaihugoGameRule.GameState.GamePlay && v == 0)
             {
                 roundEndAction?.Invoke(_gamePlayer.PlayerId, SelectCards);
             }
