@@ -67,6 +67,7 @@ public class DaihugoRoundResult
     }
     public List<GamePlayer> GetNextGamePlayers()
     {
+        foreach (var player in ResultPlayers) player.RefreshIsPlay(true);
         return ResultPlayers.OrderByDescending(p => p.PlayerRank).ToList();
     }
 }
