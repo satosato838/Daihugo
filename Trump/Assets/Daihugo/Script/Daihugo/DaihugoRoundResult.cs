@@ -9,11 +9,12 @@ public class DaihugoRoundResult
 {
     private List<GamePlayer> ResultPlayers;
     public int ResultPlayersCount => ResultPlayers.Count;
-
+    public int CurrentRoundIndex;
     public List<GamePlayer> GetResultPlayers => ResultPlayers;
 
-    public DaihugoRoundResult()
+    public DaihugoRoundResult(int currentRoundIndex)
     {
+        CurrentRoundIndex = currentRoundIndex;
         ResultPlayers = new List<GamePlayer>();
     }
 
@@ -52,6 +53,7 @@ public class DaihugoRoundResult
         else
         {
             foreach (var item in ResultPlayers) Debug.LogError("ResultPlayer:" + item.PlayerId);
+            Debug.LogError("GetPlayerIdRank CurrentRoundIndex:" + CurrentRoundIndex);
             throw new Exception("not found playerId:" + playerId);
         }
     }

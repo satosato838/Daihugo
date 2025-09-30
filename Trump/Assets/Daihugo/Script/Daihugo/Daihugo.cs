@@ -45,7 +45,7 @@ public class Daihugo : IDaihugoObservable
     private void CreatePlayerData(int playerCount)
     {
         gamePlayers = new List<GamePlayer>();
-        var resultData = new DaihugoRoundResult();
+        var resultData = new DaihugoRoundResult(daihugoRoundResults.Count + 1);
         if (IsDebug)
         {
             // var resultData1 = new DaihugoRoundResult();

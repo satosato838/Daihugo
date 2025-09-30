@@ -213,6 +213,17 @@ public class PlayerObject : MonoBehaviour
         if (_playBtn != null) _playBtn.interactable = val;
     }
 
+    public void UpdateSelectableCardsForExchange()
+    {
+        _gamePlayer.UpdateSelectableCardsForExchange();
+        for (var i = 0; i < _gamePlayer.HandCards.Count; i++)
+        {
+            var card = handCardObjects[i];
+            var cardData = _gamePlayer.HandCards[i];
+            card.RefreshButtonInteractable(cardData.IsSelectable);
+        }
+    }
+
     public void OnPlayButtonClick()
     {
         playCardAction?.Invoke(_gamePlayer.PlayerId, SelectCards);

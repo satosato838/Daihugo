@@ -86,7 +86,9 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
         Debug.Log($"<color=red> OnStartRound DaihugoGameRule.GameState {state}, CurrentPlayerId:{_daihugoInstance.CurrentPlayerId} </color>");
         for (var i = 0; i < _daihugoInstance.EntryPlayerCount; i++)
         {
-            _playerObjects[i].Init(_daihugoInstance.GamePlayers.First(p => p.PlayerId == i),
+            var playerObject = _playerObjects[i];
+            var player = _daihugoInstance.GamePlayers.First(p => p.PlayerId == i);
+            playerObject.Init(player,
             (id, v) =>
             {
                 PlayHands(id, v);
@@ -96,6 +98,10 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
                 EndRoundPlayer(id, v);
             }
             );
+            if (state == DaihugoGameRule.GameState.CardChange)
+            {
+                playerObject.UpdateSelectableCardsForExchange();
+            }
         }
         _fieldController.Init();
         _cemeteryController.Init();
