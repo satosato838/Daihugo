@@ -157,6 +157,14 @@ public class PlayerObject : MonoBehaviour
         }
     }
 
+    public void ShowHandCards()
+    {
+        foreach (var card in handCardObjects)
+        {
+            Debug.Log($"ShowHandCards {card.SuitType},{card.Number}:");
+        }
+    }
+
     public void ShowExChangeCards(List<TrumpCard> trumpCards)
     {
         DeleteExChangeCards();

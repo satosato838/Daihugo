@@ -180,7 +180,14 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
         {
             _effectCutInController.Play(state.ToString(), 0.5f, () =>
             {
-
+                if (_isDebug)
+                {
+                    for (var i = 0; i < _playerObjects.Length; i++)
+                    {
+                        Debug.Log("<color=cyan>" + "_playerObjects: " + _playerObjects[i].PlayerId + "</color>");
+                        _playerObjects[i].ShowHandCards();
+                    }
+                }
             });
         }
         else if (state == DaihugoGameRule.GameState.GamePlay)
@@ -192,8 +199,17 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
                 {
                     _playerObjects[i].DeleteExChangeCards();
                 }
+                if (_isDebug)
+                {
+                    for (var i = 0; i < _playerObjects.Length; i++)
+                    {
+                        Debug.Log("<color=yellow>" + "_playerObjects: " + _playerObjects[i].PlayerId + "</color>");
+                        _playerObjects[i].ShowHandCards();
+                    }
+                }
                 _effectCutInController.Play("PLAY THE GAME", 0.5f, () =>
                 {
+
                     StartCoroutine(StageStart(0.0f));
                 });
             });

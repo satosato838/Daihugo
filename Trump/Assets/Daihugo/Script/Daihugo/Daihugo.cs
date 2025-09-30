@@ -221,15 +221,9 @@ public class Daihugo : IDaihugoObservable
     }
     public void ExecuteCardExchange(int playerId, List<TrumpCard> playCards)
     {
-        // Debug.Log($"CardExchange: playerId={playerId}");
-        // foreach (var item in playCards)
-        //     Debug.Log($"CardExchange cardName={item.CardName}");
-
         cardChangeList.Add((playerId, playCards));
-
         // 全員分の提出が揃ったら交換処理
         if (cardChangeList.Count < EntryPlayerCount) return;
-
         // ランクごとの交換先マップ
         var exchangePairs = new Dictionary<DaihugoGameRule.GameRank, DaihugoGameRule.GameRank>
     {
@@ -238,10 +232,8 @@ public class Daihugo : IDaihugoObservable
         { DaihugoGameRule.GameRank.Hugo,      DaihugoGameRule.GameRank.Hinmin },
         { DaihugoGameRule.GameRank.DaiHugo,   DaihugoGameRule.GameRank.DaiHinmin }
     };
-
         // ランク→プレイヤーの辞書を作成
         var playerByRank = gamePlayers.ToDictionary(p => p.PlayerRank, p => p);
-
         foreach (var (pid, cards) in cardChangeList)
         {
             var fromPlayer = gamePlayers[GetPlayerIndex(pid)];
@@ -253,6 +245,14 @@ public class Daihugo : IDaihugoObservable
             else
             {
                 throw new Exception($"Exchange target not found for {fromPlayer.PlayerRank}");
+            }
+        }
+        foreach (var player in gamePlayers)
+        {
+            Debug.Log($"CardExchange: playerId={player.PlayerId}");
+            foreach (var card in player.HandCards)
+            {
+                Debug.Log($"CardExchange cardName={card.CardName}");
             }
         }
 

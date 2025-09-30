@@ -245,7 +245,9 @@ public class GamePlayer
 
     public void PlayCards(Action<int> callback)
     {
+        //Debug.Log("PlayCards PlayerId:" + PlayerId);
         handCards.RemoveAll(c => c.IsSelect);
+        //foreach (var item in handCards) Debug.Log("PlayCards item:" + item.CardName);
         callback.Invoke(handCards.Count);
     }
 }

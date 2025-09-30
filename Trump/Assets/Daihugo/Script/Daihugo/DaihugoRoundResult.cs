@@ -21,7 +21,7 @@ public class DaihugoRoundResult
     public void AddRoundEndPlayer(GamePlayer gamePlayer, bool IsForbiddenWin)
     {
         gamePlayer.RefreshRank(IsForbiddenWin ? GetNextPlayersByDescendingRank() : GetNextPlayersByAscendingRank());
-        //Debug.Log($"AddRoundEndPlayer gamePlayer Id:{gamePlayer.PlayerId} , Rank:{gamePlayer.PlayerRank}");
+        Debug.Log($"AddRoundEndPlayer gamePlayer Id:{gamePlayer.PlayerId} , Rank:{gamePlayer.PlayerRank}");
         ResultPlayers.Add(gamePlayer);
     }
 

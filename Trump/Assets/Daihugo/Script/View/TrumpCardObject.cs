@@ -12,6 +12,7 @@ public class TrumpCardObject : MonoBehaviour
     [SerializeField] private Transform _moveUpPos;
     [SerializeField] private Transform _defaultPos;
     public DaihugoGameRule.Number Number => TrumpCardData.Number;
+    public DaihugoGameRule.SuitType SuitType => TrumpCardData.Suit;
     private bool IsHand;
     private float _lastClickTime;
     private TrumpCard TrumpCardData;
