@@ -12,7 +12,7 @@ public class Daihugo : IDaihugoObservable
     private bool IsDebugCard;
     public int EntryPlayerCount => GamePlayers.Count();
     private int GamePlayingMemberCount => GamePlayers.Count(p => p.IsPlay);
-    private int StageStartGamePlayingMemberCount;
+    private int CurrentStageGamePlayingMemberCount;
     private List<TrumpCard> DeckCards;
     private List<GamePlayer> gamePlayers;
     public List<GamePlayer> GamePlayers => gamePlayers;
@@ -196,10 +196,13 @@ public class Daihugo : IDaihugoObservable
         }
 
         ActivateCardEffect(playCards);
+        //誰かがカードをプレイしたらゲーム中のプレイヤー人数を更新
+        //(上がった人が出したカードの後出せない場合と出せた場合の挙動に対応するため)
+        CurrentStageGamePlayingMemberCount = GamePlayingMemberCount;
 
-        Debug.Log($"StageStartGamePlayingMemberCount {StageStartGamePlayingMemberCount} PassCount {PassCount} == StageStartMemberCount - 1 {StageStartGamePlayingMemberCount - 1}");
-        if (StageStartGamePlayingMemberCount == 2)
+        if (CurrentStageGamePlayingMemberCount == 2)
         {
+            Debug.Log($"PlayHands PassCount({PassCount})  == CurrentStageGamePlayingMemberCount ({CurrentStageGamePlayingMemberCount - 1})");
             if (PassCount >= 1)
             {
                 StageEnd();
@@ -209,12 +212,14 @@ public class Daihugo : IDaihugoObservable
                 ChangeNextPlayerTurn(GetNextPlayerId());
             }
         }
-        else if (PassCount == StageStartGamePlayingMemberCount - 1)
+        else if (PassCount == CurrentStageGamePlayingMemberCount - 1)
         {
+            Debug.Log($"PlayHands PassCount({PassCount})  == CurrentStageGamePlayingMemberCount - 1 ({CurrentStageGamePlayingMemberCount - 1})");
             StageEnd();
         }
         else
         {
+            Debug.Log($"PlayHands PassCount({PassCount})  == CurrentStageGamePlayingMemberCount - 1 ({CurrentStageGamePlayingMemberCount - 1})");
             ChangeNextPlayerTurn(GetNextPlayerId());
         }
         SendPlayerChange();
@@ -266,7 +271,7 @@ public class Daihugo : IDaihugoObservable
         if (playCards.Any(card => card.Effect == DaihugoGameRule.Effect.Eight_Enders))
         {
             //8切りなので強制的に全員パスしたことにする
-            PassCount = StageStartGamePlayingMemberCount - 1;
+            PassCount = CurrentStageGamePlayingMemberCount - 1;
             currentRoundCardEffects.Add(DaihugoGameRule.Effect.Eight_Enders);
             SendCardEffect();
         }
@@ -376,7 +381,7 @@ public class Daihugo : IDaihugoObservable
         };
         PassCount = 0;
         //ステージ開始時のゲーム参加中の人数を覚えておく
-        StageStartGamePlayingMemberCount = GamePlayingMemberCount;
+        CurrentStageGamePlayingMemberCount = GamePlayingMemberCount;
         ChangeNextPlayerTurn(GetPlayerIndex(lastPlayCardPlayerId));
         SendStartStage();
     }
