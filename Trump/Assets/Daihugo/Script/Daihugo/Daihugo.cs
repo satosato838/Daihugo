@@ -385,6 +385,7 @@ public class Daihugo : IDaihugoObservable
         //ステージ開始時のゲーム参加中の人数を覚えておく
         CurrentStageGamePlayingMemberCount = GamePlayingMemberCount;
         ChangeNextPlayerTurn(GetPlayerIndex(lastPlayCardPlayerId));
+        fieldCards = new List<List<TrumpCard>>();
         SendStartStage();
     }
     public void CardChangeStart()
