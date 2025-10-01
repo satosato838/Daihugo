@@ -30,7 +30,7 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
     public void GameStart()
     {
         _daihugoObject.SetActive(true);
-        _daihugoInstance = new Daihugo(roundCount: _isDebug ? 1 : 5, isDebug: _isDebug, isDebugCard: _isDebugCard);
+        _daihugoInstance = new Daihugo(roundCount: _isDebug ? 2 : 5, isDebug: _isDebug, isDebugCard: _isDebugCard);
         thisDisposable = _daihugoInstance.Subscribe(this);
         StartRound(playerCount: 4);
     }
@@ -84,10 +84,13 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
     public void OnStartRound(DaihugoGameRule.GameState state)
     {
         Debug.Log($"<color=red> OnStartRound DaihugoGameRule.GameState {state}, CurrentPlayerId:{_daihugoInstance.CurrentPlayerId} </color>");
-        for (var i = 0; i < _daihugoInstance.EntryPlayerCount; i++)
+        foreach (var player in _daihugoInstance.GamePlayers)
         {
-            var playerObject = _playerObjects[i];
-            var player = _daihugoInstance.GamePlayers.First(p => p.PlayerId == i);
+            var playerObject = _playerObjects[player.PlayerId];
+            if (_daihugoInstance.CurrentRoundIndex > 1)
+            {
+                playerObject = _playerObjects.First(pObject => pObject.PlayerId == player.PlayerId);
+            }
             playerObject.Init(player,
             (id, v) =>
             {

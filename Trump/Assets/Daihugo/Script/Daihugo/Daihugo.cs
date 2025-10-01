@@ -426,7 +426,7 @@ public class Daihugo : IDaihugoObservable
         var endPlayer = new GamePlayer(playerId);
         GetCurrentRoundResult.AddRoundEndPlayer(endPlayer, IsForbiddenWin(lastPlayCards));
 
-        gamePlayers[endPlayerIndex].RefreshRank(GetCurrentRoundResult.GetPlayerIdRank(endPlayerIndex));
+        gamePlayers[endPlayerIndex].RefreshRank(GetCurrentRoundResult.GetPlayerIdRank(playerId));
         SendToGoOut(endPlayerIndex);
         //Debug.Log($"EndRoundPlayer ResultPlayersCount:{GetCurrentRoundResult.ResultPlayersCount} == EntryPlayerCount - 1:{EntryPlayerCount - 1}");
         if (GetCurrentRoundResult.ResultPlayersCount == EntryPlayerCount - 1)
