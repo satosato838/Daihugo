@@ -203,9 +203,12 @@ public class GamePlayer
     }
     public void AddCards(List<TrumpCard> cards)
     {
+        //todo ここで大貧民に不正にカードが渡っている模様
+        //Debug.Log("AddCards PlayerId:" + PlayerId);
         handCards.AddRange(cards);
         AllRefreshSelectCard();
         handCards = BubbleSortCard(handCards);
+        //foreach (var item in handCards) Debug.Log("AddCards item:" + item.CardName);
     }
     public void DealCard(List<TrumpCard> cards)
     {

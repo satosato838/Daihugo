@@ -231,18 +231,23 @@ public class PlayerObject : MonoBehaviour
             card.RefreshButtonInteractable(cardData.IsSelectable);
         }
     }
-
     public void OnPlayButtonClick()
     {
-        playCardAction?.Invoke(_gamePlayer.PlayerId, SelectCards);
+        List<TrumpCard> trumpCards = new List<TrumpCard>();
+        foreach (var card in SelectCards)
+        {
+            trumpCards.Add(new TrumpCard(card.Suit, new CardNumber(card.Number)));
+        }
         _gamePlayer.PlayCards(v =>
         {
             if (_gamePlayer.GameState == DaihugoGameRule.GameState.GamePlay && v == 0)
             {
-                roundEndAction?.Invoke(_gamePlayer.PlayerId, SelectCards);
+                roundEndAction?.Invoke(_gamePlayer.PlayerId, trumpCards);
             }
         });
+
         RefreshCards();
+        playCardAction?.Invoke(_gamePlayer.PlayerId, trumpCards);
     }
     public void OnPassButtonClick()
     {
