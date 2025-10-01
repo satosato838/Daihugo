@@ -47,7 +47,11 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
             _daihugoInstance.PlayHands(trumpCards);
             _fieldController.RefreshCards(_daihugoInstance.LastFieldCardPair);
         }
-        else
+        else if (_daihugoInstance.GetGameCurrentState == DaihugoGameRule.GameState.None)
+        {
+            _fieldController.RefreshCards(trumpCards);
+        }
+        else if (_daihugoInstance.GetGameCurrentState == DaihugoGameRule.GameState.CardChange)
         {
             _daihugoInstance.ExecuteCardExchange(playerId, trumpCards);
             var player = _playerObjects.First(p => p.PlayerId == playerId);
