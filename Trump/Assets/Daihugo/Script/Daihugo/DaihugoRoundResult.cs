@@ -52,8 +52,8 @@ public class DaihugoRoundResult
         }
         else
         {
-            foreach (var item in ResultPlayers) Debug.LogError("ResultPlayer:" + item.PlayerId);
-            Debug.LogError("GetPlayerIdRank CurrentRoundIndex:" + CurrentRoundIndex);
+            // foreach (var item in ResultPlayers) Debug.LogError("GetPlayerIdRank ResultPlayer:" + item.PlayerId);
+            // Debug.LogError("GetPlayerIdRank CurrentRoundIndex:" + CurrentRoundIndex);
             throw new Exception("not found playerId:" + playerId);
         }
     }

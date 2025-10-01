@@ -14800,7 +14800,7 @@ MonoBehaviour:
   _effectCutInController: {fileID: 1515653735}
   _cemeteryController: {fileID: 1769578479}
   _resultController: {fileID: 253717125}
-  _isDebug: 0
+  _isDebug: 1
   _isDebugCard: 1
 --- !u!1 &1807621279
 GameObject:
