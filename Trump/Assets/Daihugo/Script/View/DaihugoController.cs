@@ -155,7 +155,7 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
     {
         Debug.Log("<color=yellow>" + "OnEndStage GetGameCurrentState:" + _daihugoInstance.GetGameCurrentState + "</color>");
         _fieldController.Init();
-        _cemeteryController.Init();
+        _cemeteryController.RefreshCards(_daihugoInstance.CemeteryCards);
         RefreshPlayersState(_daihugoInstance.GetGameCurrentState);
         _effectCutInController.Play("Change Dealer", 0.5f, () =>
         {
