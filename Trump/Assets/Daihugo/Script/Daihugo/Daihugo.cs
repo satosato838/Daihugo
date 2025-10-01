@@ -421,22 +421,49 @@ public class Daihugo : IDaihugoObservable
     public void EndRoundPlayer(int playerId, List<TrumpCard> lastPlayCards)
     {
         var endPlayerIndex = GetPlayerIndex(playerId);
+
         //通常通りに終わっていれば大富豪から順にランクつける
         //反則上がりの場合は大貧民からランクつける
         gamePlayers[endPlayerIndex].RefreshIsPlay(false);
         gamePlayers[endPlayerIndex].RefreshIsMyturn(false);
+        if (CurrentRoundIndex > 1)
+        {
+            MiyakoOchi(endPlayerIndex);
+        }
 
         var endPlayer = new GamePlayer(playerId);
         GetCurrentRoundResult.AddRoundEndPlayer(endPlayer, IsForbiddenWin(lastPlayCards));
-
         gamePlayers[endPlayerIndex].RefreshRank(GetCurrentRoundResult.GetPlayerIdRank(playerId));
         SendToGoOut(endPlayerIndex);
+
+
+
         //Debug.Log($"EndRoundPlayer ResultPlayersCount:{GetCurrentRoundResult.ResultPlayersCount} == EntryPlayerCount - 1:{EntryPlayerCount - 1}");
         if (GetCurrentRoundResult.ResultPlayersCount == EntryPlayerCount - 1)
         {
             //最後まで残ったプレイヤーは最下位プレイヤーとして登録
             GetCurrentRoundResult.AddBoobyPlayer(gamePlayers.First(p => p.IsPlay));
             RoundEnd();
+        }
+    }
+
+    private void MiyakoOchi(int endPlayerIndex)
+    {
+        if (!gamePlayers.Any(p => p.PlayerRank == DaihugoGameRule.GameRank.DaiHugo)) return;
+        var daihugoPlayer = gamePlayers.First(p => p.PlayerRank == DaihugoGameRule.GameRank.DaiHugo);
+        var daihugoPlayerIndex = GetPlayerIndex(daihugoPlayer.PlayerId);
+        if (daihugoPlayer.IsPlay)
+        {
+            if (gamePlayers[endPlayerIndex].PlayerId != daihugoPlayer.PlayerId)
+            {
+                var endPlayer = new GamePlayer(daihugoPlayer.PlayerId);
+                GetCurrentRoundResult.AddBoobyPlayer(endPlayer);
+
+                gamePlayers[daihugoPlayerIndex].RefreshIsPlay(false);
+                gamePlayers[daihugoPlayerIndex].RefreshIsMyturn(false);
+                gamePlayers[daihugoPlayerIndex].RefreshRank(GetCurrentRoundResult.GetPlayerIdRank(daihugoPlayer.PlayerId));
+                SendToGoOut(daihugoPlayerIndex);
+            }
         }
     }
 
