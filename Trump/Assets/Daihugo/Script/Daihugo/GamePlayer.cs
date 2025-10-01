@@ -110,6 +110,13 @@ public class GamePlayer
             var fieldNumber = (int)fieldCards.First().Number;
             foreach (var card in handCards)
             {
+                //Joker1枚ならスペードの3以外出せない
+                if (fieldCards.First().Number == DaihugoGameRule.Number.Joker && fieldCards.Count == 1)
+                {
+                    card.RefreshIsSelectable(card.Suit == DaihugoGameRule.SuitType.Spade && card.Number == DaihugoGameRule.Number.Three);
+                    continue;
+                }
+
                 if (card.Number == DaihugoGameRule.Number.Joker)
                 {
                     var number = handCards.Any(v => (int)v.Number > fieldNumber);

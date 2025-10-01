@@ -193,9 +193,10 @@ public class Daihugo : IDaihugoObservable
             fieldCards.Add(playCards);
             PassCount = 0;
             lastPlayCardPlayerId = GamePlayers[currentPlayerIndex].PlayerId;
+            ActivateCardEffect(playCards);
         }
 
-        ActivateCardEffect(playCards);
+
         //誰かがカードをプレイしたらゲーム中のプレイヤー人数を更新
         //(上がった人が出したカードの後出せない場合と出せた場合の挙動に対応するため)
         CurrentStageGamePlayingMemberCount = GamePlayingMemberCount;
@@ -252,19 +253,18 @@ public class Daihugo : IDaihugoObservable
                 throw new Exception($"Exchange target not found for {fromPlayer.PlayerRank}");
             }
         }
-        foreach (var player in gamePlayers)
-        {
-            Debug.Log($"CardExchange: playerId={player.PlayerId}");
-            foreach (var card in player.HandCards)
-            {
-                Debug.Log($"CardExchange cardName={card.CardName}");
-            }
-        }
+        // foreach (var player in gamePlayers)
+        // {
+        //     Debug.Log($"CardExchange: playerId={player.PlayerId}");
+        //     foreach (var card in player.HandCards)
+        //     {
+        //         Debug.Log($"CardExchange cardName={card.CardName}");
+        //     }
+        // }
 
         currentGameState = DaihugoGameRule.GameState.GamePlay;
         SendGameState();
     }
-
 
     private void ActivateCardEffect(List<TrumpCard> playCards)
     {
@@ -283,9 +283,11 @@ public class Daihugo : IDaihugoObservable
             SendCardEffect();
         }
         else if (LastFieldCardPair.Count == 1 &&
-                 LastFieldCardPair.First().Number == DaihugoGameRule.Number.Joker &&
-                 playCards.First().Effect == DaihugoGameRule.Effect.Counter_Spade_3)
+                 fieldCards.SelectMany(v => v).Any(card => card.Number == DaihugoGameRule.Number.Joker) &&
+                 playCards.Any(card => card.Effect == DaihugoGameRule.Effect.Counter_Spade_3))
         {
+            //スペ3返しなので強制的に全員パスしたことにする
+            PassCount = CurrentStageGamePlayingMemberCount - 1;
             currentRoundCardEffects.Add(DaihugoGameRule.Effect.Counter_Spade_3);
             SendCardEffect();
         }
@@ -491,7 +493,6 @@ public class Daihugo : IDaihugoObservable
 
     public void SendCardEffect()
     {
-
         foreach (var observer in observers)
         {
             observer.OnCardEffect(GetCurrentRoundCardEffects.Last());
