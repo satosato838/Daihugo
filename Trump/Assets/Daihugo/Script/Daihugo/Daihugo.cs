@@ -443,7 +443,6 @@ public class Daihugo : IDaihugoObservable
     {
         EndCardEffect();
         RefreshCemeteryCards(fieldCards.SelectMany(v => v).ToList());
-        fieldCards = new List<List<TrumpCard>>();
         if (!GamePlayers[GetPlayerIndex(lastPlayCardPlayerId)].IsPlay)
         {
             lastPlayCardPlayerId = GamePlayers.First(p => p.IsPlay).PlayerId;
@@ -526,7 +525,7 @@ public class Daihugo : IDaihugoObservable
     {
         foreach (var observer in observers)
         {
-            observer.OnEndStage();
+            observer.OnEndStage(GetCurrentRoundCardEffects.Last());
         }
     }
 

@@ -122,16 +122,15 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
             }
             else
             {
-                StartCoroutine(StageStart(0.0f));
+                StageStart();
             }
 
         });
     }
 
-    private IEnumerator StageStart(float delay)
+    private void StageStart()
     {
         Debug.Log($"<color=yellow> StageStart DaihugoGameRule.GameState {_daihugoInstance.GetGameCurrentState}</color>");
-        yield return new WaitForSeconds(delay);
         if (_daihugoInstance.GetGameCurrentState == DaihugoGameRule.GameState.GamePlay)
         {
             _daihugoInstance.StageStart();
@@ -140,6 +139,7 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
     public void OnStartStage()
     {
         _fieldController.Init();
+        _cemeteryController.RefreshCards(_daihugoInstance.CemeteryCards);
         Debug.Log($"<color=yellow> OnStartStage DaihugoGameRule.GameState {_daihugoInstance.GetGameCurrentState}, CurrentPlayerId:{_daihugoInstance.CurrentPlayerId} </color>");
         RefreshPlayersState(_daihugoInstance.GetGameCurrentState);
     }
@@ -158,21 +158,24 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
         _bg.sprite = state == DaihugoGameRule.DaihugoState.None ? _nomalImage : _kakumeiImage;
     }
 
-    public void OnEndStage()
+    public void OnEndStage(DaihugoGameRule.Effect effect)
     {
         Debug.Log("<color=yellow>" + "OnEndStage GetGameCurrentState:" + _daihugoInstance.GetGameCurrentState + "</color>");
-        _fieldController.Init();
-        _cemeteryController.RefreshCards(_daihugoInstance.CemeteryCards);
         RefreshPlayersState(_daihugoInstance.GetGameCurrentState);
-        _effectCutInController.Play("Change Dealer", 0.5f, () =>
-        {
-            StartCoroutine(StageStart(0.0f));
-        });
+        _fieldController.RefreshCards(_daihugoInstance.LastFieldCardPair);
+        if (effect == DaihugoGameRule.Effect.Eight_Enders || effect == DaihugoGameRule.Effect.Counter_Spade_3) return;
+        StageStart();
     }
     public void OnCardEffect(DaihugoGameRule.Effect effect)
     {
         Debug.Log("<color=cyan>" + "OnCardEffect:" + effect + "</color>");
-        _effectCutInController.Play(effect.ToString());
+        _effectCutInController.Play(effect.ToString(), 0.5f, () =>
+        {
+            if (effect == DaihugoGameRule.Effect.Eight_Enders || effect == DaihugoGameRule.Effect.Counter_Spade_3)
+            {
+                StageStart();
+            }
+        });
     }
     public void OnDaihugoStateEffect(DaihugoGameRule.DaihugoState state)
     {
@@ -216,8 +219,7 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
                 }
                 _effectCutInController.Play("PLAY THE GAME", 0.5f, () =>
                 {
-
-                    StartCoroutine(StageStart(0.0f));
+                    StageStart();
                 });
             });
         }

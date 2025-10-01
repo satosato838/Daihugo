@@ -9,7 +9,7 @@ public interface IDaihugoObserver
     void OnCardEffect(DaihugoGameRule.Effect effect);
     void OnGameState(DaihugoGameRule.GameState state);
     void OnDaihugoStateEffect(DaihugoGameRule.DaihugoState state);
-    void OnEndStage();
+    void OnEndStage(DaihugoGameRule.Effect effect);
     void OnToGoOut(int goOutPlayerIndex);
     void OnEndRound(DaihugoGameRule.GameState state);
 }
