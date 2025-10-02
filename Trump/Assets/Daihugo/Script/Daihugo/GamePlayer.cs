@@ -6,6 +6,8 @@ using UnityEngine;
 public class GamePlayer
 {
     public int PlayerId;
+    public string PlayerName;
+    public string PlayerIconImageName;
     private bool isPlay;
     public bool IsPlay => isPlay;
     private DaihugoGameRule.DaihugoState _daihugoState;
@@ -16,6 +18,9 @@ public class GamePlayer
     public DaihugoGameRule.GameRank PlayerRank => _playerRank;
     private bool isMyTurn;
     public bool IsMyTurn => isMyTurn;
+
+    private bool isDealer;
+    public bool IsDealer => isDealer;
     public List<TrumpCard> CurrentSelectCards => handCards.Where(c => c.IsSelect).ToList();
     private List<TrumpCard> fieldCards;
     private List<TrumpCard> handCards;
@@ -31,13 +36,14 @@ public class GamePlayer
         _ => 0
     };
 
-    public GamePlayer(int id, List<TrumpCard> cards, DaihugoGameRule.GameRank rank, DaihugoGameRule.DaihugoState daihugoState, DaihugoGameRule.GameState gameState)
+    public GamePlayer(int id, string playerName, string iconImageName, DaihugoGameRule.GameRank rank, DaihugoGameRule.DaihugoState daihugoState, DaihugoGameRule.GameState gameState)
     {
         PlayerId = id;
         fieldCards = new List<TrumpCard>();
+        PlayerName = playerName;
+        PlayerIconImageName = iconImageName;
         RefreshIsPlay(true);
         RefreshRank(rank);
-        DealCard(cards);
         RefreshDaihugoState(daihugoState);
         RefreshGameState(gameState);
     }
@@ -69,6 +75,11 @@ public class GamePlayer
     public void RefreshIsPlay(bool val)
     {
         isPlay = val;
+    }
+
+    public void RefreshDealer(bool val)
+    {
+        isDealer = val;
     }
 
     public void SelectCard(TrumpCard selectCard)
@@ -211,7 +222,6 @@ public class GamePlayer
     }
     public void AddCards(List<TrumpCard> cards)
     {
-        //todo ここで大貧民に不正にカードが渡っている模様
         //Debug.Log("AddCards PlayerId:" + PlayerId);
         handCards.AddRange(cards);
         AllRefreshSelectCard();

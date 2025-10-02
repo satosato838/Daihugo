@@ -27,17 +27,17 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
         _daihugoObject.SetActive(false);
     }
 
-    public void GameStart()
+    public void GameStart(List<GamePlayer> players)
     {
         _daihugoObject.SetActive(true);
         _daihugoInstance = new Daihugo(roundCount: _isDebug ? 2 : 5, isDebug: _isDebug, isDebugCard: _isDebugCard);
         thisDisposable = _daihugoInstance.Subscribe(this);
-        StartRound(playerCount: 4);
+        StartRound(players);
     }
 
-    private void StartRound(int playerCount)
+    private void StartRound(List<GamePlayer> players)
     {
-        _daihugoInstance.RoundStart(playerCount);
+        _daihugoInstance.RoundStart(players);
     }
 
     private void PlayHands(int playerId, List<TrumpCard> trumpCards)
@@ -68,7 +68,12 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
     {
         for (var i = 0; i < _playerObjects.Length; i++)
         {
-            _playerObjects[i].RefreshGamePlayerState(state, _daihugoInstance.GamePlayers.First(p => p.PlayerId == i).IsMyTurn, _daihugoInstance.LastFieldCardPair);
+            var id = _playerObjects[i].PlayerId;
+            var gamePlayerData = _daihugoInstance.GamePlayers.First(p => p.PlayerId == id);
+            _playerObjects[i].RefreshGamePlayerState(state,
+                                                     gamePlayerData.IsDealer,
+                                                     gamePlayerData.IsMyTurn,
+                                                    _daihugoInstance.LastFieldCardPair);
         }
     }
     private void RefreshPlayerCards()
@@ -105,10 +110,12 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
                 EndRoundPlayer(id, v);
             }
             );
+            playerObject.DealCard(player.HandCards);
             if (state == DaihugoGameRule.GameState.CardChange)
             {
                 playerObject.UpdateSelectableCardsForExchange();
             }
+
         }
         _fieldController.Init();
         _cemeteryController.Init();
@@ -251,7 +258,7 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
             }
             else
             {
-                StartRound(_daihugoInstance.EntryPlayerCount);
+                StartRound(_daihugoInstance.GetRoundResults.Last().GetResultPlayers);
             }
         });
     }

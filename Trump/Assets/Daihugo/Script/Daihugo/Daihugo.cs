@@ -42,7 +42,7 @@ public class Daihugo : IDaihugoObservable
     private int lastPlayCardPlayerId = 0;
     #region GetPlayerData
 
-    private void CreatePlayerData(int playerCount)
+    private void CreatePlayerData(List<GamePlayer> players)
     {
         gamePlayers = new List<GamePlayer>();
         var resultData = new DaihugoRoundResult(daihugoRoundResults.Count + 1);
@@ -50,36 +50,23 @@ public class Daihugo : IDaihugoObservable
         {
             // var resultData1 = new DaihugoRoundResult();
             // resultData1.CreateDebugData();
-            // daihugoRoundResults.Add(resultData1);
-            // //Debug.Log("1roundCount:" + CurrentRoundIndex);
-            // var resultData2 = new DaihugoRoundResult();
-            // resultData2.CreateDebugData();
-            // daihugoRoundResults.Add(resultData2);
-            // //Debug.Log("2roundCount:" + CurrentRoundIndex);
-            // var resultData3 = new DaihugoRoundResult();
-            // resultData3.CreateDebugData();
-            // daihugoRoundResults.Add(resultData3);
-            // //Debug.Log("3roundCount:" + CurrentRoundIndex);
-            // var resultData4 = new DaihugoRoundResult();
-            // resultData4.CreateDebugData();
-            // daihugoRoundResults.Add(resultData4);
-            // //Debug.Log("4roundCount:" + CurrentRoundIndex);
         }
 
         if (daihugoRoundResults.Count == 0)
         {
-            for (var i = 0; i < playerCount; i++)
+            foreach (var player in players)
             {
-                gamePlayers.Add(new GamePlayer(i, DealTheCards(isDebug: IsDebugCard), defaultValue.rank, defaultValue.daihugoState, defaultValue.gameState));
+                //gamePlayers.Add(new GamePlayer(i, defaultValue.rank, defaultValue.daihugoState, defaultValue.gameState));
+                gamePlayers.Add(player);
             }
         }
         else
         {
             gamePlayers = daihugoRoundResults.Last().GetNextGamePlayers();
-            foreach (var player in gamePlayers)
-            {
-                player.DealCard(DealTheCards(isDebug: IsDebugCard));
-            }
+        }
+        foreach (var player in gamePlayers)
+        {
+            player.DealCard(DealTheCards(isDebug: IsDebugCard));
         }
         daihugoRoundResults.Add(resultData);
         // foreach (var item in daihugoRoundResults)
@@ -355,14 +342,14 @@ public class Daihugo : IDaihugoObservable
         daihugoRoundResults = new List<DaihugoRoundResult>();
     }
 
-    public void RoundStart(int playerCount)
+    public void RoundStart(List<GamePlayer> players)
     {
         fieldCards = new List<List<TrumpCard>>();
         cemeteryCards = new List<TrumpCard>();
         cardChangeList = new List<(int playerId, List<TrumpCard>)>();
 
         DeckCards = CreateDeck(isDebug: IsDebugCard);
-        CreatePlayerData(playerCount);
+        CreatePlayerData(players);
 
         //ランダムなプレイヤーに余ったカードを配る
         System.Random rnd = new System.Random();
@@ -384,7 +371,14 @@ public class Daihugo : IDaihugoObservable
         PassCount = 0;
         //ステージ開始時のゲーム参加中の人数を覚えておく
         CurrentStageGamePlayingMemberCount = GamePlayingMemberCount;
-        ChangeNextPlayerTurn(GetPlayerIndex(lastPlayCardPlayerId));
+        foreach (var player in gamePlayers)
+        {
+            player.RefreshDealer(false);
+        }
+        var dealerIndex = GetPlayerIndex(lastPlayCardPlayerId);
+        GamePlayers[dealerIndex].RefreshIsPlay(true);
+        gamePlayers[dealerIndex].RefreshDealer(true);
+        ChangeNextPlayerTurn(dealerIndex);
         fieldCards = new List<List<TrumpCard>>();
         SendStartStage();
     }
@@ -420,8 +414,11 @@ public class Daihugo : IDaihugoObservable
     ///プレイヤーが上がった場合の処理
     public void EndRoundPlayer(int playerId, List<TrumpCard> lastPlayCards)
     {
+        foreach (var player in gamePlayers)
+        {
+            player.RefreshDealer(false);
+        }
         var endPlayerIndex = GetPlayerIndex(playerId);
-
         //通常通りに終わっていれば大富豪から順にランクつける
         //反則上がりの場合は大貧民からランクつける
         gamePlayers[endPlayerIndex].RefreshIsPlay(false);
@@ -434,6 +431,7 @@ public class Daihugo : IDaihugoObservable
         var endPlayer = new GamePlayer(playerId);
         GetCurrentRoundResult.AddRoundEndPlayer(endPlayer, IsForbiddenWin(lastPlayCards));
         gamePlayers[endPlayerIndex].RefreshRank(GetCurrentRoundResult.GetPlayerIdRank(playerId));
+        gamePlayers[endPlayerIndex].RefreshDealer(true);
         SendToGoOut(endPlayerIndex);
 
 

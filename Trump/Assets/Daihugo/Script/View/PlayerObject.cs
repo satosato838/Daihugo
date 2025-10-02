@@ -1,13 +1,17 @@
 using TMPro;
-using UnityEngine;
-using UnityEngine.UI;
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
 
 public class PlayerObject : MonoBehaviour
 {
     [SerializeField] private Image _bg;
+    [SerializeField] private Image _playerIcon;
+    [SerializeField] private Image _roundDealerFlag;
     [SerializeField] private TextMeshProUGUI _txt_playerName;
     [SerializeField] private TextMeshProUGUI _txt_playerRank;
     [SerializeField] private Color _activeColor = new Color(0.5f, 0.5f, 0, 0.5f);
@@ -56,16 +60,36 @@ public class PlayerObject : MonoBehaviour
         // {
         //     Debug.Log(gamePlayer.PlayerId + ":PlayerItems:" + item.CardName);
         // }
-        _gamePlayer = new GamePlayer(gamePlayer.PlayerId, gamePlayer.HandCards, gamePlayer.PlayerRank, gamePlayer.DaihugoState, gamePlayer.GameState);
-        _txt_playerName.text = "GamePlayer_" + _gamePlayer.PlayerId.ToString();
+        _gamePlayer = new GamePlayer(gamePlayer.PlayerId, gamePlayer.PlayerName, gamePlayer.PlayerIconImageName, gamePlayer.PlayerRank, gamePlayer.DaihugoState, gamePlayer.GameState);
+        _txt_playerName.text = _gamePlayer.PlayerName;
+
         SetPlayerRank(_gamePlayer.PlayerRank);
         SetInteractablePlayBtn(false);
-        RefreshCards();
         ShowExChangeCards(new List<TrumpCard>());
         playCardAction = playCardCallback;
         roundEndAction = setEndCallback;
-        RefreshBGColor();
+        RefreshMyTurn();
+        LoadIconImage();
     }
+
+    public void DealCard(List<TrumpCard> trumpCards)
+    {
+        _gamePlayer.DealCard(trumpCards);
+        RefreshCards();
+    }
+
+    private void LoadIconImage()
+    {
+        var icon = Addressables.LoadAssetAsync<Sprite>(_gamePlayer.PlayerIconImageName + ".png");
+        icon.Completed += op =>
+         {
+             if (op.Status == AsyncOperationStatus.Succeeded)
+             {
+                 _playerIcon.sprite = op.Result;
+             }
+         };
+    }
+
     public void SetPlayerRank(DaihugoGameRule.GameRank rank)
     {
         _txt_playerRank.text = rank == DaihugoGameRule.GameRank.Heimin ? "" : "Rank:" + rank.ToString();
@@ -76,7 +100,7 @@ public class PlayerObject : MonoBehaviour
         _gamePlayer.RefreshDaihugoState(state);
     }
 
-    public void RefreshGamePlayerState(DaihugoGameRule.GameState gameState, bool isMyTurn, List<TrumpCard> fieldLastCards)
+    public void RefreshGamePlayerState(DaihugoGameRule.GameState gameState, bool isDealer, bool isMyTurn, List<TrumpCard> fieldLastCards)
     {
         _gamePlayer.RefreshGameState(gameState);
         if (_gamePlayer.GameState == DaihugoGameRule.GameState.CardChange)
@@ -86,6 +110,7 @@ public class PlayerObject : MonoBehaviour
         else
         {
             _gamePlayer.RefreshIsMyturn(isMyTurn);
+            _gamePlayer.RefreshDealer(isDealer);
             //Debug.Log($"PlayerObject RefreshGamePlayerState IsMyTurn:{IsMyTurn}: GamePlayerId:{_gamePlayer.PlayerId}");
             if (IsMyTurn)
             {
@@ -100,14 +125,20 @@ public class PlayerObject : MonoBehaviour
                 RefreshHandCardState(false);
                 SetInteractablePlayBtn(false);
             }
-            _passBtn.interactable = IsMyTurn;
-            RefreshBGColor();
+            RefreshDealer(_gamePlayer.IsDealer);
+            RefreshMyTurn();
         }
     }
 
-    private void RefreshBGColor()
+    private void RefreshMyTurn()
     {
         _bg.color = IsMyTurn ? _activeColor : _disActiveColor;
+        _passBtn.interactable = IsMyTurn;
+    }
+
+    public void RefreshDealer(bool val)
+    {
+        _roundDealerFlag.gameObject.SetActive(val);
     }
 
     private void RefreshHandCardState(bool val)

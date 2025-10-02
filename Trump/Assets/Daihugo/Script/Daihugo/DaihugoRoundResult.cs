@@ -40,7 +40,7 @@ public class DaihugoRoundResult
         ranks = ranks.OrderBy(a => Guid.NewGuid()).ToArray();
         for (var i = 0; i < 4; i++)
         {
-            var gamePlayer = new GamePlayer(ids[i], new List<TrumpCard>(), ranks[i], DaihugoGameRule.DaihugoState.None, DaihugoGameRule.GameState.CardChange);
+            var gamePlayer = new GamePlayer(ids[i], "player:" + i, "owl", ranks[i], DaihugoGameRule.DaihugoState.None, DaihugoGameRule.GameState.CardChange);
             ResultPlayers.Add(gamePlayer);
         }
     }
