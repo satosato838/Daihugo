@@ -60,16 +60,19 @@ public class PlayerObject : MonoBehaviour
         // {
         //     Debug.Log(gamePlayer.PlayerId + ":PlayerItems:" + item.CardName);
         // }
-        _gamePlayer = new GamePlayer(gamePlayer.PlayerId, gamePlayer.PlayerName, gamePlayer.PlayerIconImageName, gamePlayer.PlayerRank, gamePlayer.DaihugoState, gamePlayer.GameState);
+        _gamePlayer = new GamePlayer(gamePlayer.PlayerId, gamePlayer.PlayerName, gamePlayer.PlayerIconImageName,
+                                     gamePlayer.PlayerRank, gamePlayer.DaihugoState, gamePlayer.GameState);
+
         _txt_playerName.text = _gamePlayer.PlayerName;
 
         SetPlayerRank(_gamePlayer.PlayerRank);
         SetInteractablePlayBtn(false);
         ShowExChangeCards(new List<TrumpCard>());
+        RefreshMyTurn();
+        RefreshDealer(false);
+        LoadIconImage();
         playCardAction = playCardCallback;
         roundEndAction = setEndCallback;
-        RefreshMyTurn();
-        LoadIconImage();
     }
 
     public void DealCard(List<TrumpCard> trumpCards)
@@ -80,12 +83,18 @@ public class PlayerObject : MonoBehaviour
 
     private void LoadIconImage()
     {
+        if (_playerIcon.sprite != null) return;
         var icon = Addressables.LoadAssetAsync<Sprite>(_gamePlayer.PlayerIconImageName + ".png");
         icon.Completed += op =>
          {
              if (op.Status == AsyncOperationStatus.Succeeded)
              {
                  _playerIcon.sprite = op.Result;
+                 //_playerIcon.SetNativeSize();
+             }
+             else if (op.Status == AsyncOperationStatus.Failed)
+             {
+                 Debug.LogError("LoadIconImage Failed");
              }
          };
     }
