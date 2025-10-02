@@ -324,7 +324,7 @@ public class Daihugo : IDaihugoObservable
 
     public void RefreshCemeteryCards(List<TrumpCard> cards)
     {
-        cemeteryCards = cards;
+        cemeteryCards.AddRange(cards);
     }
 
     private List<IDaihugoObserver> observers = new List<IDaihugoObserver>();
