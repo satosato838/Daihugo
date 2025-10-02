@@ -92,12 +92,15 @@ public class PlayerObject : MonoBehaviour
                 //foreach (var item in fieldLastCards) Debug.Log("fieldLastCards:" + item.CardName);
                 _gamePlayer.RefreshSelectableHandCards(fieldLastCards);
                 RefreshCards();
+                SetInteractablePlayBtn(_gamePlayer.HavePlayCard);
+
             }
             else
             {
                 RefreshHandCardState(false);
+                SetInteractablePlayBtn(false);
             }
-            SetInteractablePlayBtn(IsMyTurn);
+            _passBtn.interactable = IsMyTurn;
             RefreshBGColor();
         }
     }
@@ -147,6 +150,7 @@ public class PlayerObject : MonoBehaviour
         }
         _HandPos.CalculateLayoutInputHorizontal();
         _HandPos.SetLayoutHorizontal();
+        SetInteractablePlayBtn(_gamePlayer.IsCardPlay);
     }
 
     public void DeleteExChangeCards()
@@ -218,6 +222,7 @@ public class PlayerObject : MonoBehaviour
 
     private void SetInteractablePlayBtn(bool val)
     {
+        //Debug.Log($"_gamePlayer{_gamePlayer.PlayerId} SetInteractablePlayBtn {val}:");
         if (_playBtn != null) _playBtn.interactable = val;
     }
 

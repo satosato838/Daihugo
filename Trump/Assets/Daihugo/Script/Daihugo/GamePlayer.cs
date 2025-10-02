@@ -21,6 +21,7 @@ public class GamePlayer
     private List<TrumpCard> handCards;
     public List<TrumpCard> HandCards => handCards;
     public bool IsCardPlay => fieldCards.Count == 0 ? true : fieldCards.Count == CurrentSelectCards.Count;
+    public bool HavePlayCard => handCards.Any(c => c.IsSelectable);
     public bool IsCardChangePlay => CurrentSelectCards.Count == PlayerRank switch
     {
         DaihugoGameRule.GameRank.DaiHugo => 2,
