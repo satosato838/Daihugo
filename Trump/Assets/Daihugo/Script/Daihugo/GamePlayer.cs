@@ -6,6 +6,7 @@ using UnityEngine;
 public class GamePlayer
 {
     public int PlayerId;
+    public bool IsCPU;
     public string PlayerName;
     public string PlayerIconImageName;
     private bool isPlay;
@@ -36,12 +37,13 @@ public class GamePlayer
         _ => 0
     };
 
-    public GamePlayer(int id, string playerName, string iconImageName, DaihugoGameRule.GameRank rank, DaihugoGameRule.DaihugoState daihugoState, DaihugoGameRule.GameState gameState)
+    public GamePlayer(int id, string playerName, string iconImageName, DaihugoGameRule.GameRank rank, DaihugoGameRule.DaihugoState daihugoState, DaihugoGameRule.GameState gameState, bool isCPU = false)
     {
         PlayerId = id;
         fieldCards = new List<TrumpCard>();
-        PlayerName = playerName;
+        PlayerName = isCPU ? playerName + "_CPU" : playerName;
         PlayerIconImageName = iconImageName;
+        IsCPU = isCPU;
         RefreshIsPlay(true);
         RefreshRank(rank);
         RefreshDaihugoState(daihugoState);

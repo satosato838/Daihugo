@@ -11,6 +11,7 @@ public class TrumpCardObject : MonoBehaviour
     [SerializeField] private Button _button;
     [SerializeField] private Transform _moveUpPos;
     [SerializeField] private Transform _defaultPos;
+    public bool IsSelect => TrumpCardData.IsSelect;
     public DaihugoGameRule.Number Number => TrumpCardData.Number;
     public DaihugoGameRule.SuitType SuitType => TrumpCardData.Suit;
     private bool IsHand;
@@ -94,6 +95,16 @@ public class TrumpCardObject : MonoBehaviour
         bool isInteractable = TrumpCardData.Number == selectFirstCard.Number ||
                               TrumpCardData.Number == DaihugoGameRule.Number.Joker;
         RefreshButtonInteractable(isInteractable);
+    }
+
+    public void AutoSelect()
+    {
+        if (onClick == null) return;
+        Debug.Log("AutoSelect TrumpCardData.Number:" + TrumpCardData.Number);
+        Debug.Log("AutoSelect TrumpCardData.Suit:" + TrumpCardData.Suit);
+        TrumpCardData.RefreshIsSelect(true);
+        RefreshCardImagePos();
+        onClick?.Invoke(TrumpCardData);
     }
 
     private void OnClick()

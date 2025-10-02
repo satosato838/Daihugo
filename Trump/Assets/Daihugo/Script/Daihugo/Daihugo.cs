@@ -16,6 +16,7 @@ public class Daihugo : IDaihugoObservable
     private List<TrumpCard> DeckCards;
     private List<GamePlayer> gamePlayers;
     public List<GamePlayer> GamePlayers => gamePlayers;
+    public GamePlayer CurrentGamePlayer => gamePlayers.First(p => p.PlayerId == CurrentPlayerId);
     private List<List<TrumpCard>> fieldCards;
     public List<TrumpCard> LastFieldCardPair => fieldCards.Count == 0 ? new List<TrumpCard>() : fieldCards.Last();
     private List<TrumpCard> cemeteryCards;
@@ -25,7 +26,6 @@ public class Daihugo : IDaihugoObservable
     private List<DaihugoRoundResult> daihugoRoundResults;
     private DaihugoRoundResult GetCurrentRoundResult => daihugoRoundResults.Last();
     public List<DaihugoRoundResult> GetRoundResults => daihugoRoundResults;
-    private (DaihugoGameRule.DaihugoState daihugoState, DaihugoGameRule.GameRank rank, DaihugoGameRule.GameState gameState) defaultValue = (DaihugoGameRule.DaihugoState.None, DaihugoGameRule.GameRank.Heimin, DaihugoGameRule.GameState.None);
     private DaihugoGameRule.DaihugoState beforeState;
     private DaihugoGameRule.DaihugoState currentState;
     public DaihugoGameRule.DaihugoState GetDaihugoCurrentState => currentState;
@@ -56,7 +56,6 @@ public class Daihugo : IDaihugoObservable
         {
             foreach (var player in players)
             {
-                //gamePlayers.Add(new GamePlayer(i, defaultValue.rank, defaultValue.daihugoState, defaultValue.gameState));
                 gamePlayers.Add(player);
             }
         }
@@ -164,6 +163,10 @@ public class Daihugo : IDaihugoObservable
     //プレイヤーが手札のカードを出した時の処理
     public void PlayHands(List<TrumpCard> playCards)
     {
+        foreach (var item in playCards)
+        {
+            Debug.Log("playCards:" + item.CardName);
+        }
         //空のリストがきたらパス判定
         if (playCards.Count() == 0)
         {
@@ -388,6 +391,68 @@ public class Daihugo : IDaihugoObservable
         SendGameState();
     }
 
+    public void CPUCardPlay(GamePlayer cpuGamePlayer, Action<List<TrumpCard>> selectCards)
+    {
+        Debug.Log("cpuGamePlayer:" + cpuGamePlayer.PlayerId);
+        var selects = GetMinHandPairs(GetHandPairs(cpuGamePlayer));
+        selectCards?.Invoke(selects);
+    }
+
+    private List<(DaihugoGameRule.Number number, List<TrumpCard> cards)> GetHandPairs(GamePlayer cpuGamePlayer)
+    {
+        Debug.Log("GetMinHandPairs PlayerName:" + cpuGamePlayer.PlayerName);
+        List<(DaihugoGameRule.Number number, List<TrumpCard> cards)> pairHandList = new List<(DaihugoGameRule.Number, List<TrumpCard>)>();
+        foreach (var card in cpuGamePlayer.HandCards)
+        {
+            if (!pairHandList.Any(c => c.number == card.Number))
+            {
+                var pairList = cpuGamePlayer.HandCards.Where(c => c.Number == card.Number || c.Number == DaihugoGameRule.Number.Joker).ToList();
+                var list = new List<TrumpCard>();
+                pairHandList.Add((pairList.First().Number, pairList));
+            }
+        }
+        var maxPairCount = pairHandList.Max(pair => pair.cards.Count);
+        var minNumber = pairHandList.Min(pair => pair.number);
+        var resultList = pairHandList.Where(handList => handList.cards.Count == maxPairCount).First().cards;
+        // foreach (var item in pairHandList)
+        // {
+        //     Debug.Log("GetMinHandPairs resultList Number:" + item.number);
+        //     foreach (var card in item.cards)
+        //     {
+        //         Debug.Log("GetMinHandPairs resultList CardName:" + card.CardName);
+        //     }
+        // }
+        // Debug.Log("GetMinHandPairs maxPairCount:" + maxPairCount);
+        // foreach (var card in resultList)
+        // {
+        //     Debug.Log("resultList CardName:" + card.CardName);
+        // }
+        return pairHandList;
+    }
+
+    private List<TrumpCard> GetMinHandPairs(List<(DaihugoGameRule.Number number, List<TrumpCard> cards)> pairHandList)
+    {
+        var maxPairCount = LastFieldCardPair.Count == 0 ? pairHandList.Max(pair => pair.cards.Count) : LastFieldCardPair.Count;
+        var fieldNumber = LastFieldCardPair.Count == 0 ? (currentState == DaihugoGameRule.DaihugoState.None ? pairHandList.SelectMany(pair => pair.cards).Min(c => c.Number) : pairHandList.SelectMany(pair => pair.cards).Max(c => c.Number)) :
+                                                          LastFieldCardPair.First().Number;
+
+        var resultList = pairHandList.Where(handList => handList.cards.Count == maxPairCount)
+                                     .Where(list => currentState == DaihugoGameRule.DaihugoState.None ?
+                                            list.cards.First().Number > fieldNumber :
+                                            fieldNumber > list.cards.Last().Number);
+
+        // Debug.Log($"LastFieldCardPair.Count == 0:{LastFieldCardPair.Count == 0} maxPairCount:{maxPairCount}");
+        // foreach (var item in resultList)
+        // {
+        //     foreach (var card in item.cards)
+        //     {
+        //         Debug.Log("GetMinHandPairs:" + card.CardName);
+        //     }
+        // }
+        return resultList.Count() == 0 ? new List<TrumpCard>() :
+               currentState == DaihugoGameRule.DaihugoState.None ? resultList.First().cards : resultList.Last().cards;
+    }
+
     private void ChangeNextPlayerTurn(int nextPlayerIndex)
     {
         //Debug.Log($"before ChangeNextPlayerTurn nextPlayerIndex {nextPlayerIndex} CurrentPlayerIndex {currentPlayerIndex}");
@@ -400,16 +465,13 @@ public class Daihugo : IDaihugoObservable
         //リストの先頭にいたまだ試合中の人を親にする
         if (!gamePlayers[currentPlayerIndex].IsPlay)
         {
-            //Debug.Log($"!gamePlayers[currentPlayerIndex].IsPlay ChangeNextPlayerTurn nextPlayerIndex {nextPlayerIndex} CurrentPlayerIndex {currentPlayerIndex}");
             currentPlayerIndex = GetPlayerIndex(gamePlayers.First(p => p.IsPlay).PlayerId);
-        }
-        else
-        {
-            //Debug.Log($"gamePlayers[currentPlayerIndex].IsPlay ChangeNextPlayerTurn nextPlayerIndex {nextPlayerIndex} CurrentPlayerIndex {currentPlayerIndex}");
         }
         gamePlayers[currentPlayerIndex].RefreshIsMyturn(true);
         //Debug.Log($"after ChangeNextPlayerTurn nextPlayerIndex {nextPlayerIndex} CurrentPlayerIndex {currentPlayerIndex}");
     }
+
+
 
     ///プレイヤーが上がった場合の処理
     public void EndRoundPlayer(int playerId, List<TrumpCard> lastPlayCards)
@@ -433,8 +495,6 @@ public class Daihugo : IDaihugoObservable
         gamePlayers[endPlayerIndex].RefreshRank(GetCurrentRoundResult.GetPlayerIdRank(playerId));
         gamePlayers[endPlayerIndex].RefreshDealer(true);
         SendToGoOut(endPlayerIndex);
-
-
 
         //Debug.Log($"EndRoundPlayer ResultPlayersCount:{GetCurrentRoundResult.ResultPlayersCount} == EntryPlayerCount - 1:{EntryPlayerCount - 1}");
         if (GetCurrentRoundResult.ResultPlayersCount == EntryPlayerCount - 1)
@@ -484,6 +544,8 @@ public class Daihugo : IDaihugoObservable
         //Debug.Log("RoundEnd currentGameState:" + currentGameState);
         SendEndRound();
     }
+
+
 
     public void SendStartRound()
     {

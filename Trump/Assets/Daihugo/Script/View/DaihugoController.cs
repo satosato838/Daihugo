@@ -1,9 +1,9 @@
 using System;
 using System.Linq;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-
 
 public class DaihugoController : MonoBehaviour, IDaihugoObserver
 {
@@ -83,6 +83,17 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
         }
     }
 
+    private IEnumerator CpuPlay()
+    {
+        yield return new WaitForSeconds(2.0f);
+        var player = _daihugoInstance.CurrentGamePlayer;
+        _daihugoInstance.CPUCardPlay(player, v =>
+            {
+                var playerObject = _playerObjects.First(pObject => pObject.PlayerId == player.PlayerId);
+                playerObject.AutoPlayCard(v);
+            });
+    }
+
     private void RefreshPlayerRank(int goOutPlayerIndex)
     {
         var currentPlayer = _playerObjects[goOutPlayerIndex];
@@ -107,7 +118,8 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
             (id, v) =>
             {
                 EndRoundPlayer(id, v);
-            }
+            },
+            isDebug: _isDebug
             );
             playerObject.DealCard(player.HandCards);
             if (state == DaihugoGameRule.GameState.CardChange)
@@ -145,13 +157,26 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
     {
         _fieldController.Init();
         _cemeteryController.RefreshCards(_daihugoInstance.CemeteryCards);
-        Debug.Log($"<color=yellow> OnStartStage DaihugoGameRule.GameState {_daihugoInstance.GetGameCurrentState}, CurrentPlayerId:{_daihugoInstance.CurrentPlayerId} </color>");
         RefreshPlayersState(_daihugoInstance.GetGameCurrentState);
+        var currentPlayer = _daihugoInstance.CurrentGamePlayer;
+        Debug.Log($"<color=yellow> OnStartStage DaihugoGameRule.GameState {_daihugoInstance.GetGameCurrentState},currentPlayer.IsCPU:{currentPlayer.IsCPU} CurrentPlayerId:{_daihugoInstance.CurrentPlayerId} </color>");
+        if (currentPlayer.IsCPU)
+        {
+            StartCoroutine(CpuPlay());
+        }
     }
-    public void OnChangePlayerTurn(GamePlayer gamePlayer)
+    public void OnChangePlayerTurn(GamePlayer currentPlayer)
     {
-        Debug.Log("<color=cyan>" + "OnChangePlayerTurn PlayerId:" + gamePlayer.PlayerId + "</color>");
+        Debug.Log("<color=cyan>" + "OnChangePlayerTurn PlayerId:" + currentPlayer.PlayerId + "currentPlayer.IsCPU:" + currentPlayer.IsCPU + "</color>");
         RefreshPlayersState(_daihugoInstance.GetGameCurrentState);
+        if (currentPlayer.IsCPU)
+        {
+            StartCoroutine(CpuPlay());
+        }
+        else
+        {
+            Debug.Log("<color=cyan> mainplayer </color>");
+        }
     }
     public void OnKakumei(DaihugoGameRule.DaihugoState state)
     {

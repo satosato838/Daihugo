@@ -42,8 +42,8 @@ public class TallotController : MonoBehaviour
         List<GamePlayer> players = new List<GamePlayer>();
         for (int i = 0; i < playerNames.Length; i++)
         {
-            players.Add(new GamePlayer(i, playerNames[i], playerIcons[i], DaihugoGameRule.GameRank.Heimin, DaihugoGameRule.DaihugoState.None, DaihugoGameRule.GameState.None));
-
+            players.Add(new GamePlayer(i, playerNames[i], playerIcons[i],
+            DaihugoGameRule.GameRank.Heimin, DaihugoGameRule.DaihugoState.None, DaihugoGameRule.GameState.None, isCPU: playerNames[i].Contains("CPU")));
         }
         _daihugoController.GameStart(players);
     }

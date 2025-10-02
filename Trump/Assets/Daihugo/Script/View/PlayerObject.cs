@@ -21,6 +21,7 @@ public class PlayerObject : MonoBehaviour
     [SerializeField] private HorizontalLayoutGroup _ExchangeCardPos;
     [SerializeField] private Button _playBtn;
     [SerializeField] private Button _passBtn;
+    private bool IsDebug;
 
     private bool IsMyPlayer => _gamePlayer.PlayerId == 0;
     public int PlayerId => _gamePlayer.PlayerId;
@@ -39,6 +40,7 @@ public class PlayerObject : MonoBehaviour
         {
             _playBtn.onClick.AddListener(() =>
             {
+                if (_gamePlayer.IsCPU) return;
                 if (Time.time - _lastClickTime < 0.2f) return;
                 _lastClickTime = Time.time;
                 OnPlayButtonClick();
@@ -48,20 +50,22 @@ public class PlayerObject : MonoBehaviour
         {
             _passBtn.onClick.AddListener(() =>
             {
+                if (_gamePlayer.IsCPU) return;
                 if (Time.time - _lastClickTime < 0.2f) return;
                 _lastClickTime = Time.time;
                 OnPassButtonClick();
             });
         }
     }
-    public void Init(GamePlayer gamePlayer, Action<int, List<TrumpCard>> playCardCallback, Action<int, List<TrumpCard>> setEndCallback)
+    public void Init(GamePlayer gamePlayer, Action<int, List<TrumpCard>> playCardCallback, Action<int, List<TrumpCard>> setEndCallback, bool isDebug)
     {
         // foreach (var item in gamePlayer.HandCards)
         // {
         //     Debug.Log(gamePlayer.PlayerId + ":PlayerItems:" + item.CardName);
         // }
+        IsDebug = isDebug;
         _gamePlayer = new GamePlayer(gamePlayer.PlayerId, gamePlayer.PlayerName, gamePlayer.PlayerIconImageName,
-                                     gamePlayer.PlayerRank, gamePlayer.DaihugoState, gamePlayer.GameState);
+              gamePlayer.PlayerRank, gamePlayer.DaihugoState, gamePlayer.GameState, gamePlayer.IsCPU);
 
         _txt_playerName.text = _gamePlayer.PlayerName;
 
@@ -174,17 +178,21 @@ public class PlayerObject : MonoBehaviour
                 SelectCard(v);
             });
 
-            // if (IsMyPlayer)
-            // {
-            //     hand.SetCardImage(item);
-            // }
-            // else
-            // {
-            //     hand.SetBG();
-            // }
-
-            //debug
-            hand.ShowFrontCardImage();
+            if (IsDebug)
+            {
+                hand.ShowFrontCardImage();
+            }
+            else
+            {
+                if (IsMyPlayer)
+                {
+                    hand.ShowFrontCardImage();
+                }
+                else
+                {
+                    hand.SetBG();
+                }
+            }
 
             handCardObjects.Add(hand);
         }
@@ -219,21 +227,39 @@ public class PlayerObject : MonoBehaviour
             var exchangeCard = Instantiate(trumpCardObject, _ExchangeCardPos.transform);
             exchangeCard.Init(new TrumpCard(item.Suit, new CardNumber(item.Number)), isHand: false);
 
-            // if (IsMyPlayer)
-            // {
-            //     hand.SetCardImage(item);
-            // }
-            // else
-            // {
-            //     hand.SetBG();
-            // }
-
-            //debug
-            exchangeCard.ShowFrontCardImage();
+            if (IsDebug)
+            {
+                exchangeCard.ShowFrontCardImage();
+            }
+            else
+            {
+                if (IsMyPlayer)
+                {
+                    exchangeCard.ShowFrontCardImage();
+                }
+                else
+                {
+                    exchangeCard.SetBG();
+                }
+            }
         }
         _ExchangeCardPos.CalculateLayoutInputHorizontal();
         _ExchangeCardPos.SetLayoutHorizontal();
 
+    }
+
+    public void AutoPlayCard(List<TrumpCard> cards)
+    {
+        foreach (var item in cards)
+        {
+            handCardObjects.First(cObject => cObject.Number == item.Number && cObject.SuitType == item.Suit)
+                           .AutoSelect();
+        }
+        // foreach (var hand in handCardObjects)
+        // {
+        //     Debug.Log($"AutoPlayCard :{hand.SuitType},{hand.Number}:IsSelect:{hand.IsSelect}");
+        // }
+        OnPlayButtonClick();
     }
 
     public void SelectCard(TrumpCard trumpCard)
@@ -248,14 +274,8 @@ public class PlayerObject : MonoBehaviour
 
         for (var i = 0; i < _gamePlayer.HandCards.Count; i++)
         {
-            if (_gamePlayer.CurrentSelectCards.Count == 0)
-            {
-                handCardObjects[i].RefreshOnState(null);
-            }
-            else
-            {
-                handCardObjects[i].RefreshOnState(_gamePlayer.CurrentSelectCards.First());
-            }
+            //Debug.Log("_gamePlayer.CurrentSelectCards.Count == 0");
+            handCardObjects[i].RefreshOnState(_gamePlayer.CurrentSelectCards.Count == 0 ? null : _gamePlayer.CurrentSelectCards.First());
         }
         SetInteractablePlayBtn(_gamePlayer.IsCardPlay);
     }
@@ -276,11 +296,12 @@ public class PlayerObject : MonoBehaviour
             card.RefreshButtonInteractable(cardData.IsSelectable);
         }
     }
-    public void OnPlayButtonClick()
+    private void OnPlayButtonClick()
     {
         List<TrumpCard> trumpCards = new List<TrumpCard>();
         foreach (var card in SelectCards)
         {
+            //Debug.Log("SelectCard:" + card.CardName);
             trumpCards.Add(new TrumpCard(card.Suit, new CardNumber(card.Number)));
         }
         _gamePlayer.PlayCards(v =>
@@ -294,6 +315,7 @@ public class PlayerObject : MonoBehaviour
         RefreshCards();
         playCardAction?.Invoke(_gamePlayer.PlayerId, trumpCards);
     }
+
     public void OnPassButtonClick()
     {
         playCardAction?.Invoke(_gamePlayer.PlayerId, new List<TrumpCard>());
