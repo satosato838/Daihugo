@@ -26,7 +26,7 @@ public class CemeteryController : MonoBehaviour
         foreach (var item in playCards)
         {
             var hand = Instantiate(_trumpCardObject, _cemeteryPos.transform);
-            hand.Init(new TrumpCard(item.Suit, new CardNumber(item.Number)), isHand: false, v =>
+            hand.Init(new TrumpCard(item.Suit, new CardNumber(item.Number)), isHand: false, isButton: true, v =>
             {
                 _txtCemeteryCount.text = _cemeteryPos.transform.childCount.ToString();
                 Invoke(nameof(ResetText), 1.0f);

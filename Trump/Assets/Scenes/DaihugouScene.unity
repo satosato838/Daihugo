@@ -6329,7 +6329,7 @@ MonoBehaviour:
   playerNames:
   - Player1
   - CPU2
-  - Player3
+  - CPU3
   - CPU4
   playerIcons:
   - skullwing_fire

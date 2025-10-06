@@ -167,7 +167,7 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
     }
     public void OnChangePlayerTurn(GamePlayer currentPlayer)
     {
-        Debug.Log("<color=cyan>" + "OnChangePlayerTurn PlayerId:" + currentPlayer.PlayerId + "currentPlayer.IsCPU:" + currentPlayer.IsCPU + "</color>");
+        Debug.Log("<color=cyan> OnChangePlayerTurn currentPlayer.IsCPU:" + currentPlayer.IsCPU + "</color>");
         RefreshPlayersState(_daihugoInstance.GetGameCurrentState);
         if (currentPlayer.IsCPU)
         {
@@ -175,7 +175,7 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
         }
         else
         {
-            Debug.Log("<color=cyan> mainplayer </color>");
+            Debug.Log($"<color=cyan> currentPlayerName:{currentPlayer.PlayerName} </color>");
         }
     }
     public void OnKakumei(DaihugoGameRule.DaihugoState state)

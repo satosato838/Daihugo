@@ -173,7 +173,7 @@ public class PlayerObject : MonoBehaviour
         foreach (var item in _gamePlayer.HandCards)
         {
             var hand = Instantiate(trumpCardObject, _HandPos.transform);
-            hand.Init(item, isHand: true, v =>
+            hand.Init(item, isHand: true, isButton: !_gamePlayer.IsCPU, v =>
             {
                 SelectCard(v);
             });
@@ -211,10 +211,10 @@ public class PlayerObject : MonoBehaviour
 
     public void ShowHandCards()
     {
-        foreach (var card in handCardObjects)
-        {
-            Debug.Log($"ShowHandCards {card.SuitType},{card.Number}:");
-        }
+        // foreach (var card in handCardObjects)
+        // {
+        //     Debug.Log($"ShowHandCards {card.SuitType},{card.Number}:");
+        // }
     }
 
     public void ShowExChangeCards(List<TrumpCard> trumpCards)
@@ -225,7 +225,10 @@ public class PlayerObject : MonoBehaviour
         foreach (var item in trumpCards)
         {
             var exchangeCard = Instantiate(trumpCardObject, _ExchangeCardPos.transform);
-            exchangeCard.Init(new TrumpCard(item.Suit, new CardNumber(item.Number)), isHand: false);
+            exchangeCard.Init(new TrumpCard(item.Suit,
+                              new CardNumber(item.Number)),
+                              isHand: false,
+                              isButton: !_gamePlayer.IsCPU);
 
             if (IsDebug)
             {

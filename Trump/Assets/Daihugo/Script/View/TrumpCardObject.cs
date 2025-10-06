@@ -15,6 +15,7 @@ public class TrumpCardObject : MonoBehaviour
     public DaihugoGameRule.Number Number => TrumpCardData.Number;
     public DaihugoGameRule.SuitType SuitType => TrumpCardData.Suit;
     private bool IsHand;
+    private bool IsButton;
     private float _lastClickTime;
     private TrumpCard TrumpCardData;
     private Action<TrumpCard> onClick;
@@ -22,16 +23,18 @@ public class TrumpCardObject : MonoBehaviour
     {
         _button.onClick.AddListener(() =>
         {
+            if (!IsButton) return;
             if (Time.time - _lastClickTime < 0.2f) return;
             _lastClickTime = Time.time;
             OnClick();
         });
     }
 
-    public void Init(TrumpCard trumpCard, bool isHand, Action<TrumpCard> onclick = null)
+    public void Init(TrumpCard trumpCard, bool isHand, bool isButton, Action<TrumpCard> onclick = null)
     {
         TrumpCardData = trumpCard;
         IsHand = isHand;
+        IsButton = isButton;
         onClick = onclick;
         RefreshCardImagePos();
     }
@@ -100,8 +103,8 @@ public class TrumpCardObject : MonoBehaviour
     public void AutoSelect()
     {
         if (onClick == null) return;
-        Debug.Log("AutoSelect TrumpCardData.Number:" + TrumpCardData.Number);
-        Debug.Log("AutoSelect TrumpCardData.Suit:" + TrumpCardData.Suit);
+        // Debug.Log("AutoSelect TrumpCardData.Number:" + TrumpCardData.Number);
+        // Debug.Log("AutoSelect TrumpCardData.Suit:" + TrumpCardData.Suit);
         TrumpCardData.RefreshIsSelect(true);
         RefreshCardImagePos();
         onClick?.Invoke(TrumpCardData);
