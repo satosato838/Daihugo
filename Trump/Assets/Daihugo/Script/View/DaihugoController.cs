@@ -20,6 +20,8 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
     [SerializeField] private bool _isDebugCard;
     private Daihugo _daihugoInstance;
 
+    IEnumerator enumerator;
+
     IDisposable thisDisposable;
     void Start()
     {
@@ -160,22 +162,33 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
         RefreshPlayersState(_daihugoInstance.GetGameCurrentState);
         var currentPlayer = _daihugoInstance.CurrentGamePlayer;
         Debug.Log($"<color=yellow> OnStartStage DaihugoGameRule.GameState {_daihugoInstance.GetGameCurrentState},currentPlayer.IsCPU:{currentPlayer.IsCPU} CurrentPlayerId:{_daihugoInstance.CurrentPlayerId} </color>");
+        if (enumerator != null)
+        {
+            StopCoroutine(enumerator);
+        }
         if (currentPlayer.IsCPU)
         {
-            StartCoroutine(CpuPlay());
+            enumerator = CpuPlay();
+            StartCoroutine(enumerator);
         }
     }
     public void OnChangePlayerTurn(GamePlayer currentPlayer)
     {
         Debug.Log("<color=cyan> OnChangePlayerTurn currentPlayer.IsCPU:" + currentPlayer.IsCPU + "</color>");
         RefreshPlayersState(_daihugoInstance.GetGameCurrentState);
+        if (enumerator != null)
+        {
+            StopCoroutine(enumerator);
+        }
         if (currentPlayer.IsCPU)
         {
-            StartCoroutine(CpuPlay());
+            Debug.Log($"<color=red> IsCPU currentPlayerName:{currentPlayer.PlayerName} </color>");
+            enumerator = CpuPlay();
+            StartCoroutine(enumerator);
         }
         else
         {
-            Debug.Log($"<color=cyan> currentPlayerName:{currentPlayer.PlayerName} </color>");
+            Debug.Log($"<color=cyan> currentPlayerName:{currentPlayer.PlayerName} {_daihugoInstance.LastFieldCardPair.First().Number} </color>");
         }
     }
     public void OnKakumei(DaihugoGameRule.DaihugoState state)
