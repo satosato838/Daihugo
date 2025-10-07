@@ -20,6 +20,7 @@ public class PlayerObject : MonoBehaviour
     [SerializeField] private HorizontalLayoutGroup _HandPos;
     [SerializeField] private HorizontalLayoutGroup _ExchangeCardPos;
     [SerializeField] private Button _playBtn;
+    [SerializeField] private PassBalloonObject _passBalloon;
     [SerializeField] private Button _passBtn;
     private bool IsDebug;
 
@@ -75,6 +76,7 @@ public class PlayerObject : MonoBehaviour
         RefreshMyTurn();
         RefreshDealer(false);
         LoadIconImage();
+        _passBalloon.Hide();
         playCardAction = playCardCallback;
         roundEndAction = setEndCallback;
     }
@@ -316,11 +318,16 @@ public class PlayerObject : MonoBehaviour
         });
 
         RefreshCards();
+        if (trumpCards.Count == 0)
+        {
+            _passBalloon.Show();
+        }
         playCardAction?.Invoke(_gamePlayer.PlayerId, trumpCards);
     }
 
     public void OnPassButtonClick()
     {
+        _passBalloon.Show();
         playCardAction?.Invoke(_gamePlayer.PlayerId, new List<TrumpCard>());
     }
 }
