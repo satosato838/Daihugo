@@ -189,24 +189,89 @@ public class GamePlayer
                 card.RefreshIsSelectable(selectable);
             }
         }
+    }
 
-        List<TrumpCard> GetStrongestCards(List<TrumpCard> trumpCards)
+    public void CPUAutoSelectCardForExchange()
+    {
+        if (PlayerRank == DaihugoGameRule.GameRank.Hinmin ||
+            PlayerRank == DaihugoGameRule.GameRank.DaiHinmin)
         {
-            //Debug.Log(PlayerId + " itrumpCards:" + trumpCards.Count);
-            if (trumpCards.Count == 0) return new List<TrumpCard>();
-            try
+            var strongestCards = GetStrongestCards(handCards);
+
+            if (PlayerRank == DaihugoGameRule.GameRank.DaiHinmin)
             {
-                // foreach (var item in trumpCards)
-                // {
-                //     Debug.Log(PlayerId + " item CardName:" + item.CardName);
-                // }
-                var maxValue = trumpCards.Max(c => (int)c.Number);
-                return trumpCards.Where(c => (int)c.Number == maxValue).ToList();
+                if (strongestCards.Count == 1)
+                {
+                    // 大貧民は 2枚 → 1番強いカード群を除外して次点の強いカードも対象にする
+                    var temp = handCards.ToList();
+                    temp.RemoveAll(c => c.Number == strongestCards.First().Number);
+                    strongestCards.AddRange(GetStrongestCards(temp));
+                }
             }
-            catch (Exception e)
+
+            foreach (var card in handCards)
             {
-                throw new Exception(e.Message);
+                card.RefreshIsSelect(strongestCards.Any(c => c.Number == card.Number));
             }
+        }
+        else
+        {
+            var weakestCards = GetWeakestCards(handCards);
+
+            if (PlayerRank == DaihugoGameRule.GameRank.DaiHugo)
+            {
+                if (weakestCards.Count == 1)
+                {
+                    // 大富豪は 2枚 → 1番弱いカード群を除外して次点の強いカードも対象にする
+                    var temp = handCards.ToList();
+                    temp.RemoveAll(c => c.Number == weakestCards.First().Number);
+                    weakestCards.AddRange(GetWeakestCards(temp));
+                }
+            }
+
+            foreach (var card in handCards)
+            {
+                card.RefreshIsSelect(weakestCards.Any(c => c.Number == card.Number));
+            }
+        }
+    }
+
+
+    List<TrumpCard> GetStrongestCards(List<TrumpCard> trumpCards)
+    {
+        //Debug.Log(PlayerId + " itrumpCards:" + trumpCards.Count);
+        if (trumpCards.Count == 0) return new List<TrumpCard>();
+        try
+        {
+            // foreach (var item in trumpCards)
+            // {
+            //     Debug.Log(PlayerId + " item CardName:" + item.CardName);
+            // }
+            var maxValue = trumpCards.Max(c => (int)c.Number);
+            return trumpCards.Where(c => (int)c.Number == maxValue).ToList();
+        }
+        catch (Exception e)
+        {
+            throw new Exception(e.Message);
+        }
+    }
+
+    List<TrumpCard> GetWeakestCards(List<TrumpCard> trumpCards)
+    {
+        //Debug.Log(PlayerId + " itrumpCards:" + trumpCards.Count);
+        if (trumpCards.Count == 0) return new List<TrumpCard>();
+        try
+        {
+            // foreach (var item in trumpCards)
+            // {
+            //     Debug.Log(PlayerId + " item CardName:" + item.CardName);
+            // }
+            var minValue = trumpCards.Min(c => (int)c.Number);
+            return trumpCards.Where(c => (int)c.Number == minValue).ToList();
+        }
+        catch (Exception e)
+        {
+            throw new Exception(e.Message);
         }
     }
 
@@ -235,6 +300,13 @@ public class GamePlayer
         handCards = cards;
         AllRefreshSelectCard();
         handCards = BubbleSortCard(handCards);
+        if (IsCPU)
+        {
+            if (GameState == DaihugoGameRule.GameState.CardChange)
+            {
+                CPUAutoSelectCardForExchange();
+            }
+        }
         if (GameState == DaihugoGameRule.GameState.CardChange)
         {
             UpdateSelectableCardsForExchange();

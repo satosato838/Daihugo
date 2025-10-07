@@ -300,6 +300,10 @@ public class PlayerObject : MonoBehaviour
             var cardData = _gamePlayer.HandCards[i];
             card.RefreshButtonInteractable(cardData.IsSelectable);
         }
+        if (_gamePlayer.IsCPU)
+        {
+            AutoPlayCard(_gamePlayer.HandCards.Where(c => c.IsSelect).ToList());
+        }
     }
     private void OnPlayButtonClick()
     {
