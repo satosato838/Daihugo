@@ -582,7 +582,7 @@ public class Daihugo : IDaihugoObservable
     {
         foreach (var observer in observers)
         {
-            observer.OnChangePlayerTurn(GamePlayers[currentPlayerIndex]);
+            observer.OnChangePlayerTurn(GetCurrentRoundCardEffects.Last(), GamePlayers[currentPlayerIndex]);
         }
     }
     public void SendKakumei()

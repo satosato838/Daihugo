@@ -172,23 +172,30 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
             StartCoroutine(enumerator);
         }
     }
-    public void OnChangePlayerTurn(GamePlayer currentPlayer)
+    public void OnChangePlayerTurn(DaihugoGameRule.Effect effect, GamePlayer currentPlayer)
     {
-        Debug.Log("<color=cyan> OnChangePlayerTurn currentPlayer.IsCPU:" + currentPlayer.IsCPU + "</color>");
+        Debug.Log($"<color=cyan> OnChangePlayerTurn currentPlayerName:{currentPlayer.PlayerName}</color>");
         RefreshPlayersState(_daihugoInstance.GetGameCurrentState);
         if (enumerator != null)
         {
             StopCoroutine(enumerator);
         }
+
+        if (effect == DaihugoGameRule.Effect.Eight_Enders ||
+            effect == DaihugoGameRule.Effect.Counter_Spade_3) return;
+
         if (currentPlayer.IsCPU)
         {
-            Debug.Log($"<color=red> IsCPU currentPlayerName:{currentPlayer.PlayerName} </color>");
+            var number = _daihugoInstance.LastFieldCardPair.FirstOrDefault();
+            if (number != null) Debug.Log($"<color=red> OnChangePlayerTurn IsCPU LastFieldCard {number.Number} </color>");
+
             enumerator = CpuPlay();
             StartCoroutine(enumerator);
         }
         else
         {
-            Debug.Log($"<color=cyan> currentPlayerName:{currentPlayer.PlayerName} {_daihugoInstance.LastFieldCardPair.First().Number} </color>");
+            var number = _daihugoInstance.LastFieldCardPair.FirstOrDefault();
+            if (number != null) Debug.Log($"<color=cyan> OnChangePlayerTurn LastFieldCard {_daihugoInstance.LastFieldCardPair.First().Number} </color>");
         }
     }
     public void OnKakumei(DaihugoGameRule.DaihugoState state)
@@ -206,15 +213,25 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
         Debug.Log("<color=yellow>" + "OnEndStage GetGameCurrentState:" + _daihugoInstance.GetGameCurrentState + "</color>");
         RefreshPlayersState(_daihugoInstance.GetGameCurrentState);
         _fieldController.RefreshCards(_daihugoInstance.LastFieldCardPair);
-        if (effect == DaihugoGameRule.Effect.Eight_Enders || effect == DaihugoGameRule.Effect.Counter_Spade_3) return;
+        if (effect == DaihugoGameRule.Effect.Eight_Enders ||
+            effect == DaihugoGameRule.Effect.Counter_Spade_3) return;
         StageStart();
     }
     public void OnCardEffect(DaihugoGameRule.Effect effect)
     {
-        Debug.Log("<color=cyan>" + "OnCardEffect:" + effect + "</color>");
-        _effectCutInController.Play(effect.ToString(), 0.5f, () =>
+        Debug.Log($"<color=cyan> OnCardEffect:{effect}</color>");
+        string effectName = effect switch
         {
-            if (effect == DaihugoGameRule.Effect.Eight_Enders || effect == DaihugoGameRule.Effect.Counter_Spade_3)
+            DaihugoGameRule.Effect.Eight_Enders => "8 ENDERS",
+            DaihugoGameRule.Effect.Counter_Spade_3 => "COUNTER SPADE 3",
+            DaihugoGameRule.Effect.Eleven_Back => "11 BACK",
+            _ => throw new Exception(),
+        };
+
+        _effectCutInController.Play(effectName, 0.5f, () =>
+        {
+            if (effect == DaihugoGameRule.Effect.Eight_Enders ||
+                effect == DaihugoGameRule.Effect.Counter_Spade_3)
             {
                 StageStart();
             }
