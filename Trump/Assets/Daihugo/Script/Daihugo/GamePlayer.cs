@@ -41,7 +41,7 @@ public class GamePlayer
     {
         PlayerId = id;
         fieldCards = new List<TrumpCard>();
-        PlayerName = isCPU ? playerName + "_CPU" : playerName;
+        PlayerName = playerName;
         PlayerIconImageName = iconImageName;
         IsCPU = isCPU;
         RefreshIsPlay(true);
@@ -208,6 +208,10 @@ public class GamePlayer
                     strongestCards.AddRange(GetStrongestCards(temp));
                 }
             }
+            // foreach (var card in strongestCards)
+            // {
+            //     Debug.Log($"{PlayerName} CPUAutoSelectCardForExchange strongestCards {card.CardName}:" + card.IsSelect);
+            // }
 
             foreach (var card in handCards)
             {
@@ -228,12 +232,20 @@ public class GamePlayer
                     weakestCards.AddRange(GetWeakestCards(temp));
                 }
             }
+            // foreach (var card in weakestCards)
+            // {
+            //     Debug.Log($"{PlayerName} CPUAutoSelectCardForExchange weakestCards {card.CardName}:" + card.IsSelect);
+            // }
 
             foreach (var card in handCards)
             {
                 card.RefreshIsSelect(weakestCards.Any(c => c.Number == card.Number));
             }
         }
+        // foreach (var card in handCards)
+        // {
+        //     Debug.Log($"{PlayerName} CPUAutoSelectCardForExchange {card.CardName}:" + card.IsSelect);
+        // }
     }
 
 
@@ -300,18 +312,19 @@ public class GamePlayer
         handCards = cards;
         AllRefreshSelectCard();
         handCards = BubbleSortCard(handCards);
-        if (IsCPU)
+        if (GameState == DaihugoGameRule.GameState.CardChange)
         {
-            if (GameState == DaihugoGameRule.GameState.CardChange)
+            if (IsCPU)
             {
                 CPUAutoSelectCardForExchange();
             }
-        }
-        if (GameState == DaihugoGameRule.GameState.CardChange)
-        {
-            UpdateSelectableCardsForExchange();
+            else
+            {
+                UpdateSelectableCardsForExchange();
+            }
         }
     }
+
     private void AllRefreshSelectCard()
     {
         foreach (var item in handCards) item.RefreshIsSelect(false);

@@ -58,7 +58,7 @@ public class PlayerObject : MonoBehaviour
             });
         }
     }
-    public void Init(GamePlayer gamePlayer, Action<int, List<TrumpCard>> playCardCallback, Action<int, List<TrumpCard>> setEndCallback, bool isDebug)
+    public void Init(GamePlayer gamePlayer, DaihugoGameRule.GameState state, Action<int, List<TrumpCard>> playCardCallback, Action<int, List<TrumpCard>> setEndCallback, bool isDebug)
     {
         // foreach (var item in gamePlayer.HandCards)
         // {
@@ -76,6 +76,7 @@ public class PlayerObject : MonoBehaviour
         RefreshMyTurn();
         RefreshDealer(false);
         LoadIconImage();
+        _gamePlayer.RefreshGameState(state);
         _passBalloon.Hide();
         playCardAction = playCardCallback;
         roundEndAction = setEndCallback;
@@ -213,10 +214,13 @@ public class PlayerObject : MonoBehaviour
 
     public void ShowHandCards()
     {
-        // foreach (var card in handCardObjects)
-        // {
-        //     Debug.Log($"ShowHandCards {card.SuitType},{card.Number}:");
-        // }
+        if (IsDebug)
+        {
+            foreach (var card in handCardObjects)
+            {
+                Debug.Log($"ShowHandCards {card.SuitType},{card.Number} IsSelect:" + card.IsSelect);
+            }
+        }
     }
 
     public void ShowExChangeCards(List<TrumpCard> trumpCards)

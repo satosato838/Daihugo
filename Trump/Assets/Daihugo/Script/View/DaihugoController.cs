@@ -107,12 +107,14 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
         Debug.Log($"<color=red> OnStartRound DaihugoGameRule.GameState {state}, CurrentPlayerId:{_daihugoInstance.CurrentPlayerId} </color>");
         foreach (var player in _daihugoInstance.GamePlayers)
         {
+            Debug.Log($"OnStartRound isCPU{player.IsCPU} player" + player.PlayerName);
             var playerObject = _playerObjects[player.PlayerId];
             if (_daihugoInstance.CurrentRoundIndex > 1)
             {
                 playerObject = _playerObjects.First(pObject => pObject.PlayerId == player.PlayerId);
             }
             playerObject.Init(player,
+            state,
             (id, v) =>
             {
                 PlayHands(id, v);
@@ -254,7 +256,7 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
                 {
                     for (var i = 0; i < _playerObjects.Length; i++)
                     {
-                        Debug.Log("<color=cyan>" + "_playerObjects: " + _playerObjects[i].PlayerId + "</color>");
+                        Debug.Log($"<color=cyan>_playerObjects[{i}] PlayerId: {_playerObjects[i].PlayerId} </color>");
                         _playerObjects[i].ShowHandCards();
                     }
                 }
@@ -273,7 +275,7 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
                 {
                     for (var i = 0; i < _playerObjects.Length; i++)
                     {
-                        Debug.Log("<color=yellow>" + "_playerObjects: " + _playerObjects[i].PlayerId + "</color>");
+                        Debug.Log($"<color=yellow>_playerObjects[{i}]: {_playerObjects[i].PlayerId} </color>");
                         _playerObjects[i].ShowHandCards();
                     }
                 }

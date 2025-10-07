@@ -40,6 +40,13 @@ public class Daihugo : IDaihugoObservable
     public int CurrentRoundIndex => daihugoRoundResults.Count;
     private int PassCount = 0;
     private int lastPlayCardPlayerId = 0;
+    public Daihugo(int roundCount, bool isDebug = false, bool isDebugCard = false)
+    {
+        _gameRoundCount = roundCount;
+        IsDebug = isDebug;
+        IsDebugCard = isDebugCard;
+        daihugoRoundResults = new List<DaihugoRoundResult>();
+    }
     #region GetPlayerData
 
     private void CreatePlayerData(List<GamePlayer> players)
@@ -48,8 +55,9 @@ public class Daihugo : IDaihugoObservable
         var resultData = new DaihugoRoundResult(daihugoRoundResults.Count + 1);
         if (IsDebug)
         {
-            // var resultData1 = new DaihugoRoundResult();
+            // var resultData1 = new DaihugoRoundResult(daihugoRoundResults.Count + 1);
             // resultData1.CreateDebugData();
+            // daihugoRoundResults.Add(resultData1);
         }
 
         if (daihugoRoundResults.Count == 0)
@@ -341,13 +349,7 @@ public class Daihugo : IDaihugoObservable
             observers.Add(observer);
         return new Unsubscriber(observers, observer);
     }
-    public Daihugo(int roundCount, bool isDebug = false, bool isDebugCard = false)
-    {
-        _gameRoundCount = roundCount;
-        IsDebug = isDebug;
-        IsDebugCard = isDebugCard;
-        daihugoRoundResults = new List<DaihugoRoundResult>();
-    }
+
 
     public void RoundStart(List<GamePlayer> players)
     {
@@ -438,13 +440,13 @@ public class Daihugo : IDaihugoObservable
     {
         if (LastFieldCardPair.Count == 0)
         {
-            Debug.Log($"GetMinHandPairs LastFieldCardPair.Count == 0:{LastFieldCardPair.Count == 0}");
+            //Debug.Log($"GetMinHandPairs LastFieldCardPair.Count == 0:{LastFieldCardPair.Count == 0}");
             var minNumber = currentState == DaihugoGameRule.DaihugoState.None ? pairHandList.SelectMany(pair => pair.cards).Min(c => c.Number) : pairHandList.SelectMany(pair => pair.cards).Max(c => c.Number);
             var resultList = pairHandList.First(handList => handList.number == minNumber);
-            foreach (var item in resultList.cards)
-            {
-                Debug.Log("GetMinHandPairs result:" + item.CardName);
-            }
+            // foreach (var item in resultList.cards)
+            // {
+            //     Debug.Log("GetMinHandPairs result:" + item.CardName);
+            // }
             return resultList.cards;
         }
         else
@@ -504,8 +506,9 @@ public class Daihugo : IDaihugoObservable
         {
             MiyakoOchi(endPlayerIndex);
         }
+        var end = gamePlayers[endPlayerIndex];
 
-        var endPlayer = new GamePlayer(playerId);
+        var endPlayer = new GamePlayer(end.PlayerId, end.PlayerName, end.PlayerIconImageName, end.PlayerRank, end.DaihugoState, end.GameState, end.IsCPU);
         GetCurrentRoundResult.AddRoundEndPlayer(endPlayer, IsForbiddenWin(lastPlayCards));
         gamePlayers[endPlayerIndex].RefreshRank(GetCurrentRoundResult.GetPlayerIdRank(playerId));
         gamePlayers[endPlayerIndex].RefreshDealer(true);
@@ -529,7 +532,8 @@ public class Daihugo : IDaihugoObservable
         {
             if (gamePlayers[endPlayerIndex].PlayerId != daihugoPlayer.PlayerId)
             {
-                var endPlayer = new GamePlayer(daihugoPlayer.PlayerId);
+                var endPlayer = new GamePlayer(daihugoPlayer.PlayerId, daihugoPlayer.PlayerName, daihugoPlayer.PlayerIconImageName, daihugoPlayer.PlayerRank, daihugoPlayer.DaihugoState, daihugoPlayer.GameState, daihugoPlayer.IsCPU);
+
                 GetCurrentRoundResult.AddBoobyPlayer(endPlayer);
 
                 gamePlayers[daihugoPlayerIndex].RefreshIsPlay(false);
