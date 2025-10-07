@@ -1,9 +1,9 @@
 using System;
 using System.Linq;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-
 
 public class DaihugoController : MonoBehaviour, IDaihugoObserver
 {
@@ -19,6 +19,8 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
     [SerializeField] private bool _isDebug;
     [SerializeField] private bool _isDebugCard;
     private Daihugo _daihugoInstance;
+
+    IEnumerator enumerator;
 
     IDisposable thisDisposable;
     void Start()
@@ -83,6 +85,17 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
         }
     }
 
+    private IEnumerator CpuPlay()
+    {
+        yield return new WaitForSeconds(2.0f);
+        var player = _daihugoInstance.CurrentGamePlayer;
+        _daihugoInstance.CPUCardPlay(player, v =>
+            {
+                var playerObject = _playerObjects.First(pObject => pObject.PlayerId == player.PlayerId);
+                playerObject.AutoPlayCard(v);
+            });
+    }
+
     private void RefreshPlayerRank(int goOutPlayerIndex)
     {
         var currentPlayer = _playerObjects[goOutPlayerIndex];
@@ -94,12 +107,14 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
         Debug.Log($"<color=red> OnStartRound DaihugoGameRule.GameState {state}, CurrentPlayerId:{_daihugoInstance.CurrentPlayerId} </color>");
         foreach (var player in _daihugoInstance.GamePlayers)
         {
+            Debug.Log($"OnStartRound isCPU{player.IsCPU} player" + player.PlayerName);
             var playerObject = _playerObjects[player.PlayerId];
             if (_daihugoInstance.CurrentRoundIndex > 1)
             {
                 playerObject = _playerObjects.First(pObject => pObject.PlayerId == player.PlayerId);
             }
             playerObject.Init(player,
+            state,
             (id, v) =>
             {
                 PlayHands(id, v);
@@ -107,7 +122,8 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
             (id, v) =>
             {
                 EndRoundPlayer(id, v);
-            }
+            },
+            isDebug: _isDebug
             );
             playerObject.DealCard(player.HandCards);
             if (state == DaihugoGameRule.GameState.CardChange)
@@ -145,13 +161,44 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
     {
         _fieldController.Init();
         _cemeteryController.RefreshCards(_daihugoInstance.CemeteryCards);
-        Debug.Log($"<color=yellow> OnStartStage DaihugoGameRule.GameState {_daihugoInstance.GetGameCurrentState}, CurrentPlayerId:{_daihugoInstance.CurrentPlayerId} </color>");
         RefreshPlayersState(_daihugoInstance.GetGameCurrentState);
+        var currentPlayer = _daihugoInstance.CurrentGamePlayer;
+        Debug.Log($"<color=yellow> OnStartStage DaihugoGameRule.GameState {_daihugoInstance.GetGameCurrentState},currentPlayer.IsCPU:{currentPlayer.IsCPU} CurrentPlayerId:{_daihugoInstance.CurrentPlayerId} </color>");
+        if (enumerator != null)
+        {
+            StopCoroutine(enumerator);
+        }
+        if (currentPlayer.IsCPU)
+        {
+            enumerator = CpuPlay();
+            StartCoroutine(enumerator);
+        }
     }
-    public void OnChangePlayerTurn(GamePlayer gamePlayer)
+    public void OnChangePlayerTurn(DaihugoGameRule.Effect effect, GamePlayer currentPlayer)
     {
-        Debug.Log("<color=cyan>" + "OnChangePlayerTurn PlayerId:" + gamePlayer.PlayerId + "</color>");
+        Debug.Log($"<color=cyan> OnChangePlayerTurn currentPlayerName:{currentPlayer.PlayerName}</color>");
         RefreshPlayersState(_daihugoInstance.GetGameCurrentState);
+        if (enumerator != null)
+        {
+            StopCoroutine(enumerator);
+        }
+
+        if (effect == DaihugoGameRule.Effect.Eight_Enders ||
+            effect == DaihugoGameRule.Effect.Counter_Spade_3) return;
+
+        if (currentPlayer.IsCPU)
+        {
+            var number = _daihugoInstance.LastFieldCardPair.FirstOrDefault();
+            if (number != null) Debug.Log($"<color=red> OnChangePlayerTurn IsCPU LastFieldCard {number.Number} </color>");
+
+            enumerator = CpuPlay();
+            StartCoroutine(enumerator);
+        }
+        else
+        {
+            var number = _daihugoInstance.LastFieldCardPair.FirstOrDefault();
+            if (number != null) Debug.Log($"<color=cyan> OnChangePlayerTurn LastFieldCard {_daihugoInstance.LastFieldCardPair.First().Number} </color>");
+        }
     }
     public void OnKakumei(DaihugoGameRule.DaihugoState state)
     {
@@ -168,15 +215,25 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
         Debug.Log("<color=yellow>" + "OnEndStage GetGameCurrentState:" + _daihugoInstance.GetGameCurrentState + "</color>");
         RefreshPlayersState(_daihugoInstance.GetGameCurrentState);
         _fieldController.RefreshCards(_daihugoInstance.LastFieldCardPair);
-        if (effect == DaihugoGameRule.Effect.Eight_Enders || effect == DaihugoGameRule.Effect.Counter_Spade_3) return;
+        if (effect == DaihugoGameRule.Effect.Eight_Enders ||
+            effect == DaihugoGameRule.Effect.Counter_Spade_3) return;
         StageStart();
     }
     public void OnCardEffect(DaihugoGameRule.Effect effect)
     {
-        Debug.Log("<color=cyan>" + "OnCardEffect:" + effect + "</color>");
-        _effectCutInController.Play(effect.ToString(), 0.5f, () =>
+        Debug.Log($"<color=cyan> OnCardEffect:{effect}</color>");
+        string effectName = effect switch
         {
-            if (effect == DaihugoGameRule.Effect.Eight_Enders || effect == DaihugoGameRule.Effect.Counter_Spade_3)
+            DaihugoGameRule.Effect.Eight_Enders => "8 ENDERS",
+            DaihugoGameRule.Effect.Counter_Spade_3 => "COUNTER SPADE 3",
+            DaihugoGameRule.Effect.Eleven_Back => "11 BACK",
+            _ => throw new Exception(),
+        };
+
+        _effectCutInController.Play(effectName, 0.5f, () =>
+        {
+            if (effect == DaihugoGameRule.Effect.Eight_Enders ||
+                effect == DaihugoGameRule.Effect.Counter_Spade_3)
             {
                 StageStart();
             }
@@ -199,7 +256,7 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
                 {
                     for (var i = 0; i < _playerObjects.Length; i++)
                     {
-                        Debug.Log("<color=cyan>" + "_playerObjects: " + _playerObjects[i].PlayerId + "</color>");
+                        Debug.Log($"<color=cyan>_playerObjects[{i}] PlayerId: {_playerObjects[i].PlayerId} </color>");
                         _playerObjects[i].ShowHandCards();
                     }
                 }
@@ -218,7 +275,7 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
                 {
                     for (var i = 0; i < _playerObjects.Length; i++)
                     {
-                        Debug.Log("<color=yellow>" + "_playerObjects: " + _playerObjects[i].PlayerId + "</color>");
+                        Debug.Log($"<color=yellow>_playerObjects[{i}]: {_playerObjects[i].PlayerId} </color>");
                         _playerObjects[i].ShowHandCards();
                     }
                 }

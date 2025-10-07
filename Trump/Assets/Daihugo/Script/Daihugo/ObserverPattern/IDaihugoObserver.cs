@@ -4,7 +4,7 @@ public interface IDaihugoObserver
 {
     void OnStartRound(DaihugoGameRule.GameState state);
     void OnStartStage();
-    void OnChangePlayerTurn(GamePlayer gamePlayer);
+    void OnChangePlayerTurn(DaihugoGameRule.Effect effect, GamePlayer gamePlayer);
     void OnKakumei(DaihugoGameRule.DaihugoState state);
     void OnCardEffect(DaihugoGameRule.Effect effect);
     void OnGameState(DaihugoGameRule.GameState state);
