@@ -453,6 +453,16 @@ public class Daihugo : IDaihugoObservable
         {
             var maxPairCount = LastFieldCardPair.Count;
             var fieldNumber = LastFieldCardPair.First().Number;
+            if (fieldNumber == DaihugoGameRule.Number.Joker)
+            {
+                var handcards = pairHandList.SelectMany(p => p.cards);
+                if (handcards.Any(c => c.Number == DaihugoGameRule.Number.Three &&
+                                       c.Suit == DaihugoGameRule.SuitType.Spade))
+                {
+                    return handcards.Where(c => c.Number == DaihugoGameRule.Number.Three &&
+                                                c.Suit == DaihugoGameRule.SuitType.Spade).ToList();
+                }
+            }
             var resultList = pairHandList.Where(handList => handList.cards.Count == maxPairCount)
                                                  .Where(list =>
                                                  {
@@ -466,7 +476,7 @@ public class Daihugo : IDaihugoObservable
                                                      }
                                                  });
             return resultList.Count() == 0 ? new List<TrumpCard>() :
-            currentState == DaihugoGameRule.DaihugoState.None ? resultList.First().cards : resultList.Last().cards;
+                   currentState == DaihugoGameRule.DaihugoState.None ? resultList.First().cards : resultList.Last().cards;
         }
     }
 

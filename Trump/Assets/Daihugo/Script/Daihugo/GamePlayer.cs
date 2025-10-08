@@ -49,11 +49,6 @@ public class GamePlayer
         RefreshDaihugoState(daihugoState);
         RefreshGameState(gameState);
     }
-    public GamePlayer(int id)
-    {
-        PlayerId = id;
-        fieldCards = new List<TrumpCard>();
-    }
 
     public void RefreshDaihugoState(DaihugoGameRule.DaihugoState daihugoState)
     {
