@@ -438,10 +438,14 @@ public class Daihugo : IDaihugoObservable
 
     private List<TrumpCard> GetMinHandPairs(List<(DaihugoGameRule.Number number, List<TrumpCard> cards)> pairHandList)
     {
+        var hands = GetHandList(pairHandList);
         if (LastFieldCardPair.Count == 0)
         {
             //Debug.Log($"GetMinHandPairs LastFieldCardPair.Count == 0:{LastFieldCardPair.Count == 0}");
-            var minNumber = currentState == DaihugoGameRule.DaihugoState.None ? pairHandList.SelectMany(pair => pair.cards).Min(c => c.Number) : pairHandList.SelectMany(pair => pair.cards).Max(c => c.Number);
+            var minNumber = currentState == DaihugoGameRule.DaihugoState.None ?
+                            hands.Min(c => c.Number) :
+                            hands.Max(c => c.Number);
+
             var resultList = pairHandList.First(handList => handList.number == minNumber);
             // foreach (var item in resultList.cards)
             // {
@@ -455,12 +459,9 @@ public class Daihugo : IDaihugoObservable
             var fieldNumber = LastFieldCardPair.First().Number;
             if (fieldNumber == DaihugoGameRule.Number.Joker)
             {
-                var handcards = pairHandList.SelectMany(p => p.cards);
-                if (handcards.Any(c => c.Number == DaihugoGameRule.Number.Three &&
-                                       c.Suit == DaihugoGameRule.SuitType.Spade))
+                if (hands.Any(c => IsSpade3(c.Number, c.Suit)))
                 {
-                    return handcards.Where(c => c.Number == DaihugoGameRule.Number.Three &&
-                                                c.Suit == DaihugoGameRule.SuitType.Spade).ToList();
+                    return hands.Where(c => IsSpade3(c.Number, c.Suit)).ToList();
                 }
             }
             var resultList = pairHandList.Where(handList => handList.cards.Count == maxPairCount)
@@ -477,6 +478,14 @@ public class Daihugo : IDaihugoObservable
                                                  });
             return resultList.Count() == 0 ? new List<TrumpCard>() :
                    currentState == DaihugoGameRule.DaihugoState.None ? resultList.First().cards : resultList.Last().cards;
+        }
+        List<TrumpCard> GetHandList(List<(DaihugoGameRule.Number number, List<TrumpCard> cards)> pairHandList)
+        {
+            return pairHandList.SelectMany(pair => pair.cards).ToList();
+        }
+        bool IsSpade3(DaihugoGameRule.Number number, DaihugoGameRule.SuitType suit)
+        {
+            return number == DaihugoGameRule.Number.Three && suit == DaihugoGameRule.SuitType.Spade;
         }
     }
 
