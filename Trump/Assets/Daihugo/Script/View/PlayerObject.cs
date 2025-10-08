@@ -80,6 +80,16 @@ public class PlayerObject : MonoBehaviour
         _passBalloon.Hide();
         playCardAction = playCardCallback;
         roundEndAction = setEndCallback;
+        if (IsDebug)
+        {
+            _playBtn.gameObject.SetActive(true);
+            _passBtn.gameObject.SetActive(true);
+        }
+        else
+        {
+            _playBtn.gameObject.SetActive(!gamePlayer.IsCPU);
+            _passBtn.gameObject.SetActive(!gamePlayer.IsCPU);
+        }
     }
 
     public void DealCard(List<TrumpCard> trumpCards)
