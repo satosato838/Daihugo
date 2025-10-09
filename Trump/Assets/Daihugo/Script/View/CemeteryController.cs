@@ -25,16 +25,21 @@ public class CemeteryController : MonoBehaviour
         }
         foreach (var item in playCards)
         {
-            var hand = Instantiate(_trumpCardObject, _cemeteryPos.transform);
-            hand.Init(new TrumpCard(item.Suit, new CardNumber(item.Number)), isHand: false, isButton: true, v =>
-            {
-                _txtCemeteryCount.text = _cemeteryPos.transform.childCount.ToString();
-                Invoke(nameof(ResetText), 1.0f);
-            });
-
-            hand.SetBG();
-            trumpCardObjects.Add(hand);
+            CreateCard(item.Suit, item.Number);
         }
+    }
+
+    private void CreateCard(DaihugoGameRule.SuitType suitType, DaihugoGameRule.Number number)
+    {
+        var hand = Instantiate(_trumpCardObject, _cemeteryPos.transform);
+        hand.Init(new TrumpCard(suitType, new CardNumber(number)), isHand: false, isButton: true, v =>
+        {
+            _txtCemeteryCount.text = _cemeteryPos.transform.childCount.ToString();
+            Invoke(nameof(ResetText), 1.0f);
+        });
+
+        hand.SetBG();
+        trumpCardObjects.Add(hand);
     }
 
     private void ResetText()

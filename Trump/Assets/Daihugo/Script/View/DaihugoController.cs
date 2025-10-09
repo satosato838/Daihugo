@@ -50,6 +50,10 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
         }
         else if (_daihugoInstance.GetGameCurrentState == DaihugoGameRule.GameState.CardChange)
         {
+            foreach (var item in trumpCards)
+            {
+                Debug.Log("CardChange trumpCard:" + item.CardName);
+            }
             _daihugoInstance.ExecuteCardExchange(playerId, trumpCards);
             var player = _playerObjects.First(p => p.PlayerId == playerId);
             player.ShowExChangeCards(trumpCards);
@@ -309,7 +313,7 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
             {
                 _daihugoObject.SetActive(false);
                 _resultController.ShowResult(_daihugoInstance.GetRoundResults);
-                thisDisposable.Dispose();
+                thisDisposable?.Dispose();
             }
             else
             {
@@ -319,6 +323,6 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
     }
     private void OnDestroy()
     {
-        thisDisposable.Dispose();
+        thisDisposable?.Dispose();
     }
 }
