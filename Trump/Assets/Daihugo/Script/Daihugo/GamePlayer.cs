@@ -188,61 +188,28 @@ public class GamePlayer
 
     public void CPUAutoSelectCardForExchange()
     {
-        if (PlayerRank == DaihugoGameRule.GameRank.Hinmin ||
-            PlayerRank == DaihugoGameRule.GameRank.DaiHinmin)
+        bool isHinmin = PlayerRank == DaihugoGameRule.GameRank.Hinmin || PlayerRank == DaihugoGameRule.GameRank.DaiHinmin;
+        var selectCards = isHinmin ? GetStrongestCards(handCards) : GetWeakestCards(handCards);
+        var temp = handCards;
+        // 大貧民,大富豪は 2枚 → 1番強いカード群を除外して次点の強いカードも対象にする
+        if (selectCards.Count == 1)
         {
-            var strongestCards = GetStrongestCards(handCards);
-
+            temp.RemoveAll(c => c.Number == selectCards.First().Number);
             if (PlayerRank == DaihugoGameRule.GameRank.DaiHinmin)
             {
-                if (strongestCards.Count == 1)
-                {
-                    // 大貧民は 2枚 → 1番強いカード群を除外して次点の強いカードも対象にする
-                    var temp = handCards.ToList();
-                    temp.RemoveAll(c => c.Number == strongestCards.First().Number);
-                    strongestCards.AddRange(GetStrongestCards(temp));
-                }
+                selectCards.AddRange(GetStrongestCards(temp));
             }
-            // foreach (var card in strongestCards)
-            // {
-            //     Debug.Log($"{PlayerName} CPUAutoSelectCardForExchange strongestCards {card.CardName}:" + card.IsSelect);
-            // }
-
-            foreach (var card in handCards)
+            else if (PlayerRank == DaihugoGameRule.GameRank.DaiHugo)
             {
-                card.RefreshIsSelect(strongestCards.Any(c => c.Number == card.Number));
+                selectCards.AddRange(GetWeakestCards(temp));
             }
         }
-        else
+        foreach (var card in handCards)
         {
-            var weakestCards = GetWeakestCards(handCards);
-
-            if (PlayerRank == DaihugoGameRule.GameRank.DaiHugo)
-            {
-                if (weakestCards.Count == 1)
-                {
-                    // 大富豪は 2枚 → 1番弱いカード群を除外して次点の強いカードも対象にする
-                    var temp = handCards.ToList();
-                    temp.RemoveAll(c => c.Number == weakestCards.First().Number);
-                    weakestCards.AddRange(GetWeakestCards(temp));
-                }
-            }
-            // foreach (var card in weakestCards)
-            // {
-            //     Debug.Log($"{PlayerName} CPUAutoSelectCardForExchange weakestCards {card.CardName}:" + card.IsSelect);
-            // }
-
-            foreach (var card in handCards)
-            {
-                card.RefreshIsSelect(weakestCards.Any(c => c.Number == card.Number));
-            }
+            card.RefreshIsSelect(selectCards.Any(c => c.Number == card.Number));
+            //Debug.Log($"{PlayerName} CPUAutoSelectCardForExchange {card.CardName}:" + card.IsSelect);
         }
-        // foreach (var card in handCards)
-        // {
-        //     Debug.Log($"{PlayerName} CPUAutoSelectCardForExchange {card.CardName}:" + card.IsSelect);
-        // }
     }
-
 
     List<TrumpCard> GetStrongestCards(List<TrumpCard> trumpCards)
     {
@@ -250,12 +217,9 @@ public class GamePlayer
         if (trumpCards.Count == 0) return new List<TrumpCard>();
         try
         {
-            // foreach (var item in trumpCards)
-            // {
-            //     Debug.Log(PlayerId + " item CardName:" + item.CardName);
-            // }
             var maxValue = trumpCards.Max(c => (int)c.Number);
-            return trumpCards.Where(c => (int)c.Number == maxValue).ToList();
+            var result = trumpCards.Where(c => (int)c.Number == maxValue).ToList();
+            return result.Count > 3 ? result.Take(2).ToList() : result;
         }
         catch (Exception e)
         {
@@ -274,7 +238,8 @@ public class GamePlayer
             //     Debug.Log(PlayerId + " item CardName:" + item.CardName);
             // }
             var minValue = trumpCards.Min(c => (int)c.Number);
-            return trumpCards.Where(c => (int)c.Number == minValue).ToList();
+            var result = trumpCards.Where(c => (int)c.Number == minValue).ToList();
+            return result.Count > 3 ? result.Take(2).ToList() : result;
         }
         catch (Exception e)
         {
