@@ -190,10 +190,8 @@ public class GamePlayer
     {
         bool isHinmin = PlayerRank == DaihugoGameRule.GameRank.Hinmin || PlayerRank == DaihugoGameRule.GameRank.DaiHinmin;
         var selectCards = isHinmin ? GetStrongestCards(handCards) : GetWeakestCards(handCards);
-
-
-        // 大貧民は 2枚 → 1番強いカード群を除外して次点の強いカードも対象にする
-        var temp = handCards.ToList();
+        var temp = handCards;
+        // 大貧民,大富豪は 2枚 → 1番強いカード群を除外して次点の強いカードも対象にする
         if (selectCards.Count == 1)
         {
             temp.RemoveAll(c => c.Number == selectCards.First().Number);
@@ -206,10 +204,11 @@ public class GamePlayer
                 selectCards.AddRange(GetWeakestCards(temp));
             }
         }
-        // foreach (var card in handCards)
-        // {
-        //     Debug.Log($"{PlayerName} CPUAutoSelectCardForExchange {card.CardName}:" + card.IsSelect);
-        // }
+        foreach (var card in handCards)
+        {
+            card.RefreshIsSelect(selectCards.Any(c => c.Number == card.Number));
+            //Debug.Log($"{PlayerName} CPUAutoSelectCardForExchange {card.CardName}:" + card.IsSelect);
+        }
     }
 
     List<TrumpCard> GetStrongestCards(List<TrumpCard> trumpCards)
@@ -220,7 +219,7 @@ public class GamePlayer
         {
             var maxValue = trumpCards.Max(c => (int)c.Number);
             var result = trumpCards.Where(c => (int)c.Number == maxValue).ToList();
-            return result.Count > 2 ? result.Take(2).ToList() : result;
+            return result.Count > 3 ? result.Take(2).ToList() : result;
         }
         catch (Exception e)
         {
@@ -240,7 +239,7 @@ public class GamePlayer
             // }
             var minValue = trumpCards.Min(c => (int)c.Number);
             var result = trumpCards.Where(c => (int)c.Number == minValue).ToList();
-            return result.Count > 2 ? result.Take(2).ToList() : result;
+            return result.Count > 3 ? result.Take(2).ToList() : result;
         }
         catch (Exception e)
         {
