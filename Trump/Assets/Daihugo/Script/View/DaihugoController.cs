@@ -52,7 +52,7 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
         {
             foreach (var item in trumpCards)
             {
-                Debug.Log("CardChange trumpCard:" + item.CardName);
+                Debug.Log("<color=cyan> CardChange trumpCard:" + item.CardName + "</color>");
             }
             _daihugoInstance.ExecuteCardExchange(playerId, trumpCards);
             if (_isDebug)
@@ -109,8 +109,9 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
 
     private void RefreshPlayerRank(int goOutPlayerIndex)
     {
-        var currentPlayer = _playerObjects[goOutPlayerIndex];
-        currentPlayer.SetPlayerRank(_daihugoInstance.GamePlayers[goOutPlayerIndex].PlayerRank);
+        var goOutPlayer = _daihugoInstance.GamePlayers[goOutPlayerIndex];
+        var currentPlayer = _playerObjects.First(pObject => pObject.PlayerId == goOutPlayer.PlayerId);
+        currentPlayer.SetPlayerRank(goOutPlayer.PlayerRank);
     }
 
     public void OnStartRound(DaihugoGameRule.GameState state)
@@ -311,7 +312,7 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
 
     public void OnToGoOut(int goOutPlayerIndex)
     {
-        Debug.Log("<color=cyan>" + "OnToGoOut goOutPlayerIndex:" + goOutPlayerIndex + "</color>");
+        Debug.Log("<color=green>" + "OnToGoOut goOutPlayerIndex:" + goOutPlayerIndex + "</color>");
         RefreshPlayerRank(goOutPlayerIndex);
     }
 
