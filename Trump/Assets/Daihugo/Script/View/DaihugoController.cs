@@ -55,8 +55,15 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
                 Debug.Log("CardChange trumpCard:" + item.CardName);
             }
             _daihugoInstance.ExecuteCardExchange(playerId, trumpCards);
-            var player = _playerObjects.First(p => p.PlayerId == playerId);
-            player.ShowExChangeCards(trumpCards);
+            if (_isDebug)
+            {
+                _playerObjects[playerId].ShowExChangeCards(trumpCards);
+            }
+            else
+            {
+                var player = _playerObjects.First(p => p.PlayerId == playerId);
+                player.ShowExChangeCards(trumpCards);
+            }
         }
         else
         {
@@ -113,10 +120,14 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
         {
             Debug.Log($"OnStartRound isCPU{player.IsCPU} player" + player.PlayerName);
             var playerObject = _playerObjects[player.PlayerId];
-            if (_daihugoInstance.CurrentRoundIndex > 1)
+            if (!_isDebug)
             {
-                playerObject = _playerObjects.First(pObject => pObject.PlayerId == player.PlayerId);
+                if (_daihugoInstance.CurrentRoundIndex > 1)
+                {
+                    playerObject = _playerObjects.First(pObject => pObject.PlayerId == player.PlayerId);
+                }
             }
+
             playerObject.Init(player,
             state,
             (id, v) =>

@@ -188,26 +188,51 @@ public class GamePlayer
 
     public void CPUAutoSelectCardForExchange()
     {
+        // foreach (var card in handCards)
+        // {
+        //     Debug.Log($"<color=red>{PlayerName} , {PlayerRank} before  CPUAutoSelectCardForExchange {card.CardName}:</color>");
+        // }
         bool isHinmin = PlayerRank == DaihugoGameRule.GameRank.Hinmin || PlayerRank == DaihugoGameRule.GameRank.DaiHinmin;
-        var selectCards = isHinmin ? GetStrongestCards(handCards) : GetWeakestCards(handCards);
-        var temp = handCards;
-        // 大貧民,大富豪は 2枚 → 1番強いカード群を除外して次点の強いカードも対象にする
-        if (selectCards.Count == 1)
+        var strongestCards = isHinmin ? GetStrongestCards(handCards) : GetWeakestCards(handCards);
+
+        var selectCards = new List<TrumpCard> { strongestCards.First() };
+
+        var temp = handCards.ToList();
+        if (PlayerRank == DaihugoGameRule.GameRank.DaiHugo ||
+            PlayerRank == DaihugoGameRule.GameRank.DaiHinmin)
         {
-            temp.RemoveAll(c => c.Number == selectCards.First().Number);
-            if (PlayerRank == DaihugoGameRule.GameRank.DaiHinmin)
+            if (strongestCards.Count > 1)
             {
-                selectCards.AddRange(GetStrongestCards(temp));
+                selectCards.Add(strongestCards[1]);
             }
-            else if (PlayerRank == DaihugoGameRule.GameRank.DaiHugo)
+            else
             {
-                selectCards.AddRange(GetWeakestCards(temp));
+                // 大貧民,大富豪は 2枚 → 1番強いカード群を除外して次点の強いカードも対象にする
+                temp.RemoveAll(c => c.Number == strongestCards.First().Number);
+                if (PlayerRank == DaihugoGameRule.GameRank.DaiHinmin)
+                {
+                    selectCards.Add(GetStrongestCards(temp).First());
+                }
+                else if (PlayerRank == DaihugoGameRule.GameRank.DaiHugo)
+                {
+                    selectCards.Add(GetWeakestCards(temp).First());
+                }
             }
         }
+
+        // foreach (var card in strongestCards)
+        // {
+        //     Debug.Log($"<color=yellow>{PlayerName} , {PlayerRank} strongestCards {card.CardName}</color>:");
+        // }
+        // foreach (var card in selectCards)
+        // {
+        //     Debug.Log($"<color=yellow>{PlayerName} , {PlayerRank} CPUAutoSelectCardForExchange SelectCard {card.CardName}</color>:");
+        // }
+
         foreach (var card in handCards)
         {
-            card.RefreshIsSelect(selectCards.Any(c => c.Number == card.Number));
-            //Debug.Log($"{PlayerName} CPUAutoSelectCardForExchange {card.CardName}:" + card.IsSelect);
+            card.RefreshIsSelect(selectCards.Any(c => c.Number == card.Number && c.Suit == card.Suit));
+            //Debug.Log($"<color=cyan>{PlayerName}, {PlayerRank} after  CPUAutoSelectCardForExchange {card.CardName} {card.IsSelect}</color>:");
         }
     }
 
@@ -219,7 +244,7 @@ public class GamePlayer
         {
             var maxValue = trumpCards.Max(c => (int)c.Number);
             var result = trumpCards.Where(c => (int)c.Number == maxValue).ToList();
-            return result.Count > 3 ? result.Take(2).ToList() : result;
+            return result;
         }
         catch (Exception e)
         {
@@ -239,7 +264,7 @@ public class GamePlayer
             // }
             var minValue = trumpCards.Min(c => (int)c.Number);
             var result = trumpCards.Where(c => (int)c.Number == minValue).ToList();
-            return result.Count > 3 ? result.Take(2).ToList() : result;
+            return result;
         }
         catch (Exception e)
         {

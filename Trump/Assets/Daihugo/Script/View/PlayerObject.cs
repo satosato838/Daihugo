@@ -226,10 +226,10 @@ public class PlayerObject : MonoBehaviour
     {
         if (IsDebug)
         {
-            foreach (var card in handCardObjects)
-            {
-                Debug.Log($"ShowHandCards {card.SuitType},{card.Number} IsSelect:" + card.IsSelect);
-            }
+            // foreach (var card in handCardObjects)
+            // {
+            //     Debug.Log($"ShowHandCards {card.SuitType},{card.Number} IsSelect:" + card.IsSelect);
+            // }
         }
     }
 

@@ -21,8 +21,11 @@ public class DaihugoRoundResult
     public void AddRoundEndPlayer(GamePlayer gamePlayer, bool IsForbiddenWin)
     {
         gamePlayer.RefreshRank(IsForbiddenWin ? GetNextPlayersByDescendingRank() : GetNextPlayersByAscendingRank());
-        Debug.Log($"AddRoundEndPlayer gamePlayer Id:{gamePlayer.PlayerId} , Rank:{gamePlayer.PlayerRank}");
         ResultPlayers.Add(gamePlayer);
+        // foreach (var item in ResultPlayers)
+        // {
+        //     Debug.Log($"AddRoundEndPlayer gamePlayer Id:{item.PlayerId} , Rank:{item.PlayerRank}");
+        // }
     }
 
     public void AddBoobyPlayer(GamePlayer gamePlayer)
@@ -30,17 +33,21 @@ public class DaihugoRoundResult
         gamePlayer.RefreshRank(ResultPlayers.Any(p => p.PlayerRank == DaihugoGameRule.GameRank.DaiHinmin) ? DaihugoGameRule.GameRank.Hinmin : DaihugoGameRule.GameRank.DaiHinmin);
         //Debug.Log($"AddBoobyPlayer gamePlayer Id:{gamePlayer.PlayerId} , Rank:{gamePlayer.PlayerRank}");
         ResultPlayers.Add(gamePlayer);
+        // foreach (var item in ResultPlayers)
+        // {
+        //     Debug.Log($"AddBoobyPlayer gamePlayer Id:{item.PlayerId} , Rank:{item.PlayerRank}");
+        // }
     }
 
     public void CreateDebugData()
     {
         var ids = new int[] { 0, 1, 2, 3 };
-        var ranks = new DaihugoGameRule.GameRank[] { DaihugoGameRule.GameRank.DaiHugo, DaihugoGameRule.GameRank.Hugo, DaihugoGameRule.GameRank.Hinmin, DaihugoGameRule.GameRank.DaiHinmin };
-        ids = ids.OrderBy(a => Guid.NewGuid()).ToArray();
-        ranks = ranks.OrderBy(a => Guid.NewGuid()).ToArray();
+        var ranks = new DaihugoGameRule.GameRank[] { DaihugoGameRule.GameRank.Hugo, DaihugoGameRule.GameRank.DaiHugo, DaihugoGameRule.GameRank.Hinmin, DaihugoGameRule.GameRank.DaiHinmin };
+        // ids = ids.OrderBy(a => Guid.NewGuid()).ToArray();
+        // ranks = ranks.OrderBy(a => Guid.NewGuid()).ToArray();
         for (var i = 0; i < 4; i++)
         {
-            var gamePlayer = new GamePlayer(ids[i], "player:" + i, "owl", ranks[i], DaihugoGameRule.DaihugoState.None, DaihugoGameRule.GameState.CardChange);
+            var gamePlayer = new GamePlayer(ids[i], "player:" + i, "owl", ranks[i], DaihugoGameRule.DaihugoState.None, DaihugoGameRule.GameState.CardChange, isCPU: i != 2);
             ResultPlayers.Add(gamePlayer);
         }
     }

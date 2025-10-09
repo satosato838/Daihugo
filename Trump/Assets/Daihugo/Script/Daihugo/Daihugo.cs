@@ -55,9 +55,9 @@ public class Daihugo : IDaihugoObservable
         var resultData = new DaihugoRoundResult(daihugoRoundResults.Count + 1);
         if (IsDebug)
         {
-            // var resultData1 = new DaihugoRoundResult(daihugoRoundResults.Count + 1);
-            // resultData1.CreateDebugData();
-            // daihugoRoundResults.Add(resultData1);
+            var resultData1 = new DaihugoRoundResult(daihugoRoundResults.Count + 1);
+            resultData1.CreateDebugData();
+            daihugoRoundResults.Add(resultData1);
         }
 
         if (daihugoRoundResults.Count == 0)
