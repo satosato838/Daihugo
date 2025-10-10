@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
+using System.Linq;
 
 public class PlayerSelectObject : MonoBehaviour
 {
@@ -11,8 +12,10 @@ public class PlayerSelectObject : MonoBehaviour
     [SerializeField] private Image _icon;
     [SerializeField] private Button btn_icon;
     [SerializeField] private Button btn_Select;
+    public bool isCPU => _txt_playerName.text.Contains("CPU");
     private string iconTxt;
-    Action onClick;
+    private int Index;
+    Action<int> onClick;
     void Start()
     {
         this.gameObject.SetActive(false);
@@ -20,7 +23,7 @@ public class PlayerSelectObject : MonoBehaviour
         {
             btn_Select.onClick.AddListener(() =>
             {
-                onClick?.Invoke();
+                onClick?.Invoke(Index);
             });
         }
         btn_icon.onClick.AddListener(() =>
@@ -28,13 +31,19 @@ public class PlayerSelectObject : MonoBehaviour
                 //onClick?.Invoke();
             });
     }
-    public void Init(string iconName, string playerName, Action action = null)
+    public void Init(int index, string iconName, string playerName, Action<int> action = null)
     {
-        _txt_playerName.text = playerName;
+        Index = index;
+        RefreshName(playerName);
         LoadIconImage(iconName);
         onClick = action;
         btn_Select.gameObject.SetActive(onClick != null);
 
+    }
+
+    public void RefreshName(string playerName)
+    {
+        _txt_playerName.text = playerName;
     }
     private void LoadIconImage(string iconName)
     {
