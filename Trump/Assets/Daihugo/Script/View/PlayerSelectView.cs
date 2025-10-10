@@ -41,8 +41,6 @@ public class PlayerSelectView : MonoBehaviourPunCallbacks, IInRoomCallbacks
     }
     private void RefreshPlayers(bool isOnePlayerMode)
     {
-        // _roomMembers.text = "";
-
         if (!isOnePlayerMode)
         {
             var index = 0;
@@ -64,13 +62,6 @@ public class PlayerSelectView : MonoBehaviourPunCallbacks, IInRoomCallbacks
                 playerIcon[i].Init(i, playerIcons[i], names[i],
                 v => { playerIcon[v].RefreshName(playerIcon[v].isCPU ? names[i] : "CPU" + (v + 1)); });
             }
-        }
-    }
-    public override void OnRoomListUpdate(List<RoomInfo> roomList)
-    {
-        foreach (var item in roomList)
-        {
-            Debug.Log("OnRoomListUpdate:" + item.Name);
         }
     }
 

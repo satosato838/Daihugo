@@ -20,23 +20,8 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 0c1caa94d570c1941bddee8097d8443e
-    m_Address: goat.png
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 0d550a9c176803544b13bb33de53172f
     m_Address: H01.png
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 0e0a04347b7472544baa74d6cf60170f
-    m_Address: slime_blue_a.png
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 10787d1d85c8e2f43bb3a1cd5f3096a8
-    m_Address: pig.png
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -55,23 +40,8 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 13974764af3a7ab4d8fb1d04d0ba2f17
-    m_Address: walrus.png
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 13b72915eed484d49bf9057cc42488a3
-    m_Address: turtle_01.png
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 154947ac621e77549a03653f118cc44a
     m_Address: C11.png
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 16fc411b88afccf4e86eb0bb0cb6821f
-    m_Address: caterleaf.png
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -85,18 +55,8 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 1f06c94a0ee874643bd1c3d5b80ecf89
-    m_Address: horse.png
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 1f37b7754b7e80f43815ca3b5451f26b
     m_Address: D02.png
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 1f68c7ec70a9d56469b4259142bd7dc8
-    m_Address: chicken.png
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -105,18 +65,8 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 2092ff01405b2da4f9408b9e8cc2e244
-    m_Address: elephant.png
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 2226e184d054c1a49a39e3b1f6e2e59a
     m_Address: D12.png
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 2233211c141a05640ba15851f80f907c
-    m_Address: dog.png
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -130,48 +80,13 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 249ac1faee517a7478ab1c2f8991b3d1
-    m_Address: giraffe.png
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 2766d0d1b28e3ed4e95822b94ec4362b
-    m_Address: snake.png
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 285c320d09c260a4eba1f659f58f639a
-    m_Address: brad_bio.png
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 29112caca4244d24e93614d812c32246
     m_Address: S01.png
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 2c4930abb4587cd4b8c2abfe8d4933a8
-    m_Address: armadillo.png
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 2c60e3fb17890a140aef70910d8fe558
-    m_Address: turret.png
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 30f37ada0fdc1524caa24de72a2e9af3
     m_Address: D09.png
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 383063440858eec4bba4030cfd6f307b
-    m_Address: crocodile.png
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 393f3f082585afb4587675cd42bee3de
-    m_Address: slime_b.png
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -200,33 +115,8 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 44d6eded6faa86b409aba753b4766a05
-    m_Address: orc.png
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 4656b08a6915a12478480550c3bc5119
-    m_Address: kingshroom.png
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 4c280b0a2efd404488b2b5bb88a67b85
     m_Address: C03.png
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 4f2b7373577825f42acfd8ad100a5d70
-    m_Address: rhino.png
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 4ff41dda0d3e8474c838e1c0eebf1373
-    m_Address: malandrinho.png
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 5006193968145674881a654276978e64
-    m_Address: skullwing_baby.png
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -235,28 +125,8 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 55ac8dc282e72d944976cb128c93c625
-    m_Address: hulaghost.png
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 5632e929f1b2ff849a0dc0f2d2eaea8b
-    m_Address: buffalo.png
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 59473f65c49854142ac090023e3a5e8d
     m_Address: C13.png
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 5a7f6d57adab6a046ba99f3571e66db3
-    m_Address: brad.png
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 5e4856eff8884834d9898912716a5f8b
-    m_Address: monkey.png
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -267,16 +137,6 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 5f854583136723241acdcc0409d190f4
     m_Address: S11.png
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 62868bbd6370e4a44a9ff522bff065f4
-    m_Address: panda.png
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 6401164ab75889a40b6fceff1fb4f354
-    m_Address: duck.png
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -372,11 +232,6 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 84a3dbdf870926544ac4aaffadaac9e8
     m_Address: mecha.png
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 84ba41d6e2ba09849843ef16ae6cb36b
-    m_Address: hippo.png
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -515,11 +370,6 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: b32b3c003c83e3a4686b38437f3d8e1c
-    m_Address: snake.png
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: ba844d28f3330d14d9e5c14335678319
     m_Address: S02.png
     m_ReadOnly: 0
@@ -600,16 +450,6 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: d2dddaf9b3b6a7c438b44a3de92c1cfd
-    m_Address: frog.png
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: d2f5dbeaf9828e24c8e8f552ec5610ec
-    m_Address: penguin.png
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: d41cd549f45dd414ab663add1d7ad7e1
     m_Address: S05.png
     m_ReadOnly: 0
@@ -620,11 +460,6 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: d981d45f940ed5a42a4f407656812534
-    m_Address: chick.png
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: de7f3f86c06cf854b8f7353bacbeb675
     m_Address: skullwing_fire.png
     m_ReadOnly: 0
@@ -632,11 +467,6 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: e051ceb596a85db4496d0ad7b9b4f6ef
     m_Address: H11.png
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: e0b2b069e17c9904b9967bcafefaf31b
-    m_Address: parrot.png
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -685,11 +515,6 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: f21c041fea148e54b8c7f39f3897c520
-    m_Address: rabbit.png
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: f372201f39eeacf4d99be1d29df636dc
     m_Address: argus.png
     m_ReadOnly: 0
@@ -717,11 +542,6 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: fe6de46b79889ca4d93da4d54be1cd15
     m_Address: Player1.png
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: fe9aa76e53d15b3479639f3f2b488410
-    m_Address: bear.png
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
