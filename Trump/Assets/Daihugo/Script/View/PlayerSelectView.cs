@@ -26,10 +26,6 @@ public class PlayerSelectView : MonoBehaviourPunCallbacks, IInRoomCallbacks
             }
             onClick?.Invoke(playerDatas);
         });
-        for (int i = 0; i < playerIcon.Length; i++)
-        {
-            playerIcon[i].Init(i, playerIcons[i], names[i]);
-        }
         _view.SetActive(false);
     }
 
