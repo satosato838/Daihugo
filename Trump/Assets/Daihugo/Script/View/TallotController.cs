@@ -1,8 +1,10 @@
 using System.Collections.Generic;
+using Photon.Pun;
+using Photon.Realtime;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class TallotController : MonoBehaviour
+public class TallotController : MonoBehaviourPunCallbacks
 {
     [SerializeField] GameObject _objTitle;
     [SerializeField] GameObject GridPrefab;
@@ -17,9 +19,11 @@ public class TallotController : MonoBehaviour
     [SerializeField] DaihugoController _daihugoController;
 
     [SerializeField] Button _btn_GameStart;
+    [SerializeField] Button _btn_Online;
     [SerializeField] Button _btn_Quit;
     void Start()
     {
+        PhotonNetwork.Disconnect();
         for (var i = 0; i < 4; i++)
         {
             foreach (var item in Tallots)
@@ -30,6 +34,15 @@ public class TallotController : MonoBehaviour
         }
         _btn_GameStart.onClick.AddListener(() => { _selectView.Init(true, v => { OnePlayerGameStart(v); }); });
         _btn_Quit.onClick.AddListener(() => { Quit(); });
+        _btn_Online.onClick.AddListener(() =>
+        {
+            PhotonNetwork.NickName = "Player";
+            //PhotonNetwork.GetCustomRoomList(TypedLobby.Default,);
+            // "Room"という名前のルームに参加する（ルームが存在しなければ作成して参加する）
+            PhotonNetwork.JoinOrCreateRoom("Room", new RoomOptions(), TypedLobby.Default);
+            //SoundManager.Instance.PlaySE(SESoundData.SE.buttonpush);
+            _selectView.Init(false, v => { OnePlayerGameStart(v); });
+        });
         Show();
     }
 
@@ -50,8 +63,30 @@ public class TallotController : MonoBehaviour
         _daihugoController.GameStart(players);
     }
 
+
+    // マスターサーバーへの接続が成功した時に呼ばれるコールバック
+    public override void OnConnectedToMaster()
+    {
+        Debug.Log("OnConnectedToMaster");
+        //_modalview.gameObject.SetActive(true);
+    }
+
+    // ゲームサーバーへの接続が成功した時に呼ばれるコールバック
+    public override void OnJoinedRoom()
+    {
+        Debug.Log("OnJoinedRoom");
+        // _onlineView.Show();
+        // Hide();
+    }
+
+    public override void OnJoinRandomFailed(short returnCode, string message)
+    {
+        Debug.LogError($"OnJoinRandomFailed:" + message);
+    }
+
     private void Quit()
     {
+        PhotonNetwork.Disconnect();
         Application.Quit();
     }
 

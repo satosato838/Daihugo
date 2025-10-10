@@ -1,13 +1,16 @@
 using System;
 using System.Collections.Generic;
+using Photon.Pun;
+using Photon.Realtime;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class PlayerSelectView : MonoBehaviour
+public class PlayerSelectView : MonoBehaviourPunCallbacks, IInRoomCallbacks
 {
     [SerializeField] private GameObject _view;
     [SerializeField] private PlayerSelectObject[] playerIcon;
     [SerializeField] private string[] playerIcons = { "skullwing_fire", "slug", "worm", "narwhal" };
+    List<string> names = new List<string> { "Player1", "CPU2", "CPU3", "CPU4" };
     [SerializeField] private Button btn_GameStart;
     Action<List<(string name, string icon)>> onClick;
     void Start()
@@ -24,8 +27,7 @@ public class PlayerSelectView : MonoBehaviour
         });
         for (int i = 0; i < playerIcon.Length; i++)
         {
-            playerIcon[i].Init(playerIcons[i],
-            (i == 0 ? "Player" : "CPU") + (i + 1));
+            playerIcon[i].Init(i, playerIcons[i], names[i]);
         }
         _view.SetActive(false);
     }
@@ -33,13 +35,53 @@ public class PlayerSelectView : MonoBehaviour
     public void Init(bool isOnePlayerMode, Action<List<(string name, string icon)>> action)
     {
         _view.SetActive(true);
+        RefreshPlayers(isOnePlayerMode);
+        onClick = action;
+    }
+    private void RefreshPlayers(bool isOnePlayerMode)
+    {
+        // _roomMembers.text = "";
+
+
+        if (!isOnePlayerMode)
+        {
+            var index = 0;
+            foreach (var item in PhotonNetwork.CurrentRoom.Players)
+            {
+                names[index] = item.Value.NickName;
+                index++;
+            }
+        }
 
         for (int i = 0; i < playerIcon.Length; i++)
         {
-            playerIcon[i].Init(playerIcons[i],
-                               isOnePlayerMode ? (i == 0 ? "Player" : "CPU") + (i + 1) : "Player" + (i + 1));
+            if (isOnePlayerMode)
+            {
+                playerIcon[i].Init(i, playerIcons[i], names[i]);
+            }
+            else
+            {
+                playerIcon[i].Init(i, playerIcons[i], names[i],
+                v => { playerIcon[v].RefreshName(playerIcon[v].isCPU ? names[i] : "CPU" + (v + 1)); });
+            }
         }
-        onClick = action;
+    }
+    public override void OnRoomListUpdate(List<RoomInfo> roomList)
+    {
+        foreach (var item in roomList)
+        {
+            Debug.Log("OnRoomListUpdate:" + item.Name);
+        }
     }
 
+    // ゲームサーバーへの接続が成功した時に呼ばれるコールバック
+    public override void OnJoinedRoom()
+    {
+        Debug.Log("OnJoinedRoom");
+        RefreshPlayers(false);
+    }
+    public override void OnJoinRandomFailed(short returnCode, string message)
+    {
+        Debug.LogError($"OnJoinRandomFailed:" + message);
+    }
 }
