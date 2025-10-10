@@ -36,18 +36,17 @@ public class TallotController : MonoBehaviourPunCallbacks
         _btn_Quit.onClick.AddListener(() => { Quit(); });
         _btn_Online.onClick.AddListener(() =>
         {
-            PhotonNetwork.NickName = "Player";
             //PhotonNetwork.GetCustomRoomList(TypedLobby.Default,);
             // "Room"という名前のルームに参加する（ルームが存在しなければ作成して参加する）
             PhotonNetwork.JoinOrCreateRoom("Room", new RoomOptions(), TypedLobby.Default);
             //SoundManager.Instance.PlaySE(SESoundData.SE.buttonpush);
-            _selectView.Init(false, v => { OnePlayerGameStart(v); });
         });
         Show();
     }
 
     public void Show()
     {
+        PhotonNetwork.ConnectUsingSettings();
         _objTitle.SetActive(true);
     }
 
@@ -75,8 +74,8 @@ public class TallotController : MonoBehaviourPunCallbacks
     public override void OnJoinedRoom()
     {
         Debug.Log("OnJoinedRoom");
-        // _onlineView.Show();
-        // Hide();
+        PhotonNetwork.LocalPlayer.NickName = PhotonNetwork.NickName = "Player";
+        _selectView.Init(false, v => { OnePlayerGameStart(v); });
     }
 
     public override void OnJoinRandomFailed(short returnCode, string message)

@@ -17,6 +17,7 @@ public class PlayerSelectView : MonoBehaviourPunCallbacks, IInRoomCallbacks
     {
         btn_GameStart.onClick.AddListener(() =>
         {
+
             _view.SetActive(false);
             List<(string name, string icon)> playerDatas = new List<(string name, string icon)>();
             foreach (var item in playerIcon)
@@ -41,7 +42,6 @@ public class PlayerSelectView : MonoBehaviourPunCallbacks, IInRoomCallbacks
     private void RefreshPlayers(bool isOnePlayerMode)
     {
         // _roomMembers.text = "";
-
 
         if (!isOnePlayerMode)
         {
@@ -77,7 +77,8 @@ public class PlayerSelectView : MonoBehaviourPunCallbacks, IInRoomCallbacks
     // ゲームサーバーへの接続が成功した時に呼ばれるコールバック
     public override void OnJoinedRoom()
     {
-        Debug.Log("OnJoinedRoom");
+        Debug.Log("OnJoinedRoom IsMasterClient:" + PhotonNetwork.LocalPlayer.IsMasterClient);
+        Debug.Log("MasterClientId:" + PhotonNetwork.CurrentRoom.MasterClientId);
         RefreshPlayers(false);
     }
     public override void OnJoinRandomFailed(short returnCode, string message)
