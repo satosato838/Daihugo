@@ -11,6 +11,8 @@ public class TallotController : MonoBehaviour
     [SerializeField] private string[] playerNames = { "Player1", "Player2", "Player3", "Player4" };
     [SerializeField] private string[] playerIcons = { "owl", "owl", "owl", "owl" };
 
+    [SerializeField] private PlayerSelectView _selectView;
+
 
     [SerializeField] DaihugoController _daihugoController;
 
@@ -26,7 +28,7 @@ public class TallotController : MonoBehaviour
                 tallotPrefab.Init(new Tallot(item));
             }
         }
-        _btn_GameStart.onClick.AddListener(() => { GameStart(); });
+        _btn_GameStart.onClick.AddListener(() => { _selectView.Init(true, v => { OnePlayerGameStart(v); }); });
         _btn_Quit.onClick.AddListener(() => { Quit(); });
         Show();
     }
@@ -36,13 +38,13 @@ public class TallotController : MonoBehaviour
         _objTitle.SetActive(true);
     }
 
-    private void GameStart()
+    private void OnePlayerGameStart(List<(string name, string icon)> playerDatas)
     {
         _objTitle.SetActive(false);
         List<GamePlayer> players = new List<GamePlayer>();
         for (int i = 0; i < playerNames.Length; i++)
         {
-            players.Add(new GamePlayer(i, playerNames[i], playerIcons[i],
+            players.Add(new GamePlayer(i, playerDatas[i].name, playerDatas[i].icon,
             DaihugoGameRule.GameRank.Heimin, DaihugoGameRule.DaihugoState.None, DaihugoGameRule.GameState.None, isCPU: playerNames[i].Contains("CPU")));
         }
         _daihugoController.GameStart(players);

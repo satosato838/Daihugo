@@ -16,6 +16,7 @@ public class DaihugoController : MonoBehaviour, IDaihugoObserver
     [SerializeField] private EffectCutInController _effectCutInController;
     [SerializeField] private CemeteryController _cemeteryController;
     [SerializeField] private ResultController _resultController;
+
     [SerializeField] private bool _isDebug;
     [SerializeField] private bool _isDebugCard;
     private Daihugo _daihugoInstance;
